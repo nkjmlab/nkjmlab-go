@@ -1,0 +1,339 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			1,
+			1,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			2,
+			1,
+			1,
+			1,
+			1,
+			1,
+			1,
+			42,
+			0
+		],
+		[
+			2,
+			2,
+			2,
+			2,
+			2,
+			2,
+			2,
+			1,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			1,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			1,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			2,
+			1,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			1,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "問題集 Part 5",
+	"handHistory": [
+		{
+			"number": 1165,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 0
+		},
+		{
+			"number": 1166,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 0
+		},
+		{
+			"number": 1167,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 0
+		},
+		{
+			"number": 1168,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 1
+		},
+		{
+			"number": 1169,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 1
+		},
+		{
+			"number": 1170,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 1
+		},
+		{
+			"number": 1171,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 2
+		},
+		{
+			"number": 1172,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 3
+		},
+		{
+			"number": 1173,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 4
+		},
+		{
+			"number": 1174,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 5
+		},
+		{
+			"number": 1175,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 6
+		},
+		{
+			"number": 1176,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 7
+		},
+		{
+			"number": 1177,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 7
+		},
+		{
+			"number": 1178,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 2
+		},
+		{
+			"number": 1179,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 3
+		},
+		{
+			"number": 1180,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 4
+		},
+		{
+			"number": 1181,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 5
+		},
+		{
+			"number": 1182,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 6
+		},
+		{
+			"number": 1183,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 5
+		},
+		{
+			"number": 1184,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 5
+		},
+		{
+			"number": 1185,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 5
+		},
+		{
+			"number": 1186,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 6
+		},
+		{
+			"number": 1187,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 7,
+			"y": 6
+		},
+		{
+			"number": 1188,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 6
+		},
+		{
+			"number": 1189,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 6
+		},
+		{
+			"number": 1190,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 7
+		},
+		{
+			"number": 1191,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 7,
+			"y": 7
+		},
+		{
+			"number": 1192,
+			"options": "",
+			"stone": 42,
+			"type": "onBoard",
+			"x": 2,
+			"y": 7
+		}
+	],
+	"message": "\u003Cp\u003E 黒番．白がAと打ってきました．黒地の中に入ってきてちょっと生意気ですが，実は狙いを秘めています．どうしたらその狙いを防げるでしょう？\u003C/p\u003E",
+	"name": "問題17",
+	"problemId": 1496846003727,
+	"ro": 9,
+	"symbols": {}
+}

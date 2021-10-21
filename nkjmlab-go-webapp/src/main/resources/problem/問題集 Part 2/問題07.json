@@ -1,0 +1,331 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			2,
+			0,
+			2,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			2,
+			1,
+			1,
+			2,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			2,
+			1,
+			0,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			2,
+			0,
+			1,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			2,
+			1,
+			0,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			2,
+			1,
+			1,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			2,
+			2,
+			2,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "問題集 Part 2",
+	"handHistory": [
+		{
+			"number": 959,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 3
+		},
+		{
+			"number": 960,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 3
+		},
+		{
+			"number": 961,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 3
+		},
+		{
+			"number": 962,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 3
+		},
+		{
+			"number": 963,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 3
+		},
+		{
+			"number": 964,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 1,
+			"y": 4
+		},
+		{
+			"number": 965,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 0,
+			"y": 5
+		},
+		{
+			"number": 966,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 5
+		},
+		{
+			"number": 967,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 4
+		},
+		{
+			"number": 968,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 4
+		},
+		{
+			"number": 969,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 6
+		},
+		{
+			"number": 970,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 6
+		},
+		{
+			"number": 971,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 5
+		},
+		{
+			"number": 972,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 4
+		},
+		{
+			"number": 973,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 4
+		},
+		{
+			"number": 974,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 5
+		},
+		{
+			"number": 975,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 6
+		},
+		{
+			"number": 976,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 6
+		},
+		{
+			"number": 977,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 7,
+			"y": 4
+		},
+		{
+			"number": 978,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 7,
+			"y": 5
+		},
+		{
+			"number": 979,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 7,
+			"y": 6
+		},
+		{
+			"number": 980,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 7
+		},
+		{
+			"number": 981,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 7
+		},
+		{
+			"number": 982,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 7
+		},
+		{
+			"number": 983,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 7
+		},
+		{
+			"number": 984,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 6
+		},
+		{
+			"number": 985,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 1,
+			"y": 6
+		}
+	],
+	"message": "\u003Cp\u003E 27白番．死んでいる石（二眼《眼＝着手禁止点》ない形）にするには？．\u003C/p\u003E",
+	"name": "問題07",
+	"problemId": 1496846003716,
+	"ro": 9,
+	"symbols": {}
+}

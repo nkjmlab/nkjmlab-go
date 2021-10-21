@@ -1,0 +1,195 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			2,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			21,
+			21,
+			2,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			1,
+			2,
+			2,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			1,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "問題集 Part 2",
+	"handHistory": [
+		{
+			"number": 1044,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 2
+		},
+		{
+			"number": 1045,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 2
+		},
+		{
+			"number": 1046,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 3
+		},
+		{
+			"number": 1047,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 4
+		},
+		{
+			"number": 1048,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 3
+		},
+		{
+			"number": 1049,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 4
+		},
+		{
+			"number": 1050,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 0,
+			"y": 4
+		},
+		{
+			"number": 1051,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 1,
+			"y": 5
+		},
+		{
+			"number": 1052,
+			"options": "",
+			"stone": 21,
+			"type": "onBoard",
+			"x": 1,
+			"y": 3
+		},
+		{
+			"number": 1053,
+			"options": "",
+			"stone": 21,
+			"type": "onBoard",
+			"x": 1,
+			"y": 4
+		}
+	],
+	"message": "\u003Cp\u003E 白番．△二つをとるには？\u003C/p\u003E",
+	"name": "問題10",
+	"problemId": 1496846003720,
+	"ro": 9,
+	"symbols": {}
+}

@@ -1,0 +1,355 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			2,
+			0,
+			2,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			2,
+			1,
+			2,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			2,
+			1,
+			0,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			2,
+			1,
+			0,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			2,
+			1,
+			1,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			2,
+			1,
+			0,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			2,
+			1,
+			1,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			2,
+			2,
+			2,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "問題集 Part 5",
+	"handHistory": [
+		{
+			"number": 986,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 3
+		},
+		{
+			"number": 987,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 3
+		},
+		{
+			"number": 988,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 3
+		},
+		{
+			"number": 989,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 3
+		},
+		{
+			"number": 990,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 3
+		},
+		{
+			"number": 991,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 0,
+			"y": 4
+		},
+		{
+			"number": 992,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 1,
+			"y": 4
+		},
+		{
+			"number": 993,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 7,
+			"y": 4
+		},
+		{
+			"number": 994,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 7,
+			"y": 5
+		},
+		{
+			"number": 995,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 7,
+			"y": 6
+		},
+		{
+			"number": 996,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 4
+		},
+		{
+			"number": 997,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 4
+		},
+		{
+			"number": 998,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 4
+		},
+		{
+			"number": 999,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 4
+		},
+		{
+			"number": 1000,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 4
+		},
+		{
+			"number": 1001,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 5
+		},
+		{
+			"number": 1002,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 0,
+			"y": 6
+		},
+		{
+			"number": 1003,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 1,
+			"y": 6
+		},
+		{
+			"number": 1004,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 6
+		},
+		{
+			"number": 1005,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 6
+		},
+		{
+			"number": 1006,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 6
+		},
+		{
+			"number": 1007,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 6
+		},
+		{
+			"number": 1008,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 6
+		},
+		{
+			"number": 1009,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 5
+		},
+		{
+			"number": 1010,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 5
+		},
+		{
+			"number": 1011,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 7
+		},
+		{
+			"number": 1012,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 7
+		},
+		{
+			"number": 1013,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 7
+		},
+		{
+			"number": 1014,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 7
+		},
+		{
+			"number": 1015,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 7
+		}
+	],
+	"message": "\u003Cp\u003E 白番．この黒を「死んでいる石＝2眼ない形」にしてください．\u003C/p\u003E",
+	"name": "問題16",
+	"problemId": 1496846003717,
+	"ro": 9,
+	"symbols": {}
+}

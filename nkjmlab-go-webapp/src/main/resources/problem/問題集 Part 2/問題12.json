@@ -1,0 +1,235 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			2,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			2,
+			2,
+			21,
+			21,
+			21
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			2,
+			2
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "問題集 Part 2",
+	"handHistory": [
+		{
+			"number": 1069,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 6
+		},
+		{
+			"number": 1070,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 7
+		},
+		{
+			"number": 1071,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 8
+		},
+		{
+			"number": 1072,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 5
+		},
+		{
+			"number": 1073,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 4
+		},
+		{
+			"number": 1074,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 6
+		},
+		{
+			"number": 1075,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 6
+		},
+		{
+			"number": 1076,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 7
+		},
+		{
+			"number": 1077,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 8
+		},
+		{
+			"number": 1078,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 5
+		},
+		{
+			"number": 1079,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 5
+		},
+		{
+			"number": 1080,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 6
+		},
+		{
+			"number": 1081,
+			"options": "",
+			"stone": 21,
+			"type": "onBoard",
+			"x": 4,
+			"y": 6
+		},
+		{
+			"number": 1082,
+			"options": "",
+			"stone": 21,
+			"type": "onBoard",
+			"x": 4,
+			"y": 7
+		},
+		{
+			"number": 1083,
+			"options": "",
+			"stone": 21,
+			"type": "onBoard",
+			"x": 4,
+			"y": 8
+		}
+	],
+	"message": "\u003Cp\u003E 黒番．△3子をとられないようにするには？\u003C/p\u003E",
+	"name": "問題12",
+	"problemId": 1496846003722,
+	"ro": 9,
+	"symbols": {}
+}

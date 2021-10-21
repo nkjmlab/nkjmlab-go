@@ -1,0 +1,168 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			2,
+			2,
+			2,
+			2,
+			0,
+			0
+		],
+		[
+			2,
+			1,
+			1,
+			2,
+			0,
+			0
+		],
+		[
+			1,
+			0,
+			1,
+			2,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			1,
+			2,
+			0,
+			0
+		]
+	],
+	"groupId": "第2回",
+	"handHistory": [
+		{
+			"number": 0,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 0
+		},
+		{
+			"number": 1,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 2
+		},
+		{
+			"number": 2,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 2
+		},
+		{
+			"number": 3,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 2
+		},
+		{
+			"number": 4,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 1
+		},
+		{
+			"number": 5,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 0
+		},
+		{
+			"number": 6,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 0
+		},
+		{
+			"number": 7,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 1
+		},
+		{
+			"number": 8,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 2
+		},
+		{
+			"number": 9,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 3
+		},
+		{
+			"number": 10,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 3
+		},
+		{
+			"number": 11,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 3
+		},
+		{
+			"number": 12,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 3
+		}
+	],
+	"message": "⿊番 生きている石にしてください",
+	"name": "問題03",
+	"problemId": 1591758108936,
+	"ro": 6,
+	"symbols": {}
+}

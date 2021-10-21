@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<table id="tbl-requests"
+  class="table table-bordered table-striped table-hover table-responsive-sm mt-2">
+  <thead>
+    <tr>
+      <th>順番</th>
+      <th></th>
+      <th>碁盤ID</th>
+      <th>挙手時刻</th>
+      <th>質問内容</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr th:each="item : ${games}">
+      <td class="text-center h6" th:text="${itemStat.count}"></td>
+      <td class="text-center h6" th:if="${#strings.contains(item.gameState.gameId,'-vs-')}"><img
+        class="player-icon rounded" th:src="|../img/icon/${item.gameState.blackPlayerId}.png|"
+        onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'"> <strong>vs.</strong>
+        <img class="player-icon rounded" th:src="|../img/icon/${item.gameState.whitePlayerId}.png|"
+        onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'"></td>
+      <td class="text-center h6" th:unless="${#strings.contains(item.gameState.gameId,'-vs-')}"><img
+        class="player-icon rounded" th:src="|../img/icon/${item.gameState.gameId}.png|"
+        onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'"></td>
+      <td class="h5"><a class="badge badge-primary"
+        th:href="|play.html?game_id=${item.gameState.gameId}|"><span
+          th:text="${item.gameState.gameId}"></span> <i class="fas fa-user-friends"></i></a></td>
+      <td class="small" th:text="${#dates.format(item.gameState.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+      <td class="text-left" th:utext="${item.handUp.message}"></td>
+    </tr>
+  </tbody>
+</table>

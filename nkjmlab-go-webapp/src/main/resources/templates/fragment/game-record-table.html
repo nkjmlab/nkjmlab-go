@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<div class="row mt-2">
+  <div class="col-12">
+    <table id="tbl-records" class="table table-bordered table-striped table-hover table-responsive-sm">
+      <thead>
+        <tr>
+          <th></th>
+          <th>日付</th>
+          <th>対局相手</th>
+          <th>勝敗</th>
+          <th>級位</th>
+          <th>ポイント</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr th:each="item, itemStat : ${records}">
+          <td><span th:text="${itemStat.size} - ${itemStat.index}"></span></td>
+          <td class="small" th:text="${#dates.format(item.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+          <td class="text-center h6"> <img class="player-icon rounded" th:src="|../img/icon/${item.opponentUserId}.png|"
+              onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'">
+            <span th:text="${item.opponentUserId}">
+          </td>
+          <td class="h6" th:text="${item.jadge}"></td>
+          <td class="h6" th:text="${item.rank}"></td>
+          <td class="h6" th:text="${item.point}"></td>
+          <td class="h6"><span th:utext="${item.message}"></span>
+            <span th:utext="${item.memo}">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

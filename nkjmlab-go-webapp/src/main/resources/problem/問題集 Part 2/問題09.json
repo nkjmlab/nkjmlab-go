@@ -1,0 +1,243 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			1
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			2,
+			2
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			2,
+			2
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			1
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "問題集 Part 2",
+	"handHistory": [
+		{
+			"number": 1028,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 8
+		},
+		{
+			"number": 1029,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 7
+		},
+		{
+			"number": 1030,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 7,
+			"y": 8
+		},
+		{
+			"number": 1031,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 7,
+			"y": 7
+		},
+		{
+			"number": 1032,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 8
+		},
+		{
+			"number": 1033,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 7
+		},
+		{
+			"number": 1034,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 7
+		},
+		{
+			"number": 1035,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 7
+		},
+		{
+			"number": 1036,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 7
+		},
+		{
+			"number": 1037,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 7
+		},
+		{
+			"number": 1038,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 8
+		},
+		{
+			"number": 1039,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 6
+		},
+		{
+			"number": 1040,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 6
+		},
+		{
+			"number": 1041,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 6
+		},
+		{
+			"number": 1042,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 6
+		},
+		{
+			"number": 1043,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 6
+		}
+	],
+	"message": "\u003Cp\u003E 白番．生きてください．\u003C/p\u003E",
+	"name": "問題09",
+	"problemId": 1496846003719,
+	"ro": 9,
+	"symbols": {}
+}

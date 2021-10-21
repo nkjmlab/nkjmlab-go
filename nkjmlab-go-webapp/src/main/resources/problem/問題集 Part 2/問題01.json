@@ -1,0 +1,331 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			2,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			2,
+			0,
+			0,
+			0,
+			0,
+			2,
+			2,
+			2,
+			2
+		],
+		[
+			1,
+			2,
+			2,
+			0,
+			0,
+			2,
+			1,
+			2,
+			1
+		],
+		[
+			1,
+			1,
+			1,
+			2,
+			2,
+			42,
+			1,
+			1,
+			1
+		],
+		[
+			0,
+			0,
+			0,
+			1,
+			1,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			1,
+			0,
+			0,
+			0,
+			1,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "問題集 Part 2",
+	"handHistory": [
+		{
+			"number": 802,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 0
+		},
+		{
+			"number": 803,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 1,
+			"y": 1
+		},
+		{
+			"number": 804,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 0
+		},
+		{
+			"number": 805,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 0
+		},
+		{
+			"number": 806,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 1
+		},
+		{
+			"number": 807,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 2
+		},
+		{
+			"number": 808,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 1
+		},
+		{
+			"number": 809,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 2
+		},
+		{
+			"number": 810,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 3
+		},
+		{
+			"number": 811,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 4
+		},
+		{
+			"number": 812,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 3
+		},
+		{
+			"number": 813,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 4
+		},
+		{
+			"number": 814,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 2
+		},
+		{
+			"number": 815,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 5
+		},
+		{
+			"number": 816,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 5
+		},
+		{
+			"number": 817,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 5
+		},
+		{
+			"number": 818,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 6
+		},
+		{
+			"number": 819,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 7
+		},
+		{
+			"number": 820,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 8
+		},
+		{
+			"number": 821,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 7
+		},
+		{
+			"number": 822,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 6
+		},
+		{
+			"number": 823,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 6
+		},
+		{
+			"number": 824,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 7
+		},
+		{
+			"number": 825,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 8
+		},
+		{
+			"number": 826,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 8
+		},
+		{
+			"number": 827,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 6
+		},
+		{
+			"number": 828,
+			"options": "",
+			"stone": 42,
+			"type": "onBoard",
+			"x": 4,
+			"y": 5
+		}
+	],
+	"message": "\u003Cp\u003E 黒番．あと一手で終わり．どこに打ったら良いでしょう？\u003C/p\u003E",
+	"name": "問題01",
+	"problemId": 1496846003708,
+	"ro": 9,
+	"symbols": {}
+}

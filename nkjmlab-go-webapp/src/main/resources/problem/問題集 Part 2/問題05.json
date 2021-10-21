@@ -1,0 +1,275 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			1,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			2,
+			1,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			21,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			21,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			21,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			2,
+			1,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			1,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "問題集 Part 2",
+	"handHistory": [
+		{
+			"number": 913,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 7
+		},
+		{
+			"number": 914,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 7
+		},
+		{
+			"number": 915,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 6
+		},
+		{
+			"number": 916,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 6
+		},
+		{
+			"number": 917,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 5
+		},
+		{
+			"number": 918,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 5
+		},
+		{
+			"number": 919,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 5
+		},
+		{
+			"number": 920,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 5
+		},
+		{
+			"number": 921,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 5
+		},
+		{
+			"number": 922,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 6
+		},
+		{
+			"number": 923,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 6
+		},
+		{
+			"number": 924,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 6
+		},
+		{
+			"number": 925,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 6
+		},
+		{
+			"number": 926,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 7
+		},
+		{
+			"number": 927,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 7
+		},
+		{
+			"number": 928,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 7,
+			"y": 7
+		},
+		{
+			"number": 929,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 7,
+			"y": 6
+		},
+		{
+			"number": 930,
+			"options": "",
+			"stone": 21,
+			"type": "onBoard",
+			"x": 3,
+			"y": 6
+		},
+		{
+			"number": 931,
+			"options": "",
+			"stone": 21,
+			"type": "onBoard",
+			"x": 4,
+			"y": 6
+		},
+		{
+			"number": 932,
+			"options": "",
+			"stone": 21,
+			"type": "onBoard",
+			"x": 5,
+			"y": 6
+		}
+	],
+	"message": "\u003Cp\u003E 白番．黒△3子をとるうまい手があります．\u003C/p\u003E",
+	"name": "問題05",
+	"problemId": 1496846003713,
+	"ro": 9,
+	"symbols": {}
+}

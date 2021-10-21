@@ -1,0 +1,211 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			2,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			2,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			1,
+			2,
+			2
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			1,
+			1
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "問題集 Part 2",
+	"handHistory": [
+		{
+			"number": 1016,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 1,
+			"y": 7
+		},
+		{
+			"number": 1017,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 0,
+			"y": 6
+		},
+		{
+			"number": 1018,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 1,
+			"y": 6
+		},
+		{
+			"number": 1019,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 7
+		},
+		{
+			"number": 1020,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 8
+		},
+		{
+			"number": 1021,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 0,
+			"y": 5
+		},
+		{
+			"number": 1022,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 5
+		},
+		{
+			"number": 1023,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 5
+		},
+		{
+			"number": 1024,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 6
+		},
+		{
+			"number": 1025,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 6
+		},
+		{
+			"number": 1026,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 7
+		},
+		{
+			"number": 1027,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 8
+		}
+	],
+	"message": "\u003Cp\u003E 白番．生きている石（二眼ある形）にしてください\u003C/p\u003E",
+	"name": "問題08",
+	"problemId": 1496846003718,
+	"ro": 9,
+	"symbols": {}
+}

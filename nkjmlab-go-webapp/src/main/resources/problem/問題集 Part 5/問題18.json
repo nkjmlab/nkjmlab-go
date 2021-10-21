@@ -1,0 +1,355 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			1,
+			1,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			1,
+			1,
+			2,
+			2,
+			2,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			1,
+			2,
+			2,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			42,
+			2,
+			1,
+			2,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			1,
+			2,
+			1,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			1,
+			1,
+			2,
+			2,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			1,
+			1,
+			2,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			1,
+			2,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "問題集 Part 5",
+	"handHistory": [
+		{
+			"number": 1322,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 2
+		},
+		{
+			"number": 1323,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 2
+		},
+		{
+			"number": 1324,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 2
+		},
+		{
+			"number": 1325,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 2
+		},
+		{
+			"number": 1326,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 2
+		},
+		{
+			"number": 1327,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 3
+		},
+		{
+			"number": 1328,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 3
+		},
+		{
+			"number": 1329,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 3
+		},
+		{
+			"number": 1330,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 3
+		},
+		{
+			"number": 1331,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 3
+		},
+		{
+			"number": 1332,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 7,
+			"y": 3
+		},
+		{
+			"number": 1333,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 7,
+			"y": 4
+		},
+		{
+			"number": 1334,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 8,
+			"y": 4
+		},
+		{
+			"number": 1335,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 4
+		},
+		{
+			"number": 1336,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 5
+		},
+		{
+			"number": 1337,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 1,
+			"y": 6
+		},
+		{
+			"number": 1338,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 4
+		},
+		{
+			"number": 1339,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 4
+		},
+		{
+			"number": 1340,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 4
+		},
+		{
+			"number": 1341,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 4
+		},
+		{
+			"number": 1342,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 4
+		},
+		{
+			"number": 1343,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 5
+		},
+		{
+			"number": 1344,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 7,
+			"y": 5
+		},
+		{
+			"number": 1345,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 8,
+			"y": 5
+		},
+		{
+			"number": 1346,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 5
+		},
+		{
+			"number": 1347,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 5
+		},
+		{
+			"number": 1348,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 6
+		},
+		{
+			"number": 1349,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 7
+		},
+		{
+			"number": 1350,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 1,
+			"y": 7
+		},
+		{
+			"number": 1351,
+			"options": "",
+			"stone": 42,
+			"type": "onBoard",
+			"x": 4,
+			"y": 2
+		}
+	],
+	"message": "\u003Cp\u003E 黒番．白がAときたところ．黒の最善の応手は？\u003C/p\u003E",
+	"name": "問題18",
+	"problemId": 1496846003731,
+	"ro": 9,
+	"symbols": {}
+}

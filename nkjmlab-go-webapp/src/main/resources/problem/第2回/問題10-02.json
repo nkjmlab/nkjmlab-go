@@ -1,0 +1,256 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			1,
+			1,
+			1,
+			1,
+			0,
+			0
+		],
+		[
+			2,
+			2,
+			2,
+			2,
+			1,
+			0
+		],
+		[
+			0,
+			2,
+			0,
+			2,
+			1,
+			0
+		],
+		[
+			2,
+			2,
+			2,
+			2,
+			1,
+			0
+		],
+		[
+			1,
+			1,
+			1,
+			1,
+			1,
+			0
+		]
+	],
+	"groupId": "第2回",
+	"handHistory": [
+		{
+			"number": 0,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 1,
+			"y": 0
+		},
+		{
+			"number": 1,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 1,
+			"y": 1
+		},
+		{
+			"number": 2,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 1,
+			"y": 2
+		},
+		{
+			"number": 3,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 1,
+			"y": 3
+		},
+		{
+			"number": 4,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 4
+		},
+		{
+			"number": 5,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 4
+		},
+		{
+			"number": 6,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 4
+		},
+		{
+			"number": 7,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 4
+		},
+		{
+			"number": 8,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 3
+		},
+		{
+			"number": 9,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 3
+		},
+		{
+			"number": 10,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 2
+		},
+		{
+			"number": 11,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 2
+		},
+		{
+			"number": 12,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 3
+		},
+		{
+			"number": 13,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 1
+		},
+		{
+			"number": 14,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 0
+		},
+		{
+			"number": 15,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 0
+		},
+		{
+			"number": 16,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 0
+		},
+		{
+			"number": 17,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 1
+		},
+		{
+			"number": 18,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 1
+		},
+		{
+			"number": 19,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 3
+		},
+		{
+			"number": 20,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 2
+		},
+		{
+			"number": 21,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 1
+		},
+		{
+			"number": 22,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 0
+		},
+		{
+			"number": 23,
+			"options": "",
+			"stone": 2,
+			"type": "removeFromBoard",
+			"x": 3,
+			"y": 0
+		}
+	],
+	"message": "白は生きている石でしょうか？死んでいる石でしょうか？（⿊からの着手禁⽌点が２か所あれ\nば生きている）",
+	"name": "問題10-02",
+	"problemId": 1591767448710,
+	"ro": 6,
+	"symbols": {}
+}

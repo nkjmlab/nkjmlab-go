@@ -1,0 +1,315 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			1,
+			1,
+			1,
+			1,
+			1,
+			1,
+			0
+		],
+		[
+			0,
+			0,
+			1,
+			2,
+			2,
+			2,
+			2,
+			1,
+			0
+		],
+		[
+			0,
+			0,
+			2,
+			1,
+			0,
+			0,
+			0,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			2,
+			1,
+			1,
+			1,
+			1,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			2,
+			2,
+			2,
+			2,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "セキ",
+	"handHistory": [
+		{
+			"number": 0,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 2
+		},
+		{
+			"number": 1,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 2
+		},
+		{
+			"number": 2,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 3
+		},
+		{
+			"number": 3,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 4
+		},
+		{
+			"number": 4,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 5
+		},
+		{
+			"number": 5,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 6
+		},
+		{
+			"number": 6,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 7
+		},
+		{
+			"number": 7,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 7
+		},
+		{
+			"number": 8,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 7
+		},
+		{
+			"number": 9,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 7
+		},
+		{
+			"number": 10,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 6
+		},
+		{
+			"number": 11,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 5
+		},
+		{
+			"number": 12,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 4
+		},
+		{
+			"number": 13,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 3
+		},
+		{
+			"number": 14,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 3
+		},
+		{
+			"number": 15,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 4
+		},
+		{
+			"number": 16,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 5
+		},
+		{
+			"number": 17,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 6
+		},
+		{
+			"number": 18,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 3
+		},
+		{
+			"number": 19,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 3
+		},
+		{
+			"number": 20,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 4
+		},
+		{
+			"number": 21,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 5
+		},
+		{
+			"number": 22,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 6
+		},
+		{
+			"number": 23,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 2
+		},
+		{
+			"number": 24,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 2
+		}
+	],
+	"message": "黒番 セキにして、印のついている黒を助けましょう!",
+	"name": "問題2",
+	"problemId": 1560902472624,
+	"ro": 9,
+	"symbols": {}
+}

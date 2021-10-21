@@ -1,0 +1,403 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			2,
+			0
+		],
+		[
+			0,
+			2,
+			2,
+			2,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			2,
+			2,
+			2,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			2,
+			2,
+			2,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			2,
+			2,
+			2,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			2,
+			2,
+			2,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			2
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			2,
+			2
+		]
+	],
+	"groupId": "第1回",
+	"handHistory": [
+		{
+			"number": 369,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 3
+		},
+		{
+			"number": 370,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 2
+		},
+		{
+			"number": 371,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 6
+		},
+		{
+			"number": 372,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 1,
+			"y": 6
+		},
+		{
+			"number": 373,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 1,
+			"y": 5
+		},
+		{
+			"number": 374,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 7,
+			"y": 6
+		},
+		{
+			"number": 375,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 8,
+			"y": 6
+		},
+		{
+			"number": 376,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 7,
+			"y": 5
+		},
+		{
+			"number": 377,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 8,
+			"y": 5
+		},
+		{
+			"number": 378,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 8,
+			"y": 4
+		},
+		{
+			"number": 10,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 1
+		},
+		{
+			"number": 11,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 2
+		},
+		{
+			"number": 12,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 2
+		},
+		{
+			"number": 13,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 3
+		},
+		{
+			"number": 14,
+			"options": "",
+			"stone": 2,
+			"type": "removeFromBoard",
+			"x": 2,
+			"y": 6
+		},
+		{
+			"number": 15,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 1,
+			"y": 7
+		},
+		{
+			"number": 16,
+			"options": "",
+			"stone": 2,
+			"type": "removeFromBoard",
+			"x": 1,
+			"y": 5
+		},
+		{
+			"number": 17,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 3
+		},
+		{
+			"number": 18,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 1
+		},
+		{
+			"number": 19,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 1
+		},
+		{
+			"number": 20,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 1
+		},
+		{
+			"number": 21,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 1
+		},
+		{
+			"number": 22,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 2
+		},
+		{
+			"number": 23,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 3
+		},
+		{
+			"number": 24,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 2
+		},
+		{
+			"number": 25,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 3
+		},
+		{
+			"number": 26,
+			"options": "",
+			"stone": 2,
+			"type": "removeFromBoard",
+			"x": 8,
+			"y": 6
+		},
+		{
+			"number": 27,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 8,
+			"y": 8
+		},
+		{
+			"number": 28,
+			"options": "",
+			"stone": 2,
+			"type": "removeFromBoard",
+			"x": 7,
+			"y": 6
+		},
+		{
+			"number": 29,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 7,
+			"y": 8
+		},
+		{
+			"number": 30,
+			"options": "",
+			"stone": 2,
+			"type": "removeFromBoard",
+			"x": 7,
+			"y": 5
+		},
+		{
+			"number": 31,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 7,
+			"y": 7
+		},
+		{
+			"number": 32,
+			"options": "",
+			"stone": 2,
+			"type": "removeFromBoard",
+			"x": 8,
+			"y": 5
+		},
+		{
+			"number": 33,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 8,
+			"y": 7
+		},
+		{
+			"number": 34,
+			"options": "",
+			"stone": 2,
+			"type": "removeFromBoard",
+			"x": 8,
+			"y": 4
+		},
+		{
+			"number": 35,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 8,
+			"y": 6
+		}
+	],
+	"message": "\u003Cp\u003E白石を⿊で囲んでください。⿊は何⼿打っても良いですが、できるだけ必要なところにのみ打つようにしましょう。\u003C/p\u003E",
+	"name": "問題02",
+	"problemId": 1496846003677,
+	"ro": 9,
+	"symbols": {}
+}

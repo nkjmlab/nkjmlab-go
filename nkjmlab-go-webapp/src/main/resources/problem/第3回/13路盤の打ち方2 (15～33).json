@@ -1,0 +1,475 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			0,
+			0,
+			2,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			2,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			2,
+			1,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			0,
+			0,
+			1,
+			1,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			2,
+			0,
+			2,
+			2,
+			1,
+			1,
+			0,
+			1,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			2,
+			1,
+			1,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			2,
+			2,
+			1,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			2,
+			2,
+			0,
+			1,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			0,
+			0
+		],
+		[
+			0,
+			2,
+			1,
+			1,
+			0,
+			1,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			1,
+			1,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "第3回",
+	"handHistory": [
+		{
+			"number": 0,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 9,
+			"y": 3
+		},
+		{
+			"number": 1,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 9
+		},
+		{
+			"number": 2,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 10,
+			"y": 9
+		},
+		{
+			"number": 3,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 2
+		},
+		{
+			"number": 4,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 10
+		},
+		{
+			"number": 5,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 7
+		},
+		{
+			"number": 6,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 11
+		},
+		{
+			"number": 7,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 10
+		},
+		{
+			"number": 8,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 8,
+			"y": 10
+		},
+		{
+			"number": 9,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 7,
+			"y": 2
+		},
+		{
+			"number": 10,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 9,
+			"y": 5
+		},
+		{
+			"number": 11,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 9,
+			"y": 1
+		},
+		{
+			"number": 12,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 10,
+			"y": 2
+		},
+		{
+			"number": 13,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 3
+		},
+		{
+			"number": 14,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 8
+		},
+		{
+			"number": 15,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 7
+		},
+		{
+			"number": 16,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 7
+		},
+		{
+			"number": 17,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 6
+		},
+		{
+			"number": 18,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 6
+		},
+		{
+			"number": 19,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 5
+		},
+		{
+			"number": 20,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 5
+		},
+		{
+			"number": 21,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 4
+		},
+		{
+			"number": 22,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 7,
+			"y": 4
+		},
+		{
+			"number": 23,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 7,
+			"y": 3
+		},
+		{
+			"number": 24,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 8,
+			"y": 4
+		},
+		{
+			"number": 25,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 11
+		},
+		{
+			"number": 26,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 10,
+			"y": 1
+		},
+		{
+			"number": 27,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 8,
+			"y": 2
+		},
+		{
+			"number": 28,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 9,
+			"y": 2
+		},
+		{
+			"number": 29,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 8,
+			"y": 1
+		},
+		{
+			"number": 30,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 10
+		},
+		{
+			"number": 31,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 10
+		},
+		{
+			"number": 32,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 11
+		}
+	],
+	"message": "\u003Col\u003E\n\u003Cli\u003E１３路盤も隅から打ち始めます。(黒１、白2は「星」といいます。黒３、白４は「小目」といいます)\u003C/li\u003E\n\u003Cli\u003E黒５は｢カカリ」と言い領地を拡大しながら相手にプレッシャーを与える手です。\u003C/li\u003E\n\u003Cli\u003E白６は「カカリ」に対して「受け」と言い、攻められないように守りながら領地を確保する手です。\u003C/li\u003E\n\u003Cli\u003E黒9は「シマリ」と言います。領地をしっかり確保する手です。\u003C/li\u003E\n\u003Cli\u003E隅→辺→中央の順番に打ち、陣地の輪郭ができたら２線→１線といきます。\u003C/li\u003E\n\u003Cli\u003E6路盤と9路盤でやった４つのポイント(「どこに陣地を囲いたいか意識する」「離してきたら離して、くっついてきたらくっついて打つ」「仲間になっていない石にご用心」「入れてくださいには入れません」)は13路盤も同じです。\u003C/li\u003E\n\u003C/ol\u003E\n\u003Cp\u003E1局目は模範対局の33手まで並べてから打ってみましょう。次は白番です。※ここまで並べる際、数字の通りに順番に石を置いていきましょう\u003C/p\u003E\n\u003Col\u003E\n\u003Cli\u003E13路盤からはコミは正式な6目半で打ってみましょう。\u003C/li\u003E\n\u003Cli\u003E何度か終局ができたら以下の14手まで並べて、黒番から打ち始めてください。\u003C/li\u003E\n\u003C/ol\u003E",
+	"name": "13路盤の打ち方2 (15～33)",
+	"problemId": 1594001851300,
+	"ro": 13,
+	"symbols": {}
+}

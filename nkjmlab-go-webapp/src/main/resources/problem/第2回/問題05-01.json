@@ -1,0 +1,395 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			2,
+			0,
+			0,
+			0,
+			2,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			2,
+			2,
+			2,
+			2,
+			2,
+			2,
+			2,
+			2,
+			2
+		],
+		[
+			1,
+			1,
+			1,
+			1,
+			1,
+			1,
+			1,
+			1,
+			1
+		],
+		[
+			2,
+			2,
+			1,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			2,
+			1,
+			0,
+			0,
+			0,
+			1,
+			0,
+			0
+		],
+		[
+			2,
+			2,
+			1,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			2,
+			1,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "第2回",
+	"handHistory": [
+		{
+			"number": 0,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 0
+		},
+		{
+			"number": 1,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 0
+		},
+		{
+			"number": 2,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 0
+		},
+		{
+			"number": 3,
+			"options": "",
+			"stone": 1,
+			"type": "removeFromBoard",
+			"x": 3,
+			"y": 0
+		},
+		{
+			"number": 4,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 0
+		},
+		{
+			"number": 5,
+			"options": "",
+			"stone": 2,
+			"type": "removeFromBoard",
+			"x": 2,
+			"y": 0
+		},
+		{
+			"number": 6,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 0
+		},
+		{
+			"number": 7,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 7,
+			"y": 0
+		},
+		{
+			"number": 8,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 1
+		},
+		{
+			"number": 9,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 2
+		},
+		{
+			"number": 10,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 3
+		},
+		{
+			"number": 11,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 4
+		},
+		{
+			"number": 12,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 5
+		},
+		{
+			"number": 13,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 6
+		},
+		{
+			"number": 14,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 7
+		},
+		{
+			"number": 15,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 8
+		},
+		{
+			"number": 16,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 2
+		},
+		{
+			"number": 17,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 2
+		},
+		{
+			"number": 18,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 7,
+			"y": 2
+		},
+		{
+			"number": 19,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 8,
+			"y": 2
+		},
+		{
+			"number": 20,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 1
+		},
+		{
+			"number": 21,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 1
+		},
+		{
+			"number": 22,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 7,
+			"y": 1
+		},
+		{
+			"number": 23,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 8,
+			"y": 1
+		},
+		{
+			"number": 24,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 1
+		},
+		{
+			"number": 25,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 2
+		},
+		{
+			"number": 26,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 3
+		},
+		{
+			"number": 27,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 1,
+			"y": 2
+		},
+		{
+			"number": 28,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 4
+		},
+		{
+			"number": 29,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 5
+		},
+		{
+			"number": 30,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 6
+		},
+		{
+			"number": 31,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 7
+		},
+		{
+			"number": 32,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 8
+		},
+		{
+			"number": 33,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 1,
+			"y": 6
+		},
+		{
+			"number": 34,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 6
+		}
+	],
+	"message": "終局できているものに〇、できていないものに×をつけてください",
+	"name": "問題05-01",
+	"problemId": 1591760394322,
+	"ro": 9,
+	"symbols": {}
+}

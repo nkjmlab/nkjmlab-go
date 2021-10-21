@@ -1,0 +1,199 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			2,
+			1,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			2,
+			1,
+			0
+		],
+		[
+			0,
+			0,
+			2,
+			2,
+			1,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			2,
+			1,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			1,
+			2,
+			1,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			2,
+			2,
+			1,
+			0,
+			0
+		]
+	],
+	"groupId": "第2回",
+	"handHistory": [
+		{
+			"number": 0,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 2
+		},
+		{
+			"number": 1,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 3
+		},
+		{
+			"number": 2,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 4
+		},
+		{
+			"number": 3,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 4
+		},
+		{
+			"number": 4,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 4
+		},
+		{
+			"number": 5,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 5
+		},
+		{
+			"number": 6,
+			"options": "",
+			"stone": 1,
+			"type": "putOnBoard",
+			"x": 1,
+			"y": 5
+		},
+		{
+			"number": 7,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 1,
+			"y": 4
+		},
+		{
+			"number": 8,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 2,
+			"y": 4
+		},
+		{
+			"number": 9,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 3
+		},
+		{
+			"number": 10,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 3,
+			"y": 2
+		},
+		{
+			"number": 11,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 4,
+			"y": 2
+		},
+		{
+			"number": 12,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 5,
+			"y": 3
+		},
+		{
+			"number": 13,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 3
+		},
+		{
+			"number": 14,
+			"options": "",
+			"stone": 2,
+			"type": "putOnBoard",
+			"x": 6,
+			"y": 2
+		}
+	],
+	"message": "⿊番です。白を取ってください",
+	"name": "問題08-04",
+	"problemId": 1591767096302,
+	"ro": 7,
+	"symbols": {}
+}

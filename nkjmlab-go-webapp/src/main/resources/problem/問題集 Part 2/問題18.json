@@ -1,0 +1,475 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			2
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			2,
+			2,
+			1
+		],
+		[
+			2,
+			2,
+			2,
+			2,
+			2,
+			2,
+			1,
+			1,
+			1
+		],
+		[
+			2,
+			1,
+			1,
+			2,
+			1,
+			1,
+			1,
+			22,
+			22
+		],
+		[
+			1,
+			0,
+			1,
+			1,
+			1,
+			0,
+			1,
+			1,
+			22
+		],
+		[
+			0,
+			1,
+			0,
+			0,
+			0,
+			0,
+			1,
+			22,
+			22
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			22,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			1,
+			0,
+			22
+		]
+	],
+	"groupId": "問題集 Part 2",
+	"handHistory": [
+		{
+			"number": 1226,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 0,
+			"y": 7
+		},
+		{
+			"number": 1227,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 1,
+			"y": 8
+		},
+		{
+			"number": 1228,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 7
+		},
+		{
+			"number": 1229,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 2,
+			"y": 6
+		},
+		{
+			"number": 1230,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 2,
+			"y": 8
+		},
+		{
+			"number": 1231,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 8
+		},
+		{
+			"number": 1232,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 7
+		},
+		{
+			"number": 1233,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 3,
+			"y": 6
+		},
+		{
+			"number": 1234,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 7
+		},
+		{
+			"number": 1235,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 8
+		},
+		{
+			"number": 1236,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 8
+		},
+		{
+			"number": 1237,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 8
+		},
+		{
+			"number": 1238,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 6
+		},
+		{
+			"number": 1239,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 6
+		},
+		{
+			"number": 1240,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 7
+		},
+		{
+			"number": 1241,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 6
+		},
+		{
+			"number": 1242,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 7,
+			"y": 6
+		},
+		{
+			"number": 1243,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 8,
+			"y": 6
+		},
+		{
+			"number": 1244,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 7
+		},
+		{
+			"number": 1245,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 7,
+			"y": 7
+		},
+		{
+			"number": 1246,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 8,
+			"y": 8
+		},
+		{
+			"number": 1247,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 5
+		},
+		{
+			"number": 1248,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 4
+		},
+		{
+			"number": 1249,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 3
+		},
+		{
+			"number": 1250,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 2
+		},
+		{
+			"number": 1251,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 1
+		},
+		{
+			"number": 1252,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 3,
+			"y": 0
+		},
+		{
+			"number": 1253,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 0
+		},
+		{
+			"number": 1254,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 0
+		},
+		{
+			"number": 1255,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 1
+		},
+		{
+			"number": 1256,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 1
+		},
+		{
+			"number": 1257,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 2
+		},
+		{
+			"number": 1258,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 4,
+			"y": 3
+		},
+		{
+			"number": 1259,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 5
+		},
+		{
+			"number": 1260,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 4
+		},
+		{
+			"number": 1261,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 4
+		},
+		{
+			"number": 1262,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 3
+		},
+		{
+			"number": 1263,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 2
+		},
+		{
+			"number": 1264,
+			"options": "",
+			"stone": 22,
+			"type": "onBoard",
+			"x": 4,
+			"y": 7
+		},
+		{
+			"number": 1265,
+			"options": "",
+			"stone": 22,
+			"type": "onBoard",
+			"x": 4,
+			"y": 8
+		},
+		{
+			"number": 1266,
+			"options": "",
+			"stone": 22,
+			"type": "onBoard",
+			"x": 5,
+			"y": 8
+		},
+		{
+			"number": 1267,
+			"options": "",
+			"stone": 22,
+			"type": "onBoard",
+			"x": 6,
+			"y": 8
+		},
+		{
+			"number": 1268,
+			"options": "",
+			"stone": 22,
+			"type": "onBoard",
+			"x": 6,
+			"y": 7
+		},
+		{
+			"number": 1269,
+			"options": "",
+			"stone": 22,
+			"type": "onBoard",
+			"x": 7,
+			"y": 7
+		},
+		{
+			"number": 1270,
+			"options": "",
+			"stone": 22,
+			"type": "onBoard",
+			"x": 8,
+			"y": 8
+		}
+	],
+	"message": "\u003Cp\u003E △7子は生きている石？死んでいる石？\u003C/p\u003E",
+	"name": "問題18",
+	"problemId": 1496846003729,
+	"ro": 9,
+	"symbols": {}
+}

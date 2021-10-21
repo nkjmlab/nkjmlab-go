@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+  <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
+  <script th:src="|../js/play-common.js?${js_play_common_js}|"></script>
+  <script th:inline="javascript">
+    function sendEnterRoom(uids) {
+      uids.forEach(function (uid) {
+        new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "enterWaitingRoom", [String(uid)], function (data) {
+        })).rpc();
+      });
+    }
+
+    function deleteFromWaitingRoom(uids) {
+      uids.forEach(function (uid) {
+        new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "exitWaitingRoom",
+          [String(uid)], function (data) {
+          })).rpc();
+      });
+    }
+
+    function refreshPage() {
+      var path = parseUri(location).queryKey["userId"] ? "?userId="
+        + parseUri(location).queryKey["userId"] : "";
+      $.get("./fragment/waiting-request-table.html" + path, function (data) {
+        if ($.fn.DataTable.isDataTable('#tbl-requests')) {
+          $("#tbl-requests").DataTable().destroy();
+        }
+        $("#tbl-requests").replaceWith(data);
+        var o = [3, "asc"];
+        $("#tbl-requests").DataTable({
+          //      dom: 'Blfrtip',
+          "lengthChange": false,
+          "searching": false,
+          "pageLength": 1000,
+          "order": [o]
+        });
+
+        $(".game-link").on(
+          'click',
+          function () {
+            var link = $(this);
+            new JsonRpcClient(new JsonRpcRequest(getBaseUrl(),
+              "exitWaitingRoom", [getUserId()], function (data) {
+                location.href = link.attr('data-url');
+              })).rpc();
+          });
+
+        if ($("#tbl-requests tbody tr[role='row']").length > 0) {
+          $("#btn-find-opponent").prop("disabled", true);
+          $("#tbl-requests_wrapper").show();
+          $(".alert-no-request").hide();
+          $(".alert-request").show();
+        } else {
+          $("#tbl-requests_wrapper").hide();
+          $(".alert-no-request").show();
+          $(".alert-request").hide();
+        }
+      });
+      setTimeout(refreshPage, 10 * 1000);
+    }
+    $(function () {
+      if (isStudent()) {
+        $("#btn-find-opponent").prop("disabled", false);
+        $("#btn-exit-room").prop("disabled", false);
+        $(".student").show();
+        $(".teacher").hide();
+      } else {
+        $("#btn-find-opponent").prop("disabled", true);
+        $("#btn-exit-room").prop("disabled", true);
+        $(".student").hide();
+        $(".teacher").show();
+      }
+
+      $("#span-user-id").text(getUserId());
+
+      refreshPage();
+
+      $("#btn-find-opponent").on(
+        'click',
+        function () {
+          swalAlert("", '対局相手を探します <i class="far fa-hand-paper"></i>', "info",
+            function () {
+              new JsonRpcClient(new JsonRpcRequest(getBaseUrl(),
+                "enterWaitingRoom", [getUserId()],
+                function (data) {
+                  location.reload();
+                })).rpc();
+            });
+        });
+      $("#btn-go-back").on('click', function () {
+        if (isStudent()) {
+          swalConfirm("碁盤に戻りますか？", "教員の指示がある時のみ使って下さい", "warning", function () {
+            location.href = "play.html";
+          });
+        } else {
+          location.href = "play.html";
+        }
+      });
+
+      $("#btn-exit-room").on(
+        'click',
+        function () {
+          swalConfirm("警告", "募集を取り消します．教員の指示がある時のみ使って下さい", "warning",
+            function () {
+              new JsonRpcClient(new JsonRpcRequest(getBaseUrl(),
+                "exitWaitingRoom", [getUserId()],
+                function (data) {
+                  location.reload();
+                })).rpc();
+            });
+        });
+
+      $("#btn-exit-room-users").on(
+        'click',
+        function () {
+          swalInput('ユーザリクエスト取消', "ユーザIDを入力して下さい", "", "5518001, 5518002",
+            function (input) {
+              if (!input || input === 'false') { return; }
+              deleteFromWaitingRoom(input.split(",").map(function (e) {
+                return e.trim()
+              }));
+            });
+        });
+
+    });
+  </script>
+  <style>
+    .table>tbody>tr>td,
+    .table>tbody>tr>th,
+    .table>tfoot>tr>td,
+    .table>tfoot>tr>th,
+    .table>thead>tr>td,
+    .table>thead>tr>th {
+      vertical-align: middle;
+    }
+
+    .table td {
+      text-align: center;
+    }
+  </style>
+  <title>対局待ち部屋 | Go</title>
+</head>
+
+<body>
+  <div class="container">
+    <div class="row mt-2">
+      <div class="col-12">
+        <h1 class="float-left">
+          対局待ち部屋 <i class="fas fa-couch"></i>
+        </h1>
+        <div class="float-right">
+          <img src="https://i.gyazo.com/4fe16b078e3b0ba5ac0d2f0147279628.png" style="max-width: 6em">
+        </div>
+      </div>
+    </div>
+    <div class="row mt-1">
+      <div class="col-12">
+        <button id="btn-find-opponent" class="btn  btn-primary">
+          相手を募集 <i class="fas fa-search"></i>
+        </button>
+        <div class="float-right">
+          <i class="far fa-child student"></i> <i class="fas fa-user-tie teacher"></i> <i
+            class="fas fa-sparkles text-danger" th:if='${currentUser.isAdmin()}'></i><span id="span-user-id"></span>
+        </div>
+        <div class="alert-no-request alert alert-primary mt-1">
+          <i class="fas fa-arrow-alt-circle-up"></i> 対局相手を募集するには，相手を募集 <i class="fas fa-search"></i>
+          ボタンをクリックして下さい．
+        </div>
+        <div class="alert-request alert alert-primary mt-1">
+          <i class="fas fa-arrow-alt-circle-up"></i> 対局相手が見つかるまで待って下さい．<strong>次の対局 </strong>
+          にボタンが表示されたらクリックして下さい．対局相手が見つからない場合，教員に連絡して下さい．
+        </div>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-12">
+        <table id="tbl-requests"></table>
+      </div>
+    </div>
+    <div class="row mt-3">
+      <div class="col-12">
+        <button id="btn-go-back" class="btn btn-secondary btn-sm teacher">
+          <i class="fas fa-arrow-left"></i> 碁盤に戻る
+        </button>
+        <div class="float-right">
+          <button id="btn-exit-room" class="btn btn-warning btn-sm student">
+            募集を取消 <i class="fas fa-exclamation-triangle"></i>
+          </button>
+          <button id="btn-exit-room-users" class="btn btn-warning btn-sm teacher">
+            ユーザリクエスト取消 <i class="fas fa-exclamation-triangle"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

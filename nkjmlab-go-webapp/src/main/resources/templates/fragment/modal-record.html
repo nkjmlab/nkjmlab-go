@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<div th:fragment="fcontent">
+  <div class="modal fade" id="modal-record" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">
+            対局結果登録 <i class="far fa-pencil"></i>
+          </h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="register-record-form">
+            <div class="form-group">
+              <label class="control-label">対局相手 </label> <input id="register-record-opponent-stdid" class="form-control"
+                type="tel" placeholder="5519000 (半角数字)" requried> <small class="form-text text-muted">
+                対局相手の学籍番号を半角数字で入力して下さい．対局でない場合は，自分の学籍番号を入力して下さい． </small>
+            </div>
+            <div class="form-group">
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="jadge" id="inlineRadio1" value="WIN" required>
+                <label class="form-check-label" for="inlineRadio1">勝ち</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="jadge" id="inlineRadio2" value="DRAW">
+                <label class="form-check-label" for="inlineRadio2">引分け</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="jadge" id="inlineRadio3" value="LOSE">
+                <label class="form-check-label" for="inlineRadio3">負け</label>
+              </div>
+              <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="jadge" id="inlineRadio4" value="OTHER">
+                <label class="form-check-label" for="inlineRadio4">その他</label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label">備考 </label> <input id="record-memo" class="form-control" placeholder="">
+              <small class="form-text text-muted"></small>
+            </div>
+            <input class="submit-for-validation" style="display: none" type="submit" formmethod="GET">
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+          <button id="btn-register-record" type="button" class="btn btn-primary">登録</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

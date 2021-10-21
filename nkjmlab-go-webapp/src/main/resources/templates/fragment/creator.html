@@ -1,0 +1,39 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<div th:fragment="fcontent">
+  <div class="row no-gutters creator mt-2">
+    <div class="col-12">
+      <div class="btn-group">
+        <div class="btn-group">
+          <button id="btn-vote-title" class="btn btn-sm dropdown-toggle btn-outline-dark btn-group-header"
+            data-toggle="dropdown">
+            <span class="d-none d-sm-inline">問題作成</span> <i class="fas fa-pen-alt"></i>
+          </button>
+          <div class="dropdown-menu">
+            <button id="btn-open-game-state-file" class="btn btn-sm btn-secondary dropdown-item">
+              アップロード <i class="fas fa-upload"></i>
+            </button>
+            <button class="btn btn-sm btn-primary dropdown-item" data-toggle="modal" data-backdrop="static"
+              data-target="#save-game-state-on-local-modal">
+              ダウンロード <i class="fas fa-download"></i>
+            </button>
+          </div>
+          <button id="btn-new-game" class="btn btn-sm btn-primary btn-start" data-toggle="modal" data-backdrop="static"
+            data-target="#new-game-modal">
+            新規 <i class="fas fa-plus-square"></i>
+          </button>
+          <button class="btn btn-sm btn-success" data-toggle="modal" data-backdrop="static"
+            data-target="#save-game-state-on-server-modal">
+            保存 <i class="fas fa-save"></i>
+          </button>
+          <button id="btn-initialize-problem" type="button" class="btn btn-sm btn-warning">
+            クリア <i class="fas fa-broom"></i>
+          </button>
+          <button class="btn btn-sm btn-danger" id="btn-del-problem-on-server">
+            削除 <i class="fas fa-trash-alt"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

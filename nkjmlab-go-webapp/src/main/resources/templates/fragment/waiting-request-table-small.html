@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<div>
+  <div th:unless='${req.isUnpaired}'>
+    <span class="small text-muted"> 次の対局</span>
+    <button class="btn game-link" th:data-url="|play.html?game_id=${req.gameId}|">
+      <span class="badge badge-success" th:text="${req.gameId}"></span> <i class="fas fa-user-friends"></i>
+    </button>
+  </div>
+  <div th:if='${req.isUnpaired}'>
+    <span class="badge badge-primary">募集中</span><span
+      class="spinner-grow spinner-grow-sm text-primary" role="status"></span> <span
+      class="small text-muted ml-2"><span th:text="${reqNum}"></span>
+      人が対局相手を募集しています．同じ日に同じ相手とはマッチングされません． </span>
+  </div>
+</div>

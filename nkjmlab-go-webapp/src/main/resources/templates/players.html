@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+  <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
+  <script>
+    $(function () {
+      var o = [1, "asc"];
+      $("#tbl-players").DataTable({
+        dom: 'Blfrtip',
+        buttons: ['copy', 'csv', 'excel', 'print'],
+        "lengthChange": false,
+        "searching": false,
+        "pageLength": 1000,
+        "order": [o]
+      });
+
+      if (parseUri(location).file == "players.html") {
+        $("#page-description").text("学生一覧");
+      } else {
+        $("#page-description").text("全ユーザ(教員含む)の一覧");
+      }
+    });
+  </script>
+  <style>
+    .table>tbody>tr>td,
+    .table>tbody>tr>th,
+    .table>tfoot>tr>td,
+    .table>tfoot>tr>th,
+    .table>thead>tr>td,
+    .table>thead>tr>th {
+      vertical-align: middle;
+    }
+
+    .table td {
+      text-align: center;
+    }
+  </style>
+  <title>学生一覧 | Go</title>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div th:include="/fragment/header-admin.html::fcontent" th:remove="tag"></div>
+    <hr>
+  </div>
+  <div class="container">
+    <div class="row mt-2">
+      <div class="col-12">
+        <h1 class="float-left">
+          学生一覧 <i class="fas fa-child"></i>
+        </h1>
+        <div class="float-right">
+          <img src="https://i.gyazo.com/bddd755953961dc112560348f5a2a30c.png" style="max-width: 6em">
+        </div>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-12">
+        <p id="page-description"></p>
+        <table id="tbl-players" class="table table-sm table-bordered table-striped table-hover table-responsive-sm">
+          <thead>
+            <tr>
+              <th style="min-width:4em;"></th>
+              <th>ユーザID</th>
+              <th>ユーザ名</th>
+              <th>級位</th>
+              <th>座席</th>
+              <th>Login</th>
+              <th>IP Addr.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr th:each="item, itemStat : ${userAccounts}">
+              <td class="text-center"><span th:text="${itemStat.count}"></span>. <img class="player-icon rounded"
+                  th:src="|../img/icon/${item.login.userId}.png|"
+                  onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'"></td>
+              <td class="h5"><a class="badge badge-primary" th:text="${item.login.userId}"
+                  th:href="|play.html?game_id=${item.login.userId}|"></a></td>
+              <td class="" th:text="${item.user.userName}"></td>
+              <td class="" th:text="${item.user.rank}"></td>
+              <td class="" th:text="${item.login.seatId}"></td>
+              <td class="small" th:text="${#dates.format(item.login.loggedInAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+              <td class="" th:text="${item.login.remoteAddr}"></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

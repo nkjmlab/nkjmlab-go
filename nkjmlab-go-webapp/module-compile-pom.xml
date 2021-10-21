@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.nkjmlab</groupId>
+  <artifactId>nkjmlab-utils-go-webui</artifactId>
+  <version>0.0.1</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>../../sorm4j/sorm4j</module>
+    <module>../../util/nkjmlab-utils</module>
+    <module>../../util/nkjmlab-utils-math</module>
+    <module>../../util/nkjmlab-utils-csv</module>
+    <module>../../util/nkjmlab-utils-json</module>
+    <module>../../util/nkjmlab-utils-jsonrpc</module>
+  </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.0</version>
+        <configuration>
+          <compilerVersion>11</compilerVersion>
+          <source>11</source>
+          <target>11</target>
+          <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
+

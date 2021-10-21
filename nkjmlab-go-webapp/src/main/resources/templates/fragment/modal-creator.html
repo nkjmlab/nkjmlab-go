@@ -1,0 +1,80 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<div th:fragment="fcontent">
+  <div class="modal fade insert-problem" id="save-game-state-on-server-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">問題を保存</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label class="control-label">問題ID: </label> <input class="form-control modal-problem-id" type="tel"
+                readonly>
+            </div>
+            <div class="form-group">
+              <label class="control-label">問題グループ: </label> <input class="form-control modal-problem-group"
+                placeholder="必ず入力して下さい" required>
+            </div>
+            <div class="form-group">
+              <label class="control-label">問題名: </label> <input class="form-control modal-problem-name"
+                placeholder="必ず入力して下さい" required>
+            </div>
+            <div class="form-group">
+              <label class="control-label">メッセージ: </label>
+              <textarea class="form-control modal-problem-message"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button id="btn-save-new-game-state-on-server" type="button" class="btn btn-primary">新規保存</button>
+          <button id="btn-save-game-state-on-server" type="button" class="btn btn-danger">上書き保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade insert-problem" id="save-game-state-on-local-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">問題をダウンロード</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label class="control-label">問題ID: 保存する問題IDを指定します．新規保存したい場合は空欄にして下さい．</label> <input
+                class="form-control modal-problem-id" placeholder="空白で新規保存" type="tel">
+            </div>
+            <div class="form-group">
+              <label class="control-label">問題グループ: </label> <input class="form-control modal-problem-group"
+                placeholder="必ず入力して下さい" required>
+            </div>
+            <div class="form-group">
+              <label class="control-label">問題名: </label> <input class="form-control modal-problem-name"
+                placeholder="必ず入力して下さい" required>
+            </div>
+            <div class="form-group">
+              <label class="control-label">メッセージ: </label>
+              <textarea class="form-control modal-problem-message"></textarea>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <a id="btn-save-game-state-file" class="btn btn-primary" href="#"> ダウンロード <i class="fas fa-download"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <input id="open-game-state-file" name="file-input" type="file" accept=".json" />
+</div>

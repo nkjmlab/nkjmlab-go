@@ -1,0 +1,108 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<div th:fragment="fcontent">
+  <div class="modal fade" id="new-game-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">
+            碁盤を初期化 <i class="fas fa-eraser"></i>
+          </h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <p>
+            <small class="form-text text-muted"> 碁盤を初期化します．碁石は全て削除されます． </small>
+          </p>
+          <form>
+            <div class="radio-inline">
+              <input type="radio" value="6" name="ro" id="6ro"> <label for="6ro">6路盤</label>
+            </div>
+            <div class="radio-inline">
+              <input type="radio" value="7" name="ro" id="7ro"> <label for="7ro">7路盤</label>
+            </div>
+            <div class="radio-inline">
+              <input type="radio" value="9" name="ro" id="9ro"> <label for="9ro">9路盤</label>
+            </div>
+            <div class="radio-inline">
+              <input type="radio" value="13" name="ro" id="13ro"> <label for="13ro">13路盤</label>
+            </div>
+            <div class="radio-inline">
+              <input type="radio" value="19" name="ro" id="19ro"> <label for="19ro">19路盤</label>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer creator" style="display: none">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button id="btn-initialize-board-creator" type="button" class="btn btn-primary">新規作成</button>
+        </div>
+        <div class="modal-footer student teacher">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button id="btn-initialize-board" type="button" class="btn btn-warning">変更</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="load-problem-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">問題一覧</h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="problem-tree-radio" id="problem-tree-radio-myboard"
+                value="0" checked> <label class="form-check-label" for="problem-tree-radio-myboard">マイ碁盤</label>
+            </div>
+            <div class="form-check form-check-inline">
+              <input class="form-check-input" type="radio" name="problem-tree-radio"
+                id="problem-tree-radio-currentboard" value="1"> <label class="form-check-label text-muted"
+                for="problem-tree-radio-currentboard">開いている碁盤</label>
+            </div>
+            <small class="form-text text-muted"> 読込先を選んで下さい．特別な指示がない限り「マイ碁盤」を選んで下さい． </small>
+          </div>
+          <p>
+            <small class="form-text text-muted"> 読み込む問題を選んで下さい． </small>
+          </p>
+          <div id="problem-tree"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="open-game-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">
+            対局を開く <i class="fas fa-user-friends"></i>
+          </h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label class="control-label">先手 <img src="../img/play/black-stone.png" width="20"></label>
+              <input type="tel" class="form-control input-black-player-id" placeholder="5518000 (半角数字)" required>
+            </div>
+            <div class="form-group">
+              <label class="control-label">後手 <img src="../img/play/white-stone.png" width="20"></label>
+              <input type="tel" class="form-control input-white-player-id" placeholder="5518000 (半角数字)" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          <button id="btn-open-game" type="button" class="btn btn-primary">対局を開く</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

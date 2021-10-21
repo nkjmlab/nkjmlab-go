@@ -1,0 +1,147 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <packaging>war</packaging>
+  <groupId>org.nkjmlab</groupId>
+  <artifactId>nkjmlab-go-webapp</artifactId>
+  <version>0.9.2</version>
+  <description>Go Web Application</description>
+  <url>https://github.com/nkjmlab/nkjmlab-go-webapp</url>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+  <developers>
+    <developer>
+      <name>Yuu Nakajima</name>
+      <email>yuu.nkjm.pub@gmail.com</email>
+      <organization>nkjmlab.org</organization>
+      <organizationUrl>https://github.com/nkjmlab</organizationUrl>
+    </developer>
+  </developers>
+  <scm>
+    <connection>scm:git:git@github.com:yuu-nkjmb/nkjmlab-go-webapp.git</connection>
+    <url>https://github.com/yuu-nkjm/nkjmlab-go-webapp</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <properties>
+    <servlet-api-version>4.0.1</servlet-api-version>
+    <commons-io-version>[2.11.0,)</commons-io-version>
+    <commons-lang-version>3.12.0</commons-lang-version>
+    <orange-signal-csv-version>2.2.1</orange-signal-csv-version>
+    <jackson-version>2.13.0</jackson-version>
+    <thymeleaf-version>3.0.12.RELEASE</thymeleaf-version>
+    <javalin-version>4.1.1</javalin-version>
+    <firebase-version>6.8.1</firebase-version>
+    <log4j-slf4j-version>2.14.1</log4j-slf4j-version>
+    <h2-version>1.4.200</h2-version>
+    <hicari-cp-version>4.0.3</hicari-cp-version>
+    <sorm-version>[1.,)</sorm-version>
+  </properties>
+
+  <dependencies>
+    <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <version>${servlet-api-version}</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/io.javalin/javalin -->
+    <dependency>
+      <groupId>io.javalin</groupId>
+      <artifactId>javalin</artifactId>
+      <version>${javalin-version}</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf -->
+    <dependency>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf</artifactId>
+      <version>${thymeleaf-version}</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
+    <dependency>
+      <groupId>com.google.firebase</groupId>
+      <artifactId>firebase-admin</artifactId>
+      <version>${firebase-version}</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>${h2-version}</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>${hicari-cp-version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.nkjmlab</groupId>
+      <artifactId>sorm4j</artifactId>
+      <version>${sorm-version}</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>${commons-io-version}</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-lang3</artifactId>
+      <version>${commons-lang-version}</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.orangesignal/orangesignal-csv -->
+    <dependency>
+      <groupId>com.orangesignal</groupId>
+      <artifactId>orangesignal-csv</artifactId>
+      <version>${orange-signal-csv-version}</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson-version}</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
+    <dependency>
+      <groupId>org.apache.logging.log4j</groupId>
+      <artifactId>log4j-slf4j-impl</artifactId>
+      <version>${log4j-slf4j-version}</version>
+    </dependency>
+
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.8.1</version>
+        <configuration>
+          <compilerVersion>11</compilerVersion>
+          <source>11</source>
+          <target>11</target>
+          <encoding>UTF-8</encoding>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>3.3.1</version>
+        <configuration>
+          <failOnMissingWebXml>false</failOnMissingWebXml>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>

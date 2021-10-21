@@ -1,0 +1,43 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<div th:fragment="fcontent">
+  <div class="modal fade" id="modal-icon-upload" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 class="modal-title">
+            ユーザアイコン <i class="far fa-image"></i>
+          </h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="form-icon-upload">
+            <div class="form-group">
+              <label class="control-label">学籍番号</label> <input id="modal-icon-stdid" type="tel" class="form-control"
+                placeholder="5517000 (半角数字)" required> <small class="form-text text-muted">
+                学籍番号を半角数字で入力して下さい．学籍番号がない場合は先頭が0でない7桁の数字を入力して下さい． </small>
+            </div>
+            <div class="img-wrapper">
+              <img class="rounded" src="../img/misc/nopicture.png" id="img-icon-preview">
+              <div class="btn-group">
+                <button type="button" id="btn-icon-select" class="btn btn-primary">画像を選択</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <div class="btn-group">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+          </div>
+          <div class="btn-group">
+            <button id="btn-icon-upload" class="btn btn-primary" disabled>アップロード</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <input id="file-icon-image" name="file-icon-image" type="file" accept="image/*" onchange="handleFiles(this.files)"
+    style="display: none" />
+</div>

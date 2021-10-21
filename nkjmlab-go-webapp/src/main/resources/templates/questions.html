@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+  <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
+  <script th:inline="javascript">
+    function refreshQuestionFragment() {
+      $.get("./fragment/question-table.html", function (data) {
+        if ($.fn.DataTable.isDataTable('#tbl-requests')) {
+          $("#tbl-requests").DataTable().destroy();
+        }
+        $("#tbl-requests").replaceWith(data);
+        var o = [3, "asc"];
+        $("#tbl-requests").DataTable({
+          //      dom: 'Blfrtip',
+          "lengthChange": false,
+          "searching": false,
+          "pageLength": 1000,
+          "order": [o]
+        });
+      });
+      setTimeout(refreshQuestionFragment, 10 * 1000);
+    }
+    refreshQuestionFragment();
+  </script>
+  <style>
+    .table>tbody>tr>td,
+    .table>tbody>tr>th,
+    .table>tfoot>tr>td,
+    .table>tfoot>tr>th,
+    .table>thead>tr>td,
+    .table>thead>tr>th {
+      vertical-align: middle;
+    }
+
+    .table td {
+      text-align: center;
+    }
+  </style>
+  <title>質問待ち一覧 | Go</title>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div th:include="/fragment/header-admin.html::fcontent" th:remove="tag"></div>
+    <hr>
+  </div>
+  <div class="container">
+    <div class="row mt-2">
+      <div class="col-12">
+        <h1 class="float-left">
+          質問待ち一覧 <i class="fas fa-user-friends"></i>
+        </h1>
+        <div class="float-right">
+          <img src="https://i.gyazo.com/8fed75c4834ec6346054929e34c37a71.png" style="max-width: 8em">
+        </div>
+      </div>
+    </div>
+    <div class="row mt-2">
+      <div class="col-12">
+        <table id="tbl-requests">
+        </table>
+      </div>
+    </div>
+  </div>
+</body>
+
+</html>

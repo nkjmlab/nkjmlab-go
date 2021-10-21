@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<div th:fragment="fcontent">
+  <div class="row bg-dark px-2 mb-1">
+    <div class="col-12 p-1">
+      <img src="../img/logo/toho-sm.png" class="rounded" style="height:2em">
+      <span class="text-white mincho pl-1 pr-2">東邦大学情報科学科</span>
+      <div class="btn-group">
+        <div class="btn-group mr-2">
+          <button id="btn-page-reload" class="btn btn-sm btn-info">
+            <i class="fas fa-redo"></i> <span class="d-none d-sm-inline"></span>
+          </button>
+        </div>
+      </div>
+      <div class="float-right text-right">
+        <div class="btn-group float-right">
+          <button class="btn btn-sm btn-primary dropdown-toggle btn-group-header" data-toggle="dropdown"
+            id="btn-dropdown-info-menu">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right">
+            <h6 class="dropdown-header">ユーザ <i class="far fa-child"></i></h6>
+            <button class="btn btn-sm btn-secondary dropdown-item" data-toggle="modal" data-backdrop="static"
+              data-target="#signup-modal">
+              出席情報 <i class="fas fa-chair"></i>
+            </button>
+            <button class="btn btn-sm btn-secondary dropdown-item" data-toggle="modal" data-backdrop="static"
+              data-target="#modal-icon-upload">
+              アイコン登録 <i class="far fa-image"></i>
+            </button>
+            <div class="dropdown-divider"></div>
+            <h6 class="dropdown-header">対局カード <i class="fas fa-user-friends"></i></h6>
+            <button class="btn btn-sm btn-secondary dropdown-item" data-toggle="modal" data-backdrop="static"
+              data-target="#modal-records">
+              カード閲覧 <i class="fas fa-book"></i>
+            </button>
+            <button class="btn btn-sm btn-secondary dropdown-item" data-toggle="modal" data-backdrop="static"
+              data-target="#modal-record">
+              カード記入 <i class="fas fa-pencil"></i>
+            </button>
+            <div class="dropdown-divider"></div>
+            <h6 class="dropdown-header">その他 <i class="fas fa-info-circle"></i></h6> </a> <a
+              class="btn btn-sm btn-secondary dropdown-item" href="https://classroom.google.com/u/6/c/MzE2Njg4OTUxNDMy"
+              target="_blank">
+              Classroom <i class="fab fa-google"></i> <i class="fal fa-external-link"></i>
+            </a> <a class="btn btn-sm btn-secondary dropdown-item"
+              href="https://drive.google.com/file/d/1MzCNOmSM5vAdQZGOdAveVnP2U0XKKjKU/view" target="_blank">資料集 <i
+                class="fas fa-file-pdf"></i> <i class="fal fa-external-link"></i>
+            </a>
+            <div class="dropdown-divider"></div>
+            <button class="btn btn-sm btn-secondary dropdown-item" data-toggle="modal" data-backdrop="static"
+              data-target="#modal-app-info">
+              情報 <i class="fas fa-info-circle"></i>
+            </button>
+            <button class="btn btn-sm btn-secondary dropdown-item" id="btn-logout">
+              ログアウト <i class="fas fa-sign-out-alt"></i>
+            </button>
+          </div>
+        </div>
+        <div class="btn-group float-right" th:if='${currentUser.isAdmin()}'>
+          <button type="button" class="btn btn-sm dropdown-toggle text-white" data-toggle="dropdown"
+            id="btn-dropdown-danger-menu">
+            <i class="far fa-child student-only" style="display:none"></i><i class="fas fa-user-tie teacher"
+              style="display:none"></i> <i class="fas fa-pen-alt creator" style="display:none"></i>
+          </button>
+          <div class="dropdown-menu dropdown-menu-right">
+            <a href="#" id="to-student-mode" class="btn btn-sm dropdown-item">学生 <i class="far fa-child"></i></a>
+            <a href="#" id="to-teacher-mode" class="btn btn-sm dropdown-item">教員 <i class="fas fa-user-tie"></i>
+            </a> <a href="#" id="to-creator-mode" class="btn btn-sm dropdown-item">問題作成者 <i
+                class="fas fa-pen-alt"></i></a>
+          </div>
+        </div>
+        <div class="selectable text-white pt-1 pr-2 float-right small" id="card-current-user-info">
+          <span class="current-user-icon"></span> <span class="current-user-info"></span>
+          <span class="badge badge-info" th:if='${isAttendance and !currentUser.isAdmin()}'>出</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row bg-light teacher" th:if='${currentUser.isAdmin()}'>
+    <div class="col-12 text-right">
+      <div class="btn-group">
+        <a id="link-load-players" class="btn btn-sm btn-outline-dark btn-group-header" href="players.html"> <span
+            class="d-none d-sm-inline">学生</span> <i class="fas fa-child"></i> <i class="fas fa-list"></i>
+        </a>
+        <button class="btn btn-sm btn-secondary" id="btn-load-prev-std">
+          <i class="fas fa-chevron-circle-left"></i> 前
+        </button>
+        <button class="btn btn-sm btn-success" id="btn-load-next-std">
+          次 <i class="fas fa-chevron-circle-right"></i>
+        </button>
+      </div>
+      <div class="btn-group">
+        <a id="link-list-games" class="btn btn-sm btn-outline-dark btn-group-header" href="games.html"> <span
+            class="d-none d-sm-inline">対局</span> <i class="fas fa-user-friends"></i> <i class="fas fa-list"></i>
+        </a>
+        <button class="btn btn-sm btn-secondary" id="btn-load-prev-game">
+          <i class="fas fa-chevron-circle-left"></i> 前
+        </button>
+        <button class="btn btn-sm btn-success" id="btn-load-next-game">
+          次 <i class="fas fa-chevron-circle-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

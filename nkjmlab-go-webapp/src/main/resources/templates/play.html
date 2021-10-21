@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+  <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
+  <link rel="stylesheet" href="../css/emojionearea.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.12.2/load-image.all.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.js"></script>
+  <script th:src="|../js/upload-icon.js?${js_upload_icon_js}|"></script>
+  <script th:src="|../js/register-record.js?${js_register_record_js}|"></script>
+  <script th:src="|../js/play-common.js?${js_play_common_js}|"></script>
+  <script th:src="|../js/play-board.js?${js_play_board_js}|"></script>
+  <script th:src="|../js/play-ws.js?${js_play_ws_js}|"></script>
+  <script th:src="|../js/play-creator.js?${js_play_creator_js}|"></script>
+  <script th:inline="javascript" th:if='${requireToLogin}'>
+    $(function () {
+      requireSignin();
+    });
+  </script>
+  <script th:inline="javascript">
+    var problems = [];
+    $(function () {
+      var problemsJson = /*[[${ problemGroupsJson }]]*/[];
+      var problemsData = JSON.parse(problemsJson);
+      for (var i = 0; i < problemsData.length; i++) {
+        for (var j = 0; j < problemsData[i].nodes.length; j++) {
+          problems.push(problemsData[i].nodes[j]);
+        }
+      }
+
+      $('#problem-tree').treeview({
+        data: problemsJson,
+        showTags: true
+      });
+      $('#problem-tree').treeview('collapseAll');
+    });
+  </script>
+  <style>
+    #problem-tree .badge {
+      color: #212529;
+      background-color: #f8f9fa;
+    }
+  </style>
+  <script th:src="|../js/play.js?${js_play_js}|"></script>
+  <title>碁盤 | Go</title>
+</head>
+
+<body class="unselectable">
+  <div class="container-fluid">
+    <div th:include="/fragment/header-play.html::fcontent" th:remove="tag"></div>
+    <div class="row selectable py-1">
+      <div class="col-12">
+        <div class="float-left py-1">
+          <div class="btn-group mr-2">
+            <div class="btn-group">
+              <div class="btn-group">
+                <button id="btn-vote-title" class="btn btn-sm btn-primary btn-group-header dropdown-toggle"
+                  data-toggle="dropdown">
+                  <span class="d-none d-sm-inline">投票</span> <i class="far fa-box-ballot"></i>
+                </button>
+                <div class="dropdown-menu">
+                  <button id="btn-vote-circle" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
+                    ○ <span class="vote-result"></span>
+                  </button>
+                  <button id="btn-vote-x" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
+                    X <span class="vote-result"></span>
+                  </button>
+                  <button id="btn-vote-rect" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
+                    □ <span class="vote-result"></span>
+                  </button>
+                  <button id="btn-vote-tri" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
+                    △ <span class="vote-result"></span>
+                  </button>
+                  <button id="btn-vote-a" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
+                    A <span class="vote-result"></span>
+                  </button>
+                  <button id="btn-vote-b" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
+                    B <span class="vote-result"></span>
+                  </button>
+                  <button id="btn-vote-c" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
+                    C <span class="vote-result"> </span>
+                  </button>
+                  <button id="btn-vote-none" type="button" class="btn-vote btn btn-dark btn-sm dropdown-item">
+                    <i class="far fa-trash-alt"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="btn-group">
+              <button id="btn-vote-calc" type="button" class="btn btn-success btn-sm teacher"
+                th:if='${currentUser.isAdmin()}'>
+                <span class="d-none d-sm-inline">集計</span> <i class="fas fa-calculator"></i>
+              </button>
+            </div>
+          </div>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-primary" data-toggle="modal" data-backdrop="static"
+              data-target="#load-problem-modal">
+              問題 <i class="fas fa-book-open"></i> <i class="fas fa-list"></i>
+            </button>
+            <button class="btn btn-sm btn-secondary btn-load-prev-problem">
+              <i class="fas fa-chevron-circle-left"></i> 前
+            </button>
+            <button class="btn btn-sm btn-success btn-load-next-problem">
+              次 <i class="fas fa-chevron-circle-right"></i>
+            </button>
+          </div>
+          <div class="btn-group">
+            <button id="btn-draw-stone-number" class="btn btn-sm btn-secondary">
+              <i class="fas fa-circle"></i> <i class="fas fa-sort-numeric-down"></i>
+            </button>
+          </div>
+        </div>
+        <div class="float-right py-1">
+          <div class="selectable pr-2 mb-2" id="card-player-info">
+            <div class="play-mode"> 対局 <i class="fas fa-border-all"></i>
+              <span> <span id="black-player-icon"></span> <label class="label label-default"><img
+                    src="../img/play/black-stone.png" width="20" /></label> <span class="black-player-id-label"> </span>
+              </span> <span class="ml-4">
+                <span id="white-player-icon"></span> <label class="label label-default"><img
+                    src="../img/play/white-stone.png" width="20" /></label> <span class="white-player-id-label"> </span>
+              </span>
+            </div>
+            <div class="practice-mode">
+              碁盤 <i class="fas fa-border-all"></i> <span id="practice-player-icon"></span> <span
+                class="practice-player-id-label"></span>
+            </div>
+            <div class="text-right">
+              <span class="badge badge-secondary"><i class="fas fa-glasses"></i></span> <span class="small"
+                id="login-users"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row selectable pb-2 play-mode">
+      <div class="col-12">
+        <div class="btn-group float-right">
+          <button id="btn-calc-komi" type="button" class="btn btn-sm btn-primary small">
+            コミ <i class="fas fa-balance-scale-right"></i>
+          </button>
+        </div>
+        <div id="current-komi-wrapper" class="bg-light" style="display:none">
+          <div class="text-right">
+            <button id="btn-close-komi" type="button" class="btn btn-sm btn-light small">
+              <i class="fas fa-window-close"></i>
+            </button>
+          </div>
+          <p id="current-komi"></p>
+          <a href="https://i.gyazo.com/68c652d2371d7d710372fe6f806100e2.png" target="_blank">コミ一覧 <i
+              class="fal fa-external-link"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container pt-2">
+    <div id="row-message" class="row selectable bg-light">
+      <div class="col-12">
+        <div id="btn-problem-title" class="p-1 font-weight-bold problem-info">
+          <span id="div-problem-group"></span> <span id="div-problem-name"></span>
+        </div>
+        <div id="game-state-message" class="pt-2 problem-info"></div>
+      </div>
+    </div>
+    <div th:include="/fragment/creator.html::fcontent" th:remove="tag"></div>
+    <div id="row-game-area" class="row no-gutters mt-4 mb-4">
+      <div class="col-12 col-sm-2">
+        <div class="row">
+          <div class="col-12">
+            <div class="row">
+              <div class="col-1 col-sm-12"></div>
+              <div id="white-stones-wrapper" class="col-3 col-sm-12">
+                <div id="white-stones"></div>
+              </div>
+              <div class="col-3 col-sm-12">
+                <div id="white-stones-cap" class="d-flex">
+                  <div id="white-agehama-wrapper" class="m-auto">
+                    <div id="white-agehama-2"></div>
+                    <div id="white-agehama-1"></div>
+                  </div>
+                </div>
+                <div id="white-agehama-num-wrapper" class="text-center">
+                  <span id="white-agehama-num"></span> 個
+                </div>
+              </div>
+              <div class="col-5 col-sm-12"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-sm-8 text-center">
+        <div class="d-flex justify-content-center">
+          <div id="spinner-loading-wrapper">
+            Loading ...
+            <div class="spinner-grow spinner-sm text-primary" role="status"></div>
+          </div>
+        </div>
+        <div id="game-board-wrapper">
+          <canvas id="game-board"></canvas>
+        </div>
+      </div>
+      <div class="col-12 col-sm-2 d-sm-flex align-items-end">
+        <div class="row">
+          <div class="col-5 col-sm-12"></div>
+          <div class="col-3 col-sm-12">
+            <div id="black-stones-cap" class="d-flex">
+              <div id="black-agehama-wrapper" class="m-auto">
+                <div id="black-agehama-2"></div>
+                <div id="black-agehama-1"></div>
+              </div>
+            </div>
+            <div id="black-agehama-num-wrapper" class="text-center">
+              <span id="black-agehama-num"></span> 個
+            </div>
+          </div>
+          <div id="black-stones-wrapper" class="col-3 col-sm-12">
+            <div id="black-stones"></div>
+          </div>
+          <div class="col-1 col-sm-12"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div class="row no-gutters">
+      <div class="col-12 p-1">
+        <div class="btn-group">
+          <button id="btn-go-back" class="btn btn-sm btn-warning">
+            <i class="fas fa-reply"></i> 戻す
+          </button>
+        </div>
+        <img id="circle-stones" class="symbols-area" src="../img/play/circle-stone.png"> <img id="x-stones"
+          class="symbols-area" src="../img/play/x-stone.png"><img id="rectangle-stones" class="symbols-area"
+          src="../img/play/rectangle-stone.png"> <img id="triangle-stones" class="symbols-area"
+          src="../img/play/triangle-stone.png"> <img id="a-stones" class="symbols-area" src="../img/play/a-stone.png">
+        <img id="b-stones" class="symbols-area" src="../img/play/b-stone.png"> <img id="c-stones" class="symbols-area"
+          src="../img/play/c-stone.png">
+      </div>
+    </div>
+    <div class="row no-gutters">
+      <div class="col-12">
+        <div class="row student teacher creator mt-2">
+          <div class="col-12">
+            <div class="btn-toolbar">
+              <div class="btn-group mr-2">
+                <div class="btn-group">
+                  <button class="btn btn-sm dropdown-toggle btn-outline-dark btn-group-header" data-toggle="dropdown"
+                    id="btn-dropdown-board-menu">
+                    <span class="d-none d-sm-inline">碁盤</span> <i class="fas fa-border-all"></i>
+                  </button>
+                  <div class="dropdown-menu">
+                    <button class="btn btn-sm btn-secondary dropdown-item link-open-my-practice-board">
+                      マイ碁盤 <i class="fas fa-border-all"></i>
+                    </button>
+                    <a class="btn btn-sm btn-secondary dropdown-item" href="play.html?game_id=5588999"> 大盤 <i
+                        class="fas fa-users-class"></i>
+                    </a>
+                  </div>
+                </div>
+                <button class="btn btn-sm btn-primary btn-start" data-toggle="modal" data-backdrop="static"
+                  data-target="#new-game-modal">
+                  初期化 <i class="fas fa-eraser"></i>
+                </button>
+              </div>
+              <div class="btn-group mr-2">
+                <div class="btn-group">
+                  <button class="btn btn-sm dropdown-toggle btn-outline-dark btn-group-header" data-toggle="dropdown"
+                    id="btn-dropdown-play-menu">
+                    <span class="d-none d-sm-inline">対局</span> <i class="fas fa-user-friends"></i>
+                  </button>
+                  <div class="dropdown-menu">
+                    <button class="btn btn-sm btn-secondary dropdown-item" data-toggle="modal" data-backdrop="static"
+                      data-target="#open-game-modal">
+                      開く <i class="far fa-door-open"></i>
+                    </button>
+                    <button id="btn-exit-room" class="btn btn-warning btn-sm student dropdown-item">
+                      募集取消 <i class="fas fa-exclamation-triangle"></i>
+                    </button>
+                    <button id="btn-waiting-room" class="btn btn-sm dropdown-item">
+                      対局待ち部屋 <i class="fas fa-couch"></i>
+                    </button>
+                  </div>
+                </div>
+                <button id="btn-find-opponent" class="btn btn-sm btn-primary student-only">
+                  募集 <i class="fas fa-search"></i>
+                </button>
+                <button class="btn btn-sm btn-secondary" data-toggle="modal" data-backdrop="static"
+                  data-target="#modal-records">
+                  カード <i class="fas fa-book"></i>
+                </button>
+                <button class="btn btn-sm btn-success" data-toggle="modal" data-backdrop="static"
+                  data-target="#modal-record">
+                  記入 <i class="fas fa-pencil"></i>
+                </button>
+              </div>
+              <div class="btn-group mr-1">
+                <div class="btn-group">
+                  <button class="btn btn-sm btn-outline-dark btn-group-header dropdown-toggle" data-toggle="dropdown">
+                    <i class="far fa-comments"></i>
+                  </button>
+                  <div class="dropdown-menu">
+                    <button id="btn-send-msg" class="btn btn-sm btn-secondary dropdown-item">
+                      HTML <i class="fas fa-code"></i>
+                    </button>
+                  </div>
+                </div>
+                <button id="btn-pass" class="btn btn-sm btn-secondary">
+                  パス <i class="fas fa-hand-point-right"></i>
+                </button>
+                <button id="btn-give-up" class="btn btn-sm btn-secondary">
+                  投了 <i class="fas fa-do-not-enter"></i>
+                </button>
+              </div>
+              <button id="btn-hand-up" class="btn btn-sm btn-primary">
+                質問 <i class="far fa-hand-paper"></i>
+              </button>
+              <button class="btn-hand-down btn btn-sm btn-outline-secondary" style="display: none">
+                <span class="hanko">済</span>
+              </button>
+              <div class="btn-group ml-auto">
+                <div id="list-game-history" class="small selectable p-1"></div>
+                <button id="link-top-collapse-menu" data-toggle="collapse" data-target="#top-card-body"
+                  class="btn btn-sm btn-secondary">
+                  <i class="fal fa-user-lock"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="row-control-panel" class="row mt-2">
+          <div class="col-12">
+            <div id="top-card-body" class="collapse hide">
+              <div class="row mt-2">
+                <div class="col-12">
+                  <div class="btn-group">
+                    <button class="btn btn-sm btn-outline-dark btn-group-header" disabled>
+                      <i class="fas fa-exclamation-triangle"> </i>
+                    </button>
+                    <button class="btn btn-sm btn-secondary link-open-practice-board">
+                      碁盤指定 <i class="fas fa-users-class"></i>
+                    </button>
+                    <a id="link-reset-localdata" href="#" class="btn btn-sm btn-secondary"><span
+                        class="d-none d-sm-inline">ユーザ初期化</span> <i class="fas fa-trash"></i> </a>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-12 mt-2 mb-2">
+                  <div class="input-group input-group-sm">
+                    <input id="input-current-gameboard-url" class="form-control selectable">
+                    <div class="input-group-append">
+                      <button id="btn-copy-url" class="btn btn-sm btn-secondary">
+                        <span class="d-none d-sm-inline">盤面URL</span> <i class="fas fa-copy"></i>
+                      </button>
+                    </div>
+                  </div>
+                  <div class="teacher creator">
+                    <span class="small"><i class="fas fa-book-open"></i> <span id="div-problem-id"></span> </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row student teacher mt-1 mb-1">
+          <div class="col-12">
+            <div class="pl-2 mr-2 float-left">
+              <div id="tbl-waiting-requests-wrapper"></div>
+            </div>
+            <div id="hand-question-msg" style="display:none">
+              <div class="float-right">
+                <span class="badge badge-danger mr-2">質問中 <i class="far fa-hand-paper"></i></span> <span class="small">
+                  <i class="fas fa-hourglass-half"></i> <span id="order-of-question"></span> 人待ちです. <span
+                    class="text-muted">質問終了後は <span class="hanko">済</span> を押して下さい．
+                  </span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row no-gutters">
+      <div class="col-12 col-lg-6 order-7 order-lg-0 p-1">
+        <div class="row student teacher">
+          <div class="col-12">
+            <form>
+              <div class="form-group m-0">
+                <div class="input-group input-group-sm">
+                  <input type="text" id="input-short-talk-global" class="form-control input-short-talk-global">
+                  <div class="input-group-append">
+                    <button id="btn-short-talk-global" class="btn btn-secondary" type="button">
+                      全体 <i class="fas fa-bullhorn"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div id="hand-history-log-global-wrapper" class="selectable border rounded bg-light mt-1 mb-1 p-1 small">
+              <ul id="hand-history-log-global" class="p-1"></ul>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div class="float-right">
+              <button id="btn-hand-history-global-expand" class="btn btn-sm btn-secondary">
+                <i class="fas fa-arrows-v"></i>
+              </button>
+              <button id="btn-hand-history-global-compress" class="btn btn-sm btn-secondary" style="display: none;">
+                <i class="fas fa-compress-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12 small">
+            <div id="tbl-q-requests-wrapper"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-12 col-lg-6 order-0 order-lg-7 p-1">
+        <div class="row student teacher">
+          <div class="col-12">
+            <form>
+              <div class="form-group m-0">
+                <div class="input-group input-group-sm">
+                  <input type="text" id="input-short-talk" class="form-control input-short-talk">
+                  <div class="input-group-append">
+                    <button id="btn-short-talk" class="btn btn-secondary" type="button">
+                      <i class="fas fa-paper-plane"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <div id="hand-history-log-wrapper" class="selectable border rounded bg-light mt-1 mb-1 p-1 small">
+              <ul id="hand-history-log" class="p-1"></ul>
+            </div>
+            <div class="float-right">
+              <button id="btn-hand-history-expand" class="btn btn-sm btn-secondary">
+                <i class="fas fa-arrows-v"></i>
+              </button>
+              <button id="btn-hand-history-compress" class="btn btn-sm btn-secondary" style="display: none;">
+                <i class="fas fa-compress-alt"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div th:include="/fragment/modal-misc.html::fcontent" th:remove="tag"></div>
+  <div th:include="/fragment/modal-icon.html::fcontent" th:remove="tag"></div>
+  <div th:include="/fragment/modal-signup.html::fcontent" th:remove="tag"></div>
+  <div th:include="/fragment/modal-record.html::fcontent" th:remove="tag"></div>
+  <div th:include="/fragment/modal-records.html::fcontent" th:remove="tag"></div>
+  <div th:include="/fragment/modal-app-info.html::fcontent" th:remove="tag"></div>
+  <img id="moving-white-stone" src="../img/play/white-stone.png" style="display: none" />
+  <img id="moving-black-stone" src="../img/play/black-stone.png" style="display: none" />
+  <div id="moving-a-stone" style="display: none"></div>
+  <div id="moving-b-stone" style="display: none"></div>
+  <div id="moving-c-stone" style="display: none"></div>
+  <div id="moving-x-stone" style="display: none"></div>
+  <div id="moving-circle-stone" style="display: none"></div>
+  <div id="moving-rectangle-stone" style="display: none"></div>
+  <div id="moving-triangle-stone" style="display: none"></div>
+  <audio id="audio-tap" preload="auto" muted>
+    <source src="../audio/button63.mp3" type="audio/mpeg" />
+  </audio>
+  <div th:include="/fragment/modal-creator.html::fcontent" th:remove="tag"></div>
+</body>
+
+</html>

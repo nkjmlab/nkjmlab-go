@@ -1,0 +1,243 @@
+{
+	"agehama": {
+		"black": 0,
+		"white": 0
+	},
+	"cells": [
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			1,
+			1,
+			0,
+			0,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			0,
+			1,
+			2,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			2,
+			1,
+			2,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			21,
+			21,
+			2,
+			2,
+			0,
+			0,
+			0,
+			0
+		],
+		[
+			0,
+			0,
+			21,
+			2,
+			0,
+			0,
+			0,
+			0,
+			0
+		]
+	],
+	"groupId": "問題集 Part 2",
+	"handHistory": [
+		{
+			"number": 1084,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 7,
+			"y": 1
+		},
+		{
+			"number": 1085,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 7,
+			"y": 2
+		},
+		{
+			"number": 1086,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 8,
+			"y": 2
+		},
+		{
+			"number": 1087,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 8,
+			"y": 3
+		},
+		{
+			"number": 1088,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 7,
+			"y": 3
+		},
+		{
+			"number": 1089,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 7,
+			"y": 4
+		},
+		{
+			"number": 1090,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 6,
+			"y": 3
+		},
+		{
+			"number": 1091,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 5,
+			"y": 3
+		},
+		{
+			"number": 1092,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 2
+		},
+		{
+			"number": 1093,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 6,
+			"y": 4
+		},
+		{
+			"number": 1094,
+			"options": "",
+			"stone": 2,
+			"type": "onBoard",
+			"x": 5,
+			"y": 4
+		},
+		{
+			"number": 1095,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 2
+		},
+		{
+			"number": 1096,
+			"options": "",
+			"stone": 1,
+			"type": "onBoard",
+			"x": 4,
+			"y": 1
+		},
+		{
+			"number": 1097,
+			"options": "",
+			"stone": 21,
+			"type": "onBoard",
+			"x": 7,
+			"y": 1
+		},
+		{
+			"number": 1098,
+			"options": "",
+			"stone": 21,
+			"type": "onBoard",
+			"x": 7,
+			"y": 2
+		},
+		{
+			"number": 1099,
+			"options": "",
+			"stone": 21,
+			"type": "onBoard",
+			"x": 8,
+			"y": 2
+		}
+	],
+	"message": "\u003Cp\u003E 白番．△3子を取るには？\u003C/p\u003E",
+	"name": "問題13",
+	"problemId": 1496846003723,
+	"ro": 9,
+	"symbols": {}
+}

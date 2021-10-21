@@ -1,0 +1,49 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<div th:fragment="fcontent">
+  <div class="modal fade" id="signup-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 id="signup-modal-title" class="modal-title">
+            ゲストサインアップ <i class="far fa-address-card"></i>
+          </h4>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span>&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="signup-form">
+            <div class="form-group">
+              <label class="control-label">学籍番号 </label> <input id="signup-username-stdid" type="tel"
+                class="form-control" placeholder="5518000 (半角数字)" value="5518000" required> <small
+                class="form-text text-muted">
+                学籍番号を半角数字で入力して下さい．学籍番号がない場合は先頭が0でない7桁の数字を入力して下さい． </small>
+            </div>
+            <div class="form-group">
+              <label class="control-label">氏名 (カタカナ)</label> <input id="signup-username-name" class="form-control"
+                placeholder="トウホウ タロウ (カタカナ)" required> <small class="form-text text-muted">氏名をカタカナで入力して下さい．</small>
+            </div>
+            <div class="form-group">
+              <label class="control-label">級位</label> <input id="signup-rank" type="tel" class="form-control"
+                placeholder="30 (半角数字)" value=30 required readonly>
+            </div>
+            <div class="form-group">
+              <label class="control-label">座席番号 </label> <input id="signup-seatid" type="tel" class="form-control"
+                placeholder="0 (半角数字)" required> <small
+                class="form-text text-muted">座席番号を半角数字で入力して下さい．座席番号がない場合は0を入力して下さい．</small>
+            </div>
+            <input class="submit-for-validation" style="display: none" type="submit" formmethod="GET">
+          </form>
+          <div class="text-right">
+            <span class="badge badge-info">前回のGoogleログイン</span> <span class="last-google-login-date">なし</span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">キャンセル</button>
+          <button id="btn-signup" type="button" class="btn btn-primary">登録</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

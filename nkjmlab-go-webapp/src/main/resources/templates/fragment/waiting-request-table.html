@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<table id="tbl-requests" class="table table-bordered table-striped table-hover table-responsive-sm">
+  <thead>
+    <tr>
+      <th>次の対局</th>
+      <th></th>
+      <th>ユーザID</th>
+      <th>ユーザ名</th>
+      <th>座席</th>
+      <th>級</th>
+      <th>更新時刻</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr th:each="req: ${requests}">
+      <td class="h5"><button th:unless='${req.isUnpaired}'
+          class="badge badge-primary game-link" th:data-url="|play.html?game_id=${req.gameId}|">
+          <span th:text="${req.gameId}"></span> <i class="fas fa-user-friends"></i>
+        </button> <span th:if='${req.isUnpaired}' class="small"><span class="badge badge-primary">募集中</span><span
+          class="spinner-grow spinner-grow-sm text-primary" role="status"></span> </span></td>
+      <td class="text-center h6"><img class="player-icon rounded"
+        th:src="|../img/icon/${req.userId}.png|"
+        onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'"></td>
+      <td>
+        <h6 class="mt-0">
+          <span class="label label-success" th:text="${req.userId}"></span>
+        </h6>
+      </td>
+      <td>
+        <h6 class="mt-0">
+          <span class="label label-success" th:text="${req.userName}"></span>
+        </h6>
+      </td>
+      <td>
+        <h6 class="mt-0">
+          <span class="label label-success" th:text="${req.seatId}"></span>
+        </h6>
+      </td>
+      <td>
+        <h6 class="mt-0">
+          <span class="label label-success" th:text="${req.rank}"></span>
+        </h6>
+      </td>
+      <td class="small"><div th:text="${#dates.format(req.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></div></td>
+    </tr>
+  </tbody>
+</table>
