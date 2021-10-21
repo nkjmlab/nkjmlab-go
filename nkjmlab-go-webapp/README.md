@@ -1,7 +1,7 @@
-# 東邦大学教育用囲碁Webアプリケーション (nkjmlab-go-webapp)
+# 東邦大学教育用囲碁Webアプリケーション
 
-## Website
-[nkjmlab-go-webapp@scrapbox](https://scrapbox.io/nkjmlab-go-webapp/) に，より詳しい情報を書く予定です．
+## Webサイト
+- ポータルサイトは [nkjmlab-go@scrapbox](https://scrapbox.io/toho-go/) です．
 
 ## ライセンス
 ### 概要
