@@ -1,6 +1,7 @@
 package org.nkjmlab.go.javalin;
 
 import java.io.File;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -115,8 +116,17 @@ public class GoApplication {
   }
 
   public GoApplication() {
-    FileDatabaseConfig fileDbConf = JacksonMapper.getDefaultMapper()
-        .toObject(ResourceUtils.getFile("/h2.conf"), FileDatabaseConfig.Builder.class).build();
+    FileDatabaseConfig fileDbConf;
+    try {
+      fileDbConf = JacksonMapper.getDefaultMapper()
+          .toObject(ResourceUtils.getFile("/conf/h2.json"), FileDatabaseConfig.Builder.class)
+          .build();
+    } catch (Exception e) {
+      log.warn("Try to load h2.json.default");
+      fileDbConf =
+          JacksonMapper.getDefaultMapper().toObject(ResourceUtils.getFile("/conf/h2.json.default"),
+              FileDatabaseConfig.Builder.class).build();
+    }
 
     this.memDbDataSource = createH2DataSource(getJdbcUrlOfInMemoryDb(fileDbConf.getDatabaseName()),
         fileDbConf.getUsername(), fileDbConf.getPassword());
@@ -162,7 +172,15 @@ public class GoApplication {
     handsUpTable.createTableAndIndexesIfNotExists();
 
     this.usersTable = new UsersTable(fileDbDataSource);
-    usersTable.readFromFileAndMerge(ResourceUtils.getFile("/users.csv"));
+
+    try {
+      File f = ResourceUtils.getFile("/conf/users.csv");
+      usersTable.readFromFileAndMerge(f);
+    } catch (Exception e) {
+      log.warn("Try to load users.csv.default");
+      File f = ResourceUtils.getFile("/conf/users.csv.default");
+      usersTable.readFromFileAndMerge(f);
+    }
 
     this.gameRecordsTable = new GameRecordsTable(fileDbDataSource);
     gameRecordsTable.recalculateAndUpdateRank(usersTable);
@@ -220,8 +238,15 @@ public class GoApplication {
 
   private void prepareJsonRpc() {
 
-    AuthService.initialize("https://toho-go-fb.firebaseio.com",
-        ResourceUtils.getFile("/firebase.json"));
+    try {
+      String url =
+          Files.readAllLines(ResourceUtils.getFile("/conf/firebase-url.conf").toPath()).get(0);
+      AuthService.initialize(url, ResourceUtils.getFile("/conf/firebase.json"));
+    } catch (Exception e) {
+      log.warn("Skip firebase settings");
+    }
+
+
 
     final GoJsonRpcService goJsonRpcService = new GoJsonRpcService(wsManager, gameStatesTables,
         problemsTable, usersTable, loginsTable, matchingRequestsTable, votesTable, handsUpTable,

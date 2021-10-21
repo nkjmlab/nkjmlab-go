@@ -86,8 +86,8 @@ public class AuthService implements AuthServiceInterface {
       log.error("Try guest siginup but userId [{}] conflict with a regular user", userId);
       return false;
     }
-    usersTable.merge(new User(userId, userId + "-guest@mabs.nkjmlab.org", username, GUEST, seatId,
-        30, new Date()));
+    usersTable.merge(
+        new User(userId, userId + "-guest@example.com", username, GUEST, seatId, 30, new Date()));
 
     registerAttendance(userId, seatId);
     UsersTable.createIcon(userId);

@@ -1,0 +1,4 @@
+userId,email,username,role
+5566991,example@example.com,管理者1,ADMIN
+5566992,example1@example.com,TA1,TA
+5566993,example2@example.com,学生1,STUDENT
