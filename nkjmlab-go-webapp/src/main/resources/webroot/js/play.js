@@ -41,23 +41,6 @@ $(function () {
 
   const userId = getUserId();
 
-  if (!isGuest() && (!getGoogleLoginDate() || getGoogleLoginDate() < getCurrentDate())) {
-    swalAlert("ログインが必要です", "「Googleでログイン」または「ゲスト」でログインして下さい", "info", function () {
-      requireSignin();
-    });
-    return;
-  } else if (!isGuest() && (getGoogleLoginDate() && getGoogleLoginDate() == getCurrentDate())) {
-    console.log("ok");
-  }
-
-  if (!getLoginDate() || getLoginDate() < getCurrentDate()) {
-    swalAlert("ログインが必要です", "「Googleでログイン」または「ゲスト」でログインして下さい", "info", function () {
-      requireSignin();
-    });
-    return;
-  }
-
-
   if (getSeatId() == null) {
     $('#signup-modal').modal('show');
     return;
@@ -411,6 +394,7 @@ $(function () {
     });
 
   $("#signup-modal-title").html('座席登録 <i class="fas fa-chair"></i>');
+  $("#signup-password-group").hide();
   $("#btn-signup").on(
     'click',
     function () {
