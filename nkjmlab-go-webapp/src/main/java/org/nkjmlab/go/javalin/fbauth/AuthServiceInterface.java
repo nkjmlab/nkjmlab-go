@@ -15,6 +15,8 @@ public interface AuthServiceInterface {
 
   boolean signupAsGuest(String userId, String userName, String seatId);
 
+  UserJson signinWithoutFirebase(String userId, String passsword, String seatId);
+
   boolean registerAttendance(String userId, String seatId);
 
   static Set<String> getDeclaredMethodNames() {

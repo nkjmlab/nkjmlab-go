@@ -23,6 +23,7 @@ import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
 import org.nkjmlab.go.javalin.model.relation.HandsUpTable;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
+import org.nkjmlab.go.javalin.model.relation.PasswordsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
@@ -84,6 +85,7 @@ public class GoApplication {
   private ProblemsTable problemsTable;
   private HandsUpTable handsUpTable;
   private UsersTable usersTable;
+  private PasswordsTable passwordsTable;
   private MatchingRequestsTable matchingRequestsTable;
   private GameStatesTable gameStatesTable;
   private GameStatesTable gameStatesTableInMem;
@@ -93,6 +95,7 @@ public class GoApplication {
   private GameRecordsTable gameRecordsTable;
   private LoginsTable loginsTable;
   private WebsocketSessionsManager wsManager;
+
 
 
   static {
@@ -172,15 +175,29 @@ public class GoApplication {
     handsUpTable.createTableAndIndexesIfNotExists();
 
     this.usersTable = new UsersTable(fileDbDataSource);
-
+    usersTable.dropTableIfExists();
+    usersTable.createTableAndIndexesIfNotExists();
     try {
       File f = ResourceUtils.getFile("/conf/users.csv");
       usersTable.readFromFileAndMerge(f);
     } catch (Exception e) {
-      log.warn("Try to load users.csv.default");
+      log.warn("load users.csv.default ...");
       File f = ResourceUtils.getFile("/conf/users.csv.default");
       usersTable.readFromFileAndMerge(f);
     }
+
+
+    this.passwordsTable = new PasswordsTable(fileDbDataSource);
+
+    try {
+      File f = ResourceUtils.getFile("/conf/passwords.csv");
+      passwordsTable.readFromFileAndMerge(f);
+    } catch (Exception e) {
+      log.warn("load password.csv.default ...");
+      File f = ResourceUtils.getFile("/conf/passwords.csv.default");
+      passwordsTable.readFromFileAndMerge(f);
+    }
+
 
     this.gameRecordsTable = new GameRecordsTable(fileDbDataSource);
     gameRecordsTable.recalculateAndUpdateRank(usersTable);
@@ -238,15 +255,7 @@ public class GoApplication {
 
   private void prepareJsonRpc() {
 
-    try {
-      String url =
-          Files.readAllLines(ResourceUtils.getFile("/conf/firebase-url.conf").toPath()).get(0);
-      AuthService.initialize(url, ResourceUtils.getFile("/conf/firebase.json"));
-    } catch (Exception e) {
-      log.warn("Skip firebase settings");
-    }
-
-
+    prepareFirebase();
 
     final GoJsonRpcService goJsonRpcService = new GoJsonRpcService(wsManager, gameStatesTables,
         problemsTable, usersTable, loginsTable, matchingRequestsTable, votesTable, handsUpTable,
@@ -259,7 +268,7 @@ public class GoApplication {
     app.post("/app/json/GoJsonRpcService", ctx -> {
       JsonRpcRequest jreq = JsonRpcUtils.toJsonRpcRequest(mapper, ctx.req);
       Object srv = AuthServiceInterface.getDeclaredMethodNames().contains(jreq.getMethod())
-          ? new AuthService(usersTable, loginsTable, ctx.req)
+          ? new AuthService(usersTable, loginsTable, passwordsTable, ctx.req)
           : goJsonRpcService;
       JsonRpcResponse jres = jsonRpcService.callHttpJsonRpc(srv, jreq, ctx.res);
       String ret = mapper.toJson(jres);
@@ -267,6 +276,18 @@ public class GoApplication {
     });
   }
 
+
+  private boolean prepareFirebase() {
+    try {
+      String url =
+          Files.readAllLines(ResourceUtils.getFile("/conf/firebase-url.conf").toPath()).get(0);
+      AuthService.initialize(url, ResourceUtils.getFile("/conf/firebase.json"));
+      return true;
+    } catch (Exception e) {
+      log.warn("Skip firebase settings");
+      return false;
+    }
+  }
 
   private void prepareGetHandler() {
     app.get("/app", ctx -> ctx.redirect("/app/index.html"));

@@ -9,10 +9,12 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.nkjmlab.go.javalin.model.json.UserJson;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
+import org.nkjmlab.go.javalin.model.relation.PasswordsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.util.websrv.HttpRequestUtils;
+import org.nkjmlab.util.websrv.UserSession;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -26,11 +28,15 @@ public class AuthService implements AuthServiceInterface {
 
   private final UsersTable usersTable;
   private final LoginsTable loginsTable;
+  private final PasswordsTable passwordsTable;
   private final HttpServletRequest request;
 
-  public AuthService(UsersTable usersTable, LoginsTable loginsTable, HttpServletRequest request) {
+
+  public AuthService(UsersTable usersTable, LoginsTable loginsTable, PasswordsTable passwordsTable,
+      HttpServletRequest request) {
     this.usersTable = usersTable;
     this.loginsTable = loginsTable;
+    this.passwordsTable = passwordsTable;
     this.request = request;
   }
 
@@ -42,7 +48,7 @@ public class AuthService implements AuthServiceInterface {
 
   @Override
   public boolean registerAttendance(String userId, String seatId) {
-    FirebaseUserSession session = FirebaseUserSession.wrap(request.getSession());
+    UserSession session = UserSession.wrap(request.getSession());
     session.setUserId(userId);
     User u = usersTable.readByPrimaryKey(userId);
     u.setSeatId(seatId);
@@ -93,6 +99,25 @@ public class AuthService implements AuthServiceInterface {
     UsersTable.createIcon(userId);
     return true;
   }
+
+  @Override
+  public UserJson signinWithoutFirebase(String userId, String password, String seatId) {
+    FirebaseUserSession session = FirebaseUserSession.wrap(request.getSession());
+    if (session.isSigninFirebase()) {
+      log.error("Already logined Firebase. userId=[{}]", userId);
+      return null;
+    }
+
+    if (!passwordsTable.isValid(userId, password)) {
+      return null;
+    }
+
+    User u = usersTable.readByPrimaryKey(userId);
+    registerAttendance(userId, seatId);
+    UsersTable.createIcon(userId);
+    return new UserJson(u);
+  }
+
 
   public static void initialize(String url, File firebaseJson) {
     try (FileInputStream serviceAccount = new FileInputStream(firebaseJson)) {

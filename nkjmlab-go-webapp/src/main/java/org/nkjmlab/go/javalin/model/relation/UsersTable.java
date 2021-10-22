@@ -106,7 +106,7 @@ public class UsersTable {
     List<Row> users = CsvUtils.readAllRows(usersCsvFile, conf);
     transformToUser(users).forEach(user -> {
       createIcon(user.getUserId());
-      sorm.merge(user);
+      sorm.insert(user);
     });
   }
 

@@ -1,31 +1,46 @@
-
 $(function () {
     $('#signup-modal').on('hidden.bs.modal', function () {
         location.reload();
     });
-    $("#signup-modal-title").html('ゲストサインアップ <i class="far fa-address-card"></i>');
     setGuest(false);
-    $("#btn-signup").on(
+
+    $("#btn-guest-login").on(
+        'click',
+        function () {
+		    $("#signup-modal-title").html('ゲスト <i class="far fa-address-card"></i>');
+		    $(".signin-guest").show();
+		    $(".signin-user").hide();
+	});
+
+    $("#btn-user-login").on(
+        'click',
+        function () {
+		    $("#signup-modal-title").html('ユーザ <i class="far fa-address-card"></i>');
+		    $(".signin-user").show();
+		    $(".signin-guest").hide();
+	});
+
+    $("#btn-guest-signin").on(
         'click',
         function () {
             setGuest(true);
             setUserMode(STUDENT);
 
-            for (let i = 0; i < $('#signup-form input').length; i++) {
-                if (!$('#signup-form input')[i].checkValidity()) {
+            for (let i = 0; i < $('#signup-form input:visible').length; i++) {
+                if (!$('#signup-form input:visible')[i].checkValidity()) {
                     $('#signup-form .submit-for-validation').trigger("click");
                     return;
                 }
             }
 
-            let stdId = getFormattedStdId($("#signup-username-stdid").val());
-            let seatId = getFormattedSeatId($("#signup-seatid").val());
+            const stdId = getFormattedStdId($("#signup-username-stdid").val());
+            const seatId = getFormattedSeatId($("#signup-seatid").val());
 
             if (!seatId || !stdId) {
                 swalAlert("入力エラー", (!seatId ? "座席番号" : "") + (!stdId ? " 学籍番号" : "") + "に無効な値が入力されました", "error");
                 return;
             }
-            let uname = $("#signup-username-name").val();
+            const uname = $("#signup-username-name").val();
 
             new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "signupAsGuest", [
                 stdId, uname, seatId], function () {
@@ -36,4 +51,40 @@ $(function () {
                     location = "play.html";
                 })).rpc();
         });
+
+    $("#btn-user-signin").on(
+        'click',
+        function () {
+            setUserMode(STUDENT);
+
+            for (let i = 0; i < $('#signup-form input:visible').length; i++) {
+                if (!$('#signup-form input:visible')[i].checkValidity()) {
+                    $('#signup-form .submit-for-validation').trigger("click");
+                    return;
+                }
+            }
+
+            const stdId = getFormattedStdId($("#signup-username-stdid").val());
+            const seatId = getFormattedSeatId($("#signup-seatid").val());
+
+            if (!seatId || !stdId) {
+                swalAlert("入力エラー", (!seatId ? "座席番号" : "") + (!stdId ? " 学籍番号" : "") + "に無効な値が入力されました", "error");
+                return;
+            }
+
+			const password =$("#signup-password").val();
+            new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "signinWithoutFirebase", [
+                stdId, password, seatId], function (data) {
+					if(data.result==null){
+						swalAlert("エラー", "ログイン失敗", "error");
+                        return;
+					}
+                    setUserId(stdId);
+                    setUserName(data.result.userName);
+                    setSeatId(seatId);
+                    setLoginDate(getCurrentDate());
+                    location = "play.html";
+                })).rpc();
+        });
+
 });
