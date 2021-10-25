@@ -451,17 +451,21 @@ public class GoApplication {
 
   private void isAdminOrThrow(UsersTable usersTable, HttpServletRequest req) {
     FirebaseUserSession session = FirebaseUserSession.wrap(req.getSession());
-    if (!session.isSigninFirebase()) {
-      throw new RuntimeException("Should be login with firebase");
+    User u = null;
+    if (session.isSigninFirebase()) {
+      String email = session.getEmail();
+      u = usersTable.readByEmail(email);
+    } else if (session.isLogined()) {
+      String userId = session.getUserId();
+      u = usersTable.readByPrimaryKey(userId);
     }
-    String email = session.getEmail();
-    User u = usersTable.readByEmail(email);
     if (u == null) {
-      throw new RuntimeException(StringUtils.format("User not found {}", email));
+      throw new RuntimeException(StringUtils.format("User not found"));
     }
     if (!u.isAdmin()) {
-      throw new RuntimeException(StringUtils.format("User is not admin {}", email));
+      throw new RuntimeException(StringUtils.format("User is not admin"));
     }
+
 
   }
 
