@@ -18,26 +18,17 @@
     <div class="row pt-3 pb-3 px-4 text-white bg-dark">
       <div class="col-12 mincho">
         <img src="../img/logo/toho-sm.png" class="rounded float-left mr-2" style="height: 2em">
-        <h3>東邦大学情報科学科 囲碁とコンピュータ</h3>
+        <h3>教育用囲碁Webアプリケーション</h3>
       </div>
     </div>
   </div>
   <div class="container">
     <div class="row mt-2 pt-2">
-      <div class="col-sm-6 d-flex flex-column mb-3" style="height: 200px;">
+      <div class="col-12">
         <h1 class="my-auto flex-grow" style="font-family: Impact, sans-serif">
-          Let's GO <img class="w-25" src="../img/logo/game_igo_ban.png">
+          Let's GO <img style="height: 1em; width: auto" src="../img/logo/game_igo_ban.png">
         </h1>
-        <div class="my-auto flex-grow">
-          このシステムは囲碁講座の運営を支援します．Webブラウザが使える端末があれば，簡単に授業に参加することが出来ます．</div>
-        <div class="my-auto flex-grow">受講者は大学のGoogleアカウントでログインして下さい．</div>
-      </div>
-      <div class="col-sm-6 border border-white rounded bg-light">
-        <div id="fb-loading" class="text-muted">
-          Loading login UI ...
-          <div class="spinner-grow spinner-sm text-primary" role="status"></div>
-        </div>
-        <div id="fb-auth-container" style="display: none"></div>
+        <p>このシステムはオンライン上での囲碁教育を支援するシステムです．Webブラウザが使える端末があれば，簡単に授業に参加することが出来ます．</p>
         <div class="already-logged-in" style="display: none">
           <div class="clearfix">
             <code id="user-email"></code>
@@ -49,6 +40,41 @@
             <button class="float-right btn btn-sm btn-warning" type="button" id="btn-logout">
               ログアウト <i class="fas fa-sign-out-alt"></i>
             </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="row mt-2 pt-2">
+      <div class="col-sm-8">
+        <div class="card card-default">
+          <div class="card-header">Googleアカウントでのログイン</div>
+          <div class="card-body">
+            <div id="fb-loading" class="text-muted">
+              Loading login UI ...
+              <div class="spinner-grow spinner-sm text-primary" role="status"></div>
+            </div>
+            <div id="fb-auth-container" style="display: none"></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-sm-4">
+        <div class="card card-default">
+          <div class="card-header">ログイン</div>
+          <div class="card-body">
+            <div class="btn-group">
+              <button id="btn-user-login" class="btn btn-sm btn-secondary" data-toggle="modal"
+                data-backdrop="static" data-target="#signup-modal">
+                登録者 <i class="fas fa-sign-in-alt"></i>
+              </button>
+            </div>
+            <p>講師および受講者のログイン</p>
+            <div class="btn-group">
+              <button id="btn-guest-login" class="btn btn-sm btn-secondary" data-toggle="modal"
+                data-backdrop="static" data-target="#signup-modal">
+                ゲスト <i class="fas fa-sign-in-alt"></i>
+              </button>
+            </div>
+            <p>見学者のログイン</p>
           </div>
         </div>
       </div>
@@ -67,36 +93,22 @@
           class="badge badge-warning">WARN</span> が表示される場合，一部の機能が利用できない場合があります．
       </div>
     </div>
-    <div class="row mt-2 mb-2">
-      <div class="col-12">
+
+
+    <div class="row mt-3 mb-2">
+      <div class="col-12 text-right">
         <!--
         <a class="btn btn-warning btn-sm" href="reset-localdata.html"><i class="fas fa-exclamation-triangle"></i></a>
         -->
         <div class="btn-group">
-          <a class="btn btn-sm btn-info" href="https://scrapbox.io/toho-go/"> このアプリについて <i
+          <a class="btn btn-sm btn-info" href="https://scrapbox.io/toho-go/"> アプリについて <i
             class="fas fa-external-link-alt"></i>
           </a>
-        </div>
-        <div class="btn-group float-right">
-          <!--
-          <button class="btn btn-sm btn-info" data-toggle="modal" data-backdrop="static" data-target="#modal-app-info">
-            情報 <i class="fas fa-info-circle"></i>
-          </button>
-           -->
-          <button id="btn-user-login" class="btn btn-sm btn-secondary" data-toggle="modal"
-            data-backdrop="static" data-target="#signup-modal">
-            登録者 <i class="fas fa-sign-in-alt"></i>
-          </button>
-          <button id="btn-guest-login" class="btn btn-sm btn-secondary" data-toggle="modal"
-            data-backdrop="static" data-target="#signup-modal">
-            ゲスト <i class="fas fa-sign-in-alt"></i>
-          </button>
         </div>
       </div>
     </div>
   </div>
   <div th:include="/fragment/modal-signup.html::fcontent" th:remove="tag"></div>
-  <div th:include="/fragment/modal-app-info.html::fcontent" th:remove="tag"></div>
 </body>
 
 </html>
