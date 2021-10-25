@@ -292,7 +292,7 @@ public class GoApplication {
   private void prepareGetHandler() {
     app.get("/app", ctx -> ctx.redirect("/app/index.html"));
 
-    app.get("/app/{pageName}", ctx -> {
+    app.get("/app/<pageName>", ctx -> {
       String pageName =
           ctx.pathParam("pageName") == null ? "index.html" : ctx.pathParam("pageName");
       ViewModel model = createDefaultModel(usersTable, ctx.req);
