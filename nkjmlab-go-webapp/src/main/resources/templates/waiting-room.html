@@ -80,7 +80,7 @@
       $("#btn-find-opponent").on(
         'click',
         function () {
-          swalAlert("", '対局相手を探します <i class="far fa-hand-paper"></i>', "info",
+          swalAlert("", '対局相手を探します <i class="fas fa-hand-paper"></i>', "info",
             function () {
               new JsonRpcClient(new JsonRpcRequest(getBaseUrl(),
                 "enterWaitingRoom", [getUserId()],
@@ -161,7 +161,7 @@
           相手を募集 <i class="fas fa-search"></i>
         </button>
         <div class="float-right">
-          <i class="far fa-child student"></i> <i class="fas fa-user-tie teacher"></i> <i
+          <i class="fas fa-child student"></i> <i class="fas fa-user-tie teacher"></i> <i
             class="fas fa-sparkles text-danger" th:if='${currentUser.isAdmin()}'></i><span id="span-user-id"></span>
         </div>
         <div class="alert-no-request alert alert-primary mt-1">
