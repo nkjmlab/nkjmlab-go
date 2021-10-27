@@ -17,9 +17,6 @@
 #### くらげ工匠
 - `src/main/resources/webroot/audio/button63.mp3` は，[ご利用ガイド /-フリー効果音素材 くらげ工匠](http://www.kurage-kosho.info/guide.html) に基づいて利用しています．
 
-#### Font Awesome Pro
-- Font Awesome Proを，[Pro License | Font Awesome](https://fontawesome.com/license) に基づき利用しています．これを利用するためには，Font Awesome Pro を契約し，該当箇所を書き換える必要があります．または，一部を Font Awesome Free に置き換えて利用することが出来ます．
-
 #### 東邦大学
 - `src/main/resources/webroot/img/logo/toho-sm.pg` は，東邦大学が著作権を持つものです．
 
