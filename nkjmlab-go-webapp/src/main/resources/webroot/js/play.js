@@ -783,7 +783,7 @@ function initView() {
         $("<a>").addClass("text-secondary").attr("href",
           "play.html?game_id=" + getVisitedGameIds()[i])
           .html(
-            ' <i class="far fa-swords"></i> '
+            ' <i class="far fa-handshake"></i> '
             + getVisitedGameIds()[i])).html());
   }
   $("#list-game-history").empty();
