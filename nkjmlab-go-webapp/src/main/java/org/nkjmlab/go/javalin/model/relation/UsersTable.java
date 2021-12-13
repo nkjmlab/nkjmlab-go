@@ -22,8 +22,8 @@ import org.nkjmlab.sorm4j.sql.ParameterizedSql;
 import org.nkjmlab.sorm4j.sql.result.Tuple2;
 import org.nkjmlab.sorm4j.sql.schema.TableSchema;
 import org.nkjmlab.sorm4j.sql.schema.TableSchemaKeyword;
-import org.nkjmlab.util.csv.CsvUtils;
-import org.nkjmlab.util.csv.Row;
+import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils;
+import org.nkjmlab.util.orangesignal_csv.Row;
 import com.orangesignal.csv.CsvConfig;
 
 /***
@@ -33,7 +33,7 @@ import com.orangesignal.csv.CsvConfig;
  *
  */
 public class UsersTable {
-  private static org.apache.logging.log4j.Logger log =
+  private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
   public static final String TABLE_NAME = "PLAYERS";
@@ -51,15 +51,13 @@ public class UsersTable {
 
   public UsersTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = new TableSchema.Builder(TABLE_NAME)
-        .addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
-        .addColumnDefinition(EMAIL, VARCHAR, TableSchemaKeyword.UNIQUE)
-        .addColumnDefinition(USER_NAME, VARCHAR)
-        .addColumnDefinition(ROLE, VARCHAR)
-        .addColumnDefinition(SEAT_ID, VARCHAR)
-        .addColumnDefinition(RANK, INT)
-        .addColumnDefinition(CREATED_AT, TIMESTAMP).addIndexColumn(EMAIL)
-        .addIndexColumn(ROLE).build();
+    this.schema =
+        new TableSchema.Builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
+            .addColumnDefinition(EMAIL, VARCHAR, TableSchemaKeyword.UNIQUE)
+            .addColumnDefinition(USER_NAME, VARCHAR).addColumnDefinition(ROLE, VARCHAR)
+            .addColumnDefinition(SEAT_ID, VARCHAR).addColumnDefinition(RANK, INT)
+            .addColumnDefinition(CREATED_AT, TIMESTAMP).addIndexColumn(EMAIL).addIndexColumn(ROLE)
+            .build();
     createTableAndIndexesIfNotExists();
   }
 
@@ -74,7 +72,7 @@ public class UsersTable {
 
 
   public User getUser(String uid) {
-    User entry = sorm.type(User.class).readByPrimaryKey(uid);
+    User entry = sorm.readByPrimaryKey(User.class, uid);
     return entry;
   }
 
@@ -89,21 +87,20 @@ public class UsersTable {
   }
 
   private List<User> readAllOrderedUsers() {
-    return sorm.type(User.class).readList("SELECT * FROM " + TABLE_NAME + " ORDER BY " + USER_ID);
+    return sorm.readList(User.class, "SELECT * FROM " + TABLE_NAME + " ORDER BY " + USER_ID);
 
   }
 
   public User readByEmail(String email) {
-    return sorm.type(User.class).readOne(SELECT_STAR + FROM + TABLE_NAME + WHERE + EMAIL + "=?",
-        email);
+    return sorm.readOne(User.class, SELECT_STAR + FROM + TABLE_NAME + WHERE + EMAIL + "=?", email);
   }
 
 
 
   public void readFromFileAndMerge(File usersCsvFile) {
-    CsvConfig conf = CsvUtils.createDefaultCsvConfig();
+    CsvConfig conf = OrangeSignalCsvUtils.createDefaultCsvConfig();
     conf.setSkipLines(1);
-    List<Row> users = CsvUtils.readAllRows(usersCsvFile, conf);
+    List<Row> users = OrangeSignalCsvUtils.readAllRows(usersCsvFile, conf);
     transformToUser(users).forEach(user -> {
       createIcon(user.getUserId());
       sorm.insert(user);
@@ -126,7 +123,7 @@ public class UsersTable {
     ParameterizedSql st =
         OrderedParameterSql.from("SELECT * from " + TABLE_NAME + " where " + USER_ID + " IN (<?>)")
             .addParameter(uids).parse();
-    return sorm.type(User.class).readList(st.getSql(), st.getParameters());
+    return sorm.readList(User.class, st.getSql(), st.getParameters());
   }
 
   public List<String> getAdminUserIds() {
@@ -141,12 +138,12 @@ public class UsersTable {
   }
 
   public boolean isAdmin(String userId) {
-    return sorm.type(User.class).readByPrimaryKey(userId).isAdmin();
+    return sorm.readByPrimaryKey(User.class, userId).isAdmin();
   }
 
 
   public User readByPrimaryKey(String userId) {
-    return sorm.type(User.class).readByPrimaryKey(userId);
+    return sorm.readByPrimaryKey(User.class, userId);
   }
 
 

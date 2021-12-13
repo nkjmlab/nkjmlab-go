@@ -13,10 +13,10 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.row.GameState;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.sql.schema.TableSchema;
-import org.nkjmlab.util.db.h2.H2StatementUtils;
+import org.nkjmlab.util.h2.H2StatementUtils;
 
 public class GameStatesTable {
-  private static org.apache.logging.log4j.Logger log =
+  private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
 
@@ -90,12 +90,12 @@ public class GameStatesTable {
     String selectSql =
         selectFrom(TABLE_NAME) + where(cond(ROWNUM, "<=", deleteRowNum)) + orderBy(ID);
 
-    String st = H2StatementUtils.getCsvWriteSqlStatement(outputFile, selectSql,
-        StandardCharsets.UTF_8.name(), ",");
+    String st = H2StatementUtils.getCsvWriteSql(outputFile, selectSql,
+        StandardCharsets.UTF_8, ",");
     log.info("{}", st);
     sorm.executeUpdate(st);
 
-    List<GameState> dels = sorm.type(GameState.class).readList(selectSql);
+    List<GameState> dels = sorm.readList(GameState.class, selectSql);
     sorm.delete(dels.toArray(GameState[]::new));
 
     log.info("trim and backup to {}.", outputFile);

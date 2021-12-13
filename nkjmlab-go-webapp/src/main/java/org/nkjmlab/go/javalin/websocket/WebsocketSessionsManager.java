@@ -29,14 +29,14 @@ import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.row.Problem;
 import org.nkjmlab.go.javalin.model.row.User;
-import org.nkjmlab.util.concurrent.ForkJoinPoolUtils;
-import org.nkjmlab.util.concurrent.RetryUtils;
-import org.nkjmlab.util.json.JacksonMapper;
-import org.nkjmlab.util.json.JsonMapper;
-import org.nkjmlab.util.lang.Try;
+import org.nkjmlab.util.jackson.JacksonMapper;
+import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
+import org.nkjmlab.util.java.concurrent.RetryUtils;
+import org.nkjmlab.util.java.function.Try;
+import org.nkjmlab.util.java.json.JsonMapper;
 
 public class WebsocketSessionsManager {
-  private static org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
+  private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
 
   private final ProblemsTable problemsTable;
   private final GameStatesTables gameStatesTables;
@@ -213,10 +213,10 @@ public class WebsocketSessionsManager {
 
 
   private static class WebSocketJsonSenderService {
-    private static org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
+    private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
 
     private ExecutorService srv =
-        Executors.newFixedThreadPool(ForkJoinPoolUtils.getAutoThreadsNumMinus(2));
+        Executors.newFixedThreadPool(ForkJoinPoolUtils.getAvailableProcessorsMinus(2));
     private JsonMapper mapper = JacksonMapper.getDefaultMapper();
 
     private enum MethodName {

@@ -2,6 +2,8 @@ package org.nkjmlab.go.javalin.jsonrpc;
 
 import static org.nkjmlab.go.javalin.GoApplication.*;
 import java.io.File;
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -26,9 +28,10 @@ import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.go.javalin.model.row.Vote;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
-import org.nkjmlab.util.base64.Base64ImageUtils;
-import org.nkjmlab.util.json.JacksonMapper;
-import org.nkjmlab.util.lang.StringUtils;
+import org.nkjmlab.util.jackson.JacksonMapper;
+import org.nkjmlab.util.java.Base64Utils;
+import org.nkjmlab.util.java.lang.ParameterizedStringUtils;
+import org.nkjmlab.util.javax.imageio.ImageIoUtils;
 
 public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   private static final org.apache.logging.log4j.Logger log =
@@ -116,7 +119,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       autoBackupProblemJsonToFile(ProblemJson.createFrom(p));
       p.setAgehama(mapper.toJson(currentState.getAgehama()));
       p.setCells(mapper.toJson(currentState.getCells()));
-      p.setCreatedAt(new Date());
+      p.setCreatedAt(Timestamp.from(Instant.now()));
       p.setHandHistory(mapper.toJson(currentState.getHandHistory()));
       p.setSymbols(mapper.toJson(currentState.getSymbols()));
       p.setName(name);
@@ -124,10 +127,10 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       p.setMessage(message);
       problemsTable.merge(p);
     } else {
-      p = new Problem(problemId == -1 ? ProblemFactory.getNewId() : problemId, new Date(), groupId,
-          name, mapper.toJson(currentState.getCells()), mapper.toJson(currentState.getSymbols()),
-          message == null ? "" : message, mapper.toJson(currentState.getHandHistory()),
-          mapper.toJson(currentState.getAgehama()));
+      p = new Problem(problemId == -1 ? ProblemFactory.getNewId() : problemId,
+          Timestamp.from(Instant.now()), groupId, name, mapper.toJson(currentState.getCells()),
+          mapper.toJson(currentState.getSymbols()), message == null ? "" : message,
+          mapper.toJson(currentState.getHandHistory()), mapper.toJson(currentState.getAgehama()));
       problemsTable.insert(p);
     }
     problemsTable.clearProblemsJson();
@@ -284,11 +287,11 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       {
         File outputFile = new File(UPLOADED_ICON_DIR, userId + ".png");
         outputFile.mkdirs();
-        Base64ImageUtils.decodeAndWrite(base64EncodedImage, "png", outputFile);
+        ImageIoUtils.write(Base64Utils.decodeToImage(base64EncodedImage, "png"), "png", outputFile);
       }
       File outputFile = new File(CURRENT_ICON_DIR, userId + ".png");
       outputFile.mkdirs();
-      Base64ImageUtils.decodeAndWrite(base64EncodedImage, "png", outputFile);
+      ImageIoUtils.write(Base64Utils.decodeToImage(base64EncodedImage, "png"), "png", outputFile);
       log.info("Icon is uploaded={}", outputFile);
       return outputFile;
     } catch (Exception e) {
@@ -373,7 +376,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       String s1 = start.get(roCol).get(Math.min(diff, 5));
       String s2 = midFlow.get(roCol).get(Math.min(diff, 5));
 
-      msg = StringUtils.format(
+      msg = ParameterizedStringUtils.newString(
           "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge badge-info'>はじめから</span> {}, <span class='badge badge-info'>棋譜並べから</span> {} <br>",
           bp.getUserId(), bp.getUserName(), bp.getRank(), wp.getUserId(), wp.getUserName(),
           wp.getRank(), diff, ro, s1, s2);

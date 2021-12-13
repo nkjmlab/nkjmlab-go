@@ -11,7 +11,7 @@ import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.sql.SelectSql;
 import org.nkjmlab.sorm4j.sql.schema.TableSchema;
-import org.nkjmlab.util.db.h2.H2StatementUtils;
+import org.nkjmlab.util.h2.H2StatementUtils;
 
 public class GameRecordsTable {
 
@@ -32,7 +32,7 @@ public class GameRecordsTable {
   public GameRecordsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
     this.schema = new TableSchema.Builder(TABLE_NAME)
-        .addColumnDefinition(ID, VARCHAR, AUTO_INCREMENT, PRIMARY_KEY)
+        .addColumnDefinition(ID, INT, AUTO_INCREMENT, PRIMARY_KEY)
         .addColumnDefinition(CREATED_AT, TIMESTAMP_AS_CURRENT_TIMESTAMP)
         .addColumnDefinition(USER_ID, VARCHAR).addColumnDefinition(OPPONENT_USER_ID, VARCHAR)
         .addColumnDefinition(JADGE, VARCHAR).addColumnDefinition(MEMO, VARCHAR)
@@ -58,7 +58,7 @@ public class GameRecordsTable {
 
   public int registerRecordAndGetRank(UsersTable usersTable, String userId, String opponentUserId,
       String jadge, String memo) {
-    GameRecord lastRecords = sorm.type(GameRecord.class).readFirst("select * from " + TABLE_NAME
+    GameRecord lastRecords = sorm.readFirst(GameRecord.class, "select * from " + TABLE_NAME
         + " where " + USER_ID + "=?" + " order by " + CREATED_AT + " desc limit 1", userId);
 
 
@@ -76,8 +76,7 @@ public class GameRecordsTable {
       message = rank + "級に昇級 <i class='fas fa-trophy'></i>";
     }
 
-    sorm.type(GameRecord.class)
-        .insert(new GameRecord(userId, opponentUserId, jadge, memo, rank, point, message));
+    sorm.insert(new GameRecord(userId, opponentUserId, jadge, memo, rank, point, message));
     return rank;
   }
 
@@ -110,13 +109,13 @@ public class GameRecordsTable {
   }
 
   public List<GameRecord> readByUserId(String userId) {
-    return sorm.type(GameRecord.class).readList(
+    return sorm.readList(GameRecord.class,
         "select * from " + TABLE_NAME + " where " + USER_ID + "=? order by " + CREATED_AT + " DESC",
         userId);
   }
 
   public void backupToCsv(File backupDir) {
-    String stmt = H2StatementUtils.getCsvWriteSqlStatement(
+    String stmt = H2StatementUtils.getCsvWriteSql(
         new File(backupDir, System.currentTimeMillis() + ".csv"), SelectSql.selectFrom(TABLE_NAME),
         StandardCharsets.UTF_8, ",");
     sorm.executeUpdate(stmt);

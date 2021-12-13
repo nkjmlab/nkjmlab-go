@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin.fbauth;
 
 import javax.servlet.http.HttpSession;
-import org.nkjmlab.util.websrv.UserSession;
+import org.nkjmlab.util.javax.servlet.UserSession;
 
 public class FirebaseUserSession extends UserSession {
 

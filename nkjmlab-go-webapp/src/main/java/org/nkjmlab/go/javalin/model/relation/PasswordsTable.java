@@ -8,8 +8,8 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.sql.schema.TableSchema;
-import org.nkjmlab.util.csv.CsvUtils;
-import org.nkjmlab.util.csv.Row;
+import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils;
+import org.nkjmlab.util.orangesignal_csv.Row;
 import com.orangesignal.csv.CsvConfig;
 
 /***
@@ -18,7 +18,7 @@ import com.orangesignal.csv.CsvConfig;
  *
  */
 public class PasswordsTable {
-  private static org.apache.logging.log4j.Logger log =
+  private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
   public static final String TABLE_NAME = "PASSWORDS";
@@ -47,16 +47,16 @@ public class PasswordsTable {
   }
 
   public boolean isValid(String userId, String password) {
-    return Optional.ofNullable(sorm.type(Password.class).readByPrimaryKey(userId))
+    return Optional.ofNullable(sorm.readByPrimaryKey(Password.class, userId))
         .map(p -> password.equals(p.password)).orElse(false);
   }
 
 
 
   public void readFromFileAndMerge(File usersCsvFile) {
-    CsvConfig conf = CsvUtils.createDefaultCsvConfig();
+    CsvConfig conf = OrangeSignalCsvUtils.createDefaultCsvConfig();
     conf.setSkipLines(1);
-    List<Row> users = CsvUtils.readAllRows(usersCsvFile, conf);
+    List<Row> users = OrangeSignalCsvUtils.readAllRows(usersCsvFile, conf);
     transformToPassword(users).forEach(user -> sorm.merge(user));
   }
 

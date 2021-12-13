@@ -1,8 +1,9 @@
 package org.nkjmlab.go.javalin.model.json;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,7 +11,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.nkjmlab.go.javalin.model.Stone;
 import org.nkjmlab.go.javalin.model.row.Problem;
-import org.nkjmlab.util.json.JacksonMapper;
+import org.nkjmlab.util.jackson.JacksonMapper;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
 
@@ -46,7 +47,7 @@ public class ProblemJson {
   }
 
   public Problem toProblem() {
-    return new Problem(problemId, new Date(), groupId, name, mapper.toJson(cells),
+    return new Problem(problemId, Timestamp.from(Instant.now()), groupId, name, mapper.toJson(cells),
         mapper.toJson(symbols), message, mapper.toJson(handHistory), mapper.toJson(agehama));
   }
 

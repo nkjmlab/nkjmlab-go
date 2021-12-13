@@ -11,7 +11,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 @WebSocket
 public class GoWebSocket {
 
-  private static org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
+  private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
 
   private static AtomicInteger onConnectCounter = new AtomicInteger(0);
   private static AtomicInteger onMessageCounter = new AtomicInteger(0);
