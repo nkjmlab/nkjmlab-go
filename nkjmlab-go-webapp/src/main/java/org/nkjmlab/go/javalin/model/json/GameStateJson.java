@@ -9,8 +9,8 @@ import java.util.Map;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.nkjmlab.go.javalin.model.row.GameState;
-import org.nkjmlab.util.json.JacksonMapper;
-import org.nkjmlab.util.json.JsonMapper;
+import org.nkjmlab.util.jackson.JacksonMapper;
+import org.nkjmlab.util.java.json.JsonMapper;
 
 public class GameStateJson {
 

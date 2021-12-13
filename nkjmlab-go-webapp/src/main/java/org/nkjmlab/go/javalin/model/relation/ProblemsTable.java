@@ -11,10 +11,11 @@ import org.nkjmlab.go.javalin.model.problem.ProblemGroupsNode;
 import org.nkjmlab.go.javalin.model.row.Problem;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.sql.schema.TableSchema;
-import org.nkjmlab.util.json.JacksonMapper;
+import org.nkjmlab.util.jackson.JacksonMapper;
 
 public class ProblemsTable {
-  private static org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
+  private static final org.apache.logging.log4j.Logger log =
+      org.apache.logging.log4j.LogManager.getLogger();
 
   private Sorm sorm;
   private TableSchema schema;
@@ -37,8 +38,7 @@ public class ProblemsTable {
   public ProblemsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
     this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(ID, BIGINT, PRIMARY_KEY)
-        .addColumnDefinition(CREATED_AT, TIMESTAMP_AS_CURRENT_TIMESTAMP)
-        .addColumnDefinition(GROUP_ID, VARCHAR, NOT_NULL)
+        .addColumnDefinition(CREATED_AT, TIMESTAMP).addColumnDefinition(GROUP_ID, VARCHAR, NOT_NULL)
         .addColumnDefinition(NAME, VARCHAR, NOT_NULL).addColumnDefinition(CELLS, VARCHAR, NOT_NULL)
         .addColumnDefinition(SYMBOLS, VARCHAR, NOT_NULL)
         .addColumnDefinition(AGEHAMA, VARCHAR, NOT_NULL)
@@ -69,8 +69,9 @@ public class ProblemsTable {
       try {
         sorm.insert(j.toProblem());
       } catch (Exception e) {
-        log.error("[{} - {}] in [{}] has error.", j.getGroupId(), j.getName(), problemDir);
-        // logger.error(e, e);
+        log.error("[{} - {}] in [{}] has error = {}", j.getGroupId(), j.getName(), problemDir,
+            e.getMessage());
+        log.error(e, e);
       }
     });
   }

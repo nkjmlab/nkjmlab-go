@@ -14,7 +14,7 @@ import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.sql.schema.TableSchema;
 
 public class MatchingRequestsTable {
-  private static org.apache.logging.log4j.Logger log =
+  private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
   public static final String TABLE_NAME = "MATCHING_REQUESTS";
@@ -32,11 +32,10 @@ public class MatchingRequestsTable {
 
   public MatchingRequestsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema =
-        TableSchema.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
-            .addColumnDefinition(SEAT_ID, VARCHAR).addColumnDefinition(USER_NAME, VARCHAR)
-            .addColumnDefinition(RANK, INT).addColumnDefinition(GAME_ID, VARCHAR)
-            .addColumnDefinition(CREATED_AT, TIMESTAMP).addIndexColumn(GAME_ID).build();
+    this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
+        .addColumnDefinition(SEAT_ID, VARCHAR).addColumnDefinition(USER_NAME, VARCHAR)
+        .addColumnDefinition(RANK, INT).addColumnDefinition(GAME_ID, VARCHAR)
+        .addColumnDefinition(CREATED_AT, TIMESTAMP).addIndexColumn(GAME_ID).build();
     schema.createTableAndIndexesIfNotExists(sorm);
   }
 
@@ -137,7 +136,7 @@ public class MatchingRequestsTable {
 
 
   public MatchingRequest readByPrimaryKey(String userId) {
-    return sorm.type(MatchingRequest.class).readByPrimaryKey(userId);
+    return sorm.readByPrimaryKey(MatchingRequest.class, userId);
   }
 
 

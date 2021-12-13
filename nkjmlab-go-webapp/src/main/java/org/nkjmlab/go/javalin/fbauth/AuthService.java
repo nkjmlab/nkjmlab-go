@@ -13,8 +13,8 @@ import org.nkjmlab.go.javalin.model.relation.PasswordsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
-import org.nkjmlab.util.websrv.HttpRequestUtils;
-import org.nkjmlab.util.websrv.UserSession;
+import org.nkjmlab.util.javax.servlet.HttpRequestUtils;
+import org.nkjmlab.util.javax.servlet.UserSession;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
@@ -23,7 +23,7 @@ import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 
 public class AuthService implements AuthServiceInterface {
-  private static org.apache.logging.log4j.Logger log =
+  private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
   private final UsersTable usersTable;

@@ -1,6 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <packaging>war</packaging>
   <groupId>org.nkjmlab</groupId>
@@ -29,96 +27,98 @@
   </scm>
 
   <properties>
-    <servlet-api-version>4.0.1</servlet-api-version>
-    <commons-io-version>[2.11.0,)</commons-io-version>
-    <commons-lang-version>3.12.0</commons-lang-version>
-    <orange-signal-csv-version>2.2.1</orange-signal-csv-version>
-    <jackson-version>2.13.0</jackson-version>
-    <thymeleaf-version>3.0.12.RELEASE</thymeleaf-version>
-    <javalin-version>4.1.1</javalin-version>
-    <firebase-version>6.8.1</firebase-version>
-    <log4j-slf4j-version>2.14.1</log4j-slf4j-version>
-    <h2-version>1.4.200</h2-version>
-    <hicari-cp-version>4.0.3</hicari-cp-version>
-    <sorm-version>[1.3.19,)</sorm-version>
+    <nkjmlab-utils-version>0.1.4</nkjmlab-utils-version>
+    <sorm-version>1.4.0-rc5</sorm-version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <downloadSources>true</downloadSources>
+    <downloadJavadocs>true</downloadJavadocs>
   </properties>
 
   <dependencies>
+    <!-- https://mvnrepository.com/artifact/org.nkjmlab/nkjmlab-utils-helper -->
+    <dependency>
+      <groupId>org.nkjmlab</groupId>
+      <artifactId>nkjmlab-utils-helper</artifactId>
+      <version>${nkjmlab-utils-version}</version>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.nkjmlab/sorm4j -->
+    <dependency>
+      <groupId>org.nkjmlab</groupId>
+      <artifactId>sorm4j</artifactId>
+      <version>${sorm-version}</version>
+    </dependency>
     <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>javax.servlet-api</artifactId>
-      <version>${servlet-api-version}</version>
+      <version>4.0.1</version>
     </dependency>
+
     <!-- https://mvnrepository.com/artifact/io.javalin/javalin -->
     <dependency>
       <groupId>io.javalin</groupId>
       <artifactId>javalin</artifactId>
-      <version>${javalin-version}</version>
+      <version>4.1.1</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf -->
-    <dependency>
-      <groupId>org.thymeleaf</groupId>
-      <artifactId>thymeleaf</artifactId>
-      <version>${thymeleaf-version}</version>
-    </dependency>
+
     <!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
     <dependency>
       <groupId>com.google.firebase</groupId>
       <artifactId>firebase-admin</artifactId>
-      <version>${firebase-version}</version>
+      <version>8.1.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>${h2-version}</version>
+      <version>2.0.202</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
     <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
-      <version>${hicari-cp-version}</version>
+      <version>5.0.0</version>
     </dependency>
 
+    <!-- https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf -->
     <dependency>
-      <groupId>org.nkjmlab</groupId>
-      <artifactId>sorm4j</artifactId>
-      <version>${sorm-version}</version>
+      <groupId>org.thymeleaf</groupId>
+      <artifactId>thymeleaf</artifactId>
+      <version>3.0.14.RELEASE</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>${commons-io-version}</version>
+      <version>2.11.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>${commons-lang-version}</version>
+      <version>3.12.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.orangesignal/orangesignal-csv -->
     <dependency>
       <groupId>com.orangesignal</groupId>
       <artifactId>orangesignal-csv</artifactId>
-      <version>${orange-signal-csv-version}</version>
+      <version>2.2.1</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>${jackson-version}</version>
+      <version>2.13.0</version>
     </dependency>
-
     <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
-      <version>${log4j-slf4j-version}</version>
+      <version>2.15.0</version>
     </dependency>
 
   </dependencies>
@@ -129,10 +129,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <compilerVersion>11</compilerVersion>
-          <source>11</source>
-          <target>11</target>
-          <encoding>UTF-8</encoding>
+          <release>11</release>
         </configuration>
       </plugin>
       <plugin>

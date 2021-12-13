@@ -18,7 +18,7 @@ import org.nkjmlab.go.javalin.model.row.GameState;
 import org.nkjmlab.sorm4j.internal.util.Try;
 
 public class GameStatesTables {
-  private static org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
+  private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
 
   public static final String VS_SEPARATOR = "-vs-";
 

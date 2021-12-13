@@ -21,7 +21,8 @@ import org.nkjmlab.sorm4j.sql.ParameterizedSql;
 import org.nkjmlab.sorm4j.sql.schema.TableSchema;
 
 public class WebsoketSessionsTable {
-  private static org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
+  private static final org.apache.logging.log4j.Logger log =
+      org.apache.logging.log4j.LogManager.getLogger();
 
   private Sorm sorm;
 
@@ -49,13 +50,13 @@ public class WebsoketSessionsTable {
 
 
   List<WebSocketSession> readSessionsByGameId(String gameId) {
-    return sorm.type(WebSocketSession.class)
-        .readList(SELECT_STAR + FROM + TABLE_NAME + WHERE + GAME_ID + "=?", gameId);
+    return sorm.readList(WebSocketSession.class,
+        SELECT_STAR + FROM + TABLE_NAME + WHERE + GAME_ID + "=?", gameId);
   }
 
   List<WebSocketSession> readSessionsByUserId(String userId) {
-    return sorm.type(WebSocketSession.class)
-        .readList("select * " + FROM + TABLE_NAME + WHERE + USER_ID + "=?", userId);
+    return sorm.readList(WebSocketSession.class,
+        "select * " + FROM + TABLE_NAME + WHERE + USER_ID + "=?", userId);
   }
 
   List<Session> getSessionsByGameId(String gameId) {
@@ -78,7 +79,7 @@ public class WebsoketSessionsTable {
     }
     ParameterizedSql psql = ParameterizedSql
         .parse("select * from " + TABLE_NAME + " where " + USER_ID + " IN(<?>) ", userIds);
-    return sorm.type(WebSocketSession.class).readList(psql.getSql(), psql.getParameters()).stream()
+    return sorm.readList(WebSocketSession.class, psql.getSql(), psql.getParameters()).stream()
         .map(session -> sessions.get(session.getSessionId())).filter(s -> Objects.nonNull(s))
         .collect(Collectors.toList());
   }
@@ -86,7 +87,7 @@ public class WebsoketSessionsTable {
 
 
   List<Session> getAllSessions() {
-    List<Session> result = sorm.type(WebSocketSession.class).readAll().stream()
+    List<Session> result = sorm.readAll(WebSocketSession.class).stream()
         .map(session -> sessions.get(session.getSessionId())).filter(s -> Objects.nonNull(s))
         .collect(Collectors.toList());
     return result;

@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin.model.json;
 
 import java.util.Map;
-import org.nkjmlab.util.json.JacksonMapper;
+import org.nkjmlab.util.jackson.JacksonMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public class GameStateUtils {

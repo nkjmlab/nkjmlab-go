@@ -3,6 +3,7 @@ package org.nkjmlab.go.javalin;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,23 +34,24 @@ import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
-import org.nkjmlab.sorm4j.internal.util.StringUtils;
+import org.nkjmlab.sorm4j.internal.util.MessageUtils;
 import org.nkjmlab.sorm4j.internal.util.Try;
 import org.nkjmlab.sorm4j.sql.result.Tuple2;
-import org.nkjmlab.util.concurrent.ForkJoinPoolUtils;
-import org.nkjmlab.util.db.h2.FileDatabaseConfig;
-import org.nkjmlab.util.db.h2.H2Server;
-import org.nkjmlab.util.io.FileUtils;
-import org.nkjmlab.util.json.JacksonMapper;
-import org.nkjmlab.util.lang.ProcessUtils;
-import org.nkjmlab.util.lang.ResourceUtils;
+import org.nkjmlab.util.h2.H2Server;
+import org.nkjmlab.util.h2.LocalDataSourceFactory;
+import org.nkjmlab.util.jackson.JacksonMapper;
+import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
+import org.nkjmlab.util.java.io.SystemFileUtils;
+import org.nkjmlab.util.java.json.FileDatabaseConfigJson;
+import org.nkjmlab.util.java.lang.ProcessUtils;
+import org.nkjmlab.util.java.lang.ResourceUtils;
+import org.nkjmlab.util.javax.servlet.JsonRpcService;
+import org.nkjmlab.util.javax.servlet.UserSession;
+import org.nkjmlab.util.javax.servlet.ViewModel;
+import org.nkjmlab.util.javax.servlet.ViewModel.Builder;
+import org.nkjmlab.util.jsonrpc.JsonRpcRequest;
+import org.nkjmlab.util.jsonrpc.JsonRpcResponse;
 import org.nkjmlab.util.thymeleaf.TemplateEngineBuilder;
-import org.nkjmlab.util.websrv.UserSession;
-import org.nkjmlab.util.websrv.ViewModel;
-import org.nkjmlab.util.webui.jsonrpc.JsonRpcRequest;
-import org.nkjmlab.util.webui.jsonrpc.JsonRpcResponse;
-import org.nkjmlab.util.webui.jsonrpc.JsonRpcService;
-import org.nkjmlab.util.webui.jsonrpc.JsonRpcUtils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.javalin.Javalin;
@@ -58,13 +60,13 @@ import io.javalin.plugin.rendering.template.JavalinThymeleaf;
 
 public class GoApplication {
 
-  private static org.apache.logging.log4j.Logger log =
+  private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
   private static final File APP_ROOT_DIR = ResourceUtils.getFile("/");
   private static final String WEBROOT_DIR_NAME = "/webroot";
   private static final File WEBROOT_DIR = new File(APP_ROOT_DIR, WEBROOT_DIR_NAME);
-  private static final File USER_HOME_DIR = FileUtils.getUserDirectory();
+  private static final File USER_HOME_DIR = SystemFileUtils.getUserHomeDirectory();
   public static final File BACKUP_DIR = new File(USER_HOME_DIR, "go-bkup/");
   public static final File PROBLEM_DIR = new File(APP_ROOT_DIR, "problem");
   public static final File PROBLEM_BACKUP_DIR = new File(APP_ROOT_DIR, "problem-auto-bkup");
@@ -99,7 +101,7 @@ public class GoApplication {
 
 
   static {
-    H2Server.startAndWait();
+    H2Server.startServerProcessAndWait();
   }
 
   public static void main(String[] args) {
@@ -119,27 +121,30 @@ public class GoApplication {
   }
 
   public GoApplication() {
-    FileDatabaseConfig fileDbConf;
+    FileDatabaseConfigJson fileDbConf;
     try {
       fileDbConf = JacksonMapper.getDefaultMapper()
-          .toObject(ResourceUtils.getFile("/conf/h2.json"), FileDatabaseConfig.Builder.class)
+          .toObject(ResourceUtils.getFile("/conf/h2.json"), FileDatabaseConfigJson.Builder.class)
           .build();
     } catch (Exception e) {
       log.warn("Try to load h2.json.default");
       fileDbConf =
           JacksonMapper.getDefaultMapper().toObject(ResourceUtils.getFile("/conf/h2.json.default"),
-              FileDatabaseConfig.Builder.class).build();
+              FileDatabaseConfigJson.Builder.class).build();
     }
 
-    this.memDbDataSource = createH2DataSource(getJdbcUrlOfInMemoryDb(fileDbConf.getDatabaseName()),
-        fileDbConf.getUsername(), fileDbConf.getPassword());
-    this.fileDbDataSource = createHikariDataSource(fileDbConf.getJdbcUrl(),
-        fileDbConf.getUsername(), fileDbConf.getPassword());
+    LocalDataSourceFactory factory = LocalDataSourceFactory.builder(fileDbConf.databaseDirectory,
+        fileDbConf.databaseName, fileDbConf.username, fileDbConf.password).build();
+
+    this.memDbDataSource = createH2DataSource(factory.getInMemoryModeJdbcUrl(),
+        factory.getUsername(), factory.getPassword());
+    this.fileDbDataSource = createHikariDataSource(factory.getMixedModeJdbcUrl(),
+        factory.getUsername(), factory.getPassword());
     // H2Server.openBrowser(memDbDataSource, true);
 
 
     prepareJavalin();
-    prepareTable(fileDbConf);
+    prepareTable(factory);
     prepareWebSocket();
     prepareJsonRpc();
     prepareGetHandler();
@@ -164,7 +169,7 @@ public class GoApplication {
     });
   }
 
-  private void prepareTable(FileDatabaseConfig fileDbConf) {
+  private void prepareTable(LocalDataSourceFactory dsFactory) {
     this.problemsTable = new ProblemsTable(memDbDataSource);
     problemsTable.dropAndInsertInitialProblemsToTable(PROBLEM_DIR);
 
@@ -205,7 +210,7 @@ public class GoApplication {
     this.matchingRequestsTable = new MatchingRequestsTable(memDbDataSource);
 
     this.gameStatesTable = new GameStatesTable(fileDbDataSource);
-    gameStatesTable.trimAndBackupToFile(fileDbConf.getDatabaseDirectory(),
+    gameStatesTable.trimAndBackupToFile(dsFactory.getDatabaseDirectory(),
         TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
 
     this.gameStatesTableInMem = new GameStatesTable(memDbDataSource);
@@ -266,7 +271,7 @@ public class GoApplication {
     JsonRpcService jsonRpcService = new JsonRpcService(mapper);
 
     app.post("/app/json/GoJsonRpcService", ctx -> {
-      JsonRpcRequest jreq = JsonRpcUtils.toJsonRpcRequest(mapper, ctx.req);
+      JsonRpcRequest jreq = JsonRpcService.toJsonRpcRequest(mapper, ctx.req);
       Object srv = AuthServiceInterface.getDeclaredMethodNames().contains(jreq.getMethod())
           ? new AuthService(usersTable, loginsTable, passwordsTable, ctx.req)
           : goJsonRpcService;
@@ -295,7 +300,7 @@ public class GoApplication {
     app.get("/app/<pageName>", ctx -> {
       String pageName =
           ctx.pathParam("pageName") == null ? "index.html" : ctx.pathParam("pageName");
-      ViewModel model = createDefaultModel(usersTable, ctx.req);
+      Builder model = createDefaultModel(usersTable, ctx.req);
       switch (pageName) {
         case "play.html": {
           UserSession session = UserSession.wrap(ctx.req.getSession());
@@ -303,9 +308,11 @@ public class GoApplication {
             model.put("requireToLogin", true);
             break;
           }
-          boolean attend = loginsTable.isAttendance(session.getUserId());
-          model.put("isAttendance", attend);
-          model.put("problemGroupsJson", problemsTable.getproblemGroupsNode());
+          session.getUserId().ifPresent(uid -> {
+            boolean attend = loginsTable.isAttendance(uid);
+            model.put("isAttendance", attend);
+            model.put("problemGroupsJson", problemsTable.getproblemGroupsNode());
+          });
           break;
         }
         case "players-all.html": {
@@ -403,7 +410,7 @@ public class GoApplication {
           model.put("reqNum", tmp.size());
         }
       }
-      ctx.render(pageName, model);
+      ctx.render(pageName, model.build().getMap());
     });
   }
 
@@ -435,18 +442,19 @@ public class GoApplication {
 
 
 
-  private ViewModel createDefaultModel(UsersTable usersTable, HttpServletRequest request) {
-    ViewModel model =
-        new ViewModel.Builder().setFileModifiedDate(WEBROOT_DIR, true, "js", "css").build();
-    model.put("currentUser", getCurrentUserAccount(usersTable, request));
-    return model;
+  private Builder createDefaultModel(UsersTable usersTable, HttpServletRequest request) {
+    ViewModel.Builder modelBuilder =
+        ViewModel.builder().setFileModifiedDate(WEBROOT_DIR, 10, "js", "css");
+    modelBuilder.put("currentUser", getCurrentUserAccount(usersTable, request));
+    return modelBuilder;
   }
 
 
 
   private User getCurrentUserAccount(UsersTable usersTable, HttpServletRequest request) {
-    User u = usersTable.readByPrimaryKey(UserSession.wrap(request.getSession()).getUserId());
-    return u == null ? new User() : u;
+    Optional<User> u = UserSession.wrap(request.getSession()).getUserId()
+        .map(uid -> usersTable.readByPrimaryKey(uid));
+    return u.orElse(new User());
   }
 
   private void isAdminOrThrow(UsersTable usersTable, HttpServletRequest req) {
@@ -456,14 +464,13 @@ public class GoApplication {
       String email = session.getEmail();
       u = usersTable.readByEmail(email);
     } else if (session.isLogined()) {
-      String userId = session.getUserId();
-      u = usersTable.readByPrimaryKey(userId);
+      u = session.getUserId().map(userId -> usersTable.readByPrimaryKey(userId)).orElse(null);
     }
     if (u == null) {
-      throw new RuntimeException(StringUtils.format("User not found"));
+      throw new RuntimeException(MessageUtils.newMessage("User not found"));
     }
     if (!u.isAdmin()) {
-      throw new RuntimeException(StringUtils.format("User is not admin"));
+      throw new RuntimeException(MessageUtils.newMessage("User is not admin"));
     }
 
 
