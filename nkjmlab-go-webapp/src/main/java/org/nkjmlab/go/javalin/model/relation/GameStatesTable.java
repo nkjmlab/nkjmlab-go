@@ -2,7 +2,7 @@ package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.sql.SelectSql.*;
 import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
-import static org.nkjmlab.sorm4j.sql.schema.TableSchemaKeyword.*;
+import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
@@ -52,8 +52,8 @@ public class GameStatesTable {
         .addColumnDefinition(SYMBOLS, VARCHAR, NOT_NULL)
         .addColumnDefinition(HAND_HISTORY, VARCHAR, NOT_NULL)
         .addColumnDefinition(PROBLEM_ID, BIGINT, NOT_NULL)
-        .addColumnDefinition(OPTIONS, VARCHAR, NOT_NULL).addIndexColumn(GAME_ID)
-        .addIndexColumn(BLACK_PLAYER_ID, WHITE_PLAYER_ID).build();
+        .addColumnDefinition(OPTIONS, VARCHAR, NOT_NULL).addIndexDefinition(GAME_ID)
+        .addIndexDefinition(BLACK_PLAYER_ID, WHITE_PLAYER_ID).build();
     schema.createTableAndIndexesIfNotExists(sorm);
 
   }

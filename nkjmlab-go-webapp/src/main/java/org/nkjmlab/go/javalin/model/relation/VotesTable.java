@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.sql.schema.TableSchemaKeyword.*;
+import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
 import java.util.List;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.json.VoteResult;

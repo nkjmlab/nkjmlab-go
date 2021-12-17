@@ -1,6 +1,6 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.sql.schema.TableSchemaKeyword.*;
+import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -33,7 +33,7 @@ public class GameRecordsTable {
     this.sorm = Sorm.create(dataSource);
     this.schema = new TableSchema.Builder(TABLE_NAME)
         .addColumnDefinition(ID, INT, AUTO_INCREMENT, PRIMARY_KEY)
-        .addColumnDefinition(CREATED_AT, TIMESTAMP_AS_CURRENT_TIMESTAMP)
+        .addColumnDefinition(CREATED_AT, "TIMESTAMP AS CURRENT_TIMESTAMP")
         .addColumnDefinition(USER_ID, VARCHAR).addColumnDefinition(OPPONENT_USER_ID, VARCHAR)
         .addColumnDefinition(JADGE, VARCHAR).addColumnDefinition(MEMO, VARCHAR)
         .addColumnDefinition(RANK, INT).addColumnDefinition(POINT, INT)

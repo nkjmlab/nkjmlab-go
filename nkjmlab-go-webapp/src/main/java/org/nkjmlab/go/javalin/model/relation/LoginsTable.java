@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.sql.schema.TableSchemaKeyword.*;
+import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -36,7 +36,7 @@ public class LoginsTable {
         .addColumnDefinition(ID, BIGINT, AUTO_INCREMENT, PRIMARY_KEY)
         .addColumnDefinition(USER_ID, VARCHAR).addColumnDefinition(SEAT_ID, VARCHAR)
         .addColumnDefinition(USER_NAME, VARCHAR).addColumnDefinition(LOGGED_IN_AT, TIMESTAMP)
-        .addColumnDefinition(REMOTE_ADDR, VARCHAR).addIndexColumn(USER_ID).build();
+        .addColumnDefinition(REMOTE_ADDR, VARCHAR).addIndexDefinition(USER_ID).build();
     schema.createTableAndIndexesIfNotExists(sorm);
   }
 

@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.sql.schema.TableSchemaKeyword.*;
+import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
 import java.io.File;
 import java.util.List;
 import javax.sql.DataSource;
@@ -43,7 +43,7 @@ public class ProblemsTable {
         .addColumnDefinition(SYMBOLS, VARCHAR, NOT_NULL)
         .addColumnDefinition(AGEHAMA, VARCHAR, NOT_NULL)
         .addColumnDefinition(HAND_HISTORY, VARCHAR, NOT_NULL)
-        .addColumnDefinition(MESSAGE, VARCHAR, NOT_NULL).addIndexColumn(GROUP_ID).build();
+        .addColumnDefinition(MESSAGE, VARCHAR, NOT_NULL).addIndexDefinition(GROUP_ID).build();
     schema.createTableAndIndexesIfNotExists(sorm);
   }
 
