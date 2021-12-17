@@ -2,7 +2,7 @@ package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.sql.SelectSql.*;
 import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
-import static org.nkjmlab.sorm4j.sql.schema.TableSchemaKeyword.*;
+import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -35,7 +35,7 @@ public class MatchingRequestsTable {
     this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
         .addColumnDefinition(SEAT_ID, VARCHAR).addColumnDefinition(USER_NAME, VARCHAR)
         .addColumnDefinition(RANK, INT).addColumnDefinition(GAME_ID, VARCHAR)
-        .addColumnDefinition(CREATED_AT, TIMESTAMP).addIndexColumn(GAME_ID).build();
+        .addColumnDefinition(CREATED_AT, TIMESTAMP).addIndexDefinition(GAME_ID).build();
     schema.createTableAndIndexesIfNotExists(sorm);
   }
 
@@ -75,7 +75,7 @@ public class MatchingRequestsTable {
     List<String> reqs = readUserIdsOfUnpairedRequestOrdereByCreatedAt();
 
     log.debug("[{}] unpaired matching requests in [{}] matching requests", reqs.size(),
-        sorm.readFirst(Integer.class, SELECT + "count(*)" + FROM + TABLE_NAME));
+        sorm.readFirst(Integer.class, SELECT + COUNT + "(*)" + FROM + TABLE_NAME));
 
     List<String> ret = new ArrayList<>();
     for (String uid : reqs) {

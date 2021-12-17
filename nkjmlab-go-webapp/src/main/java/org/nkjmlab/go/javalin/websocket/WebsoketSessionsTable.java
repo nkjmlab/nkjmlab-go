@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin.websocket;
 
 import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
-import static org.nkjmlab.sorm4j.sql.schema.TableSchemaKeyword.*;
+import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +43,7 @@ public class WebsoketSessionsTable {
     this.schema = new TableSchema.Builder(TABLE_NAME)
         .addColumnDefinition(SESSION_ID, INT, PRIMARY_KEY).addColumnDefinition(USER_ID, VARCHAR)
         .addColumnDefinition(GAME_ID, VARCHAR).addColumnDefinition(CREATED_AT, TIMESTAMP)
-        .addColumnDefinition(GLOBAL_MESSAGE_COUNT, INT).addIndexColumn(GAME_ID).build();
+        .addColumnDefinition(GLOBAL_MESSAGE_COUNT, INT).addIndexDefinition(GAME_ID).build();
     schema.createTableAndIndexesIfNotExists(sorm);
   }
 

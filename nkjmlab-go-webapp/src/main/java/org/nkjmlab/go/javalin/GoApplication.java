@@ -34,11 +34,12 @@ import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
-import org.nkjmlab.sorm4j.internal.util.MessageUtils;
+import org.nkjmlab.sorm4j.internal.util.ParameterizedStringUtils;
 import org.nkjmlab.sorm4j.internal.util.Try;
 import org.nkjmlab.sorm4j.sql.result.Tuple2;
-import org.nkjmlab.util.h2.H2Server;
-import org.nkjmlab.util.h2.LocalDataSourceFactory;
+import org.nkjmlab.util.h2.H2ServerUtils;
+import org.nkjmlab.util.h2.H2ServerUtils.H2TcpServerProperties;
+import org.nkjmlab.util.h2.H2LocalDataSourceFactory;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
 import org.nkjmlab.util.java.io.SystemFileUtils;
@@ -101,7 +102,7 @@ public class GoApplication {
 
 
   static {
-    H2Server.startServerProcessAndWait();
+    H2ServerUtils.startServerProcessAndWaitFor(H2TcpServerProperties.builder().build());
   }
 
   public static void main(String[] args) {
@@ -133,7 +134,7 @@ public class GoApplication {
               FileDatabaseConfigJson.Builder.class).build();
     }
 
-    LocalDataSourceFactory factory = LocalDataSourceFactory.builder(fileDbConf.databaseDirectory,
+    H2LocalDataSourceFactory factory = H2LocalDataSourceFactory.builder(fileDbConf.databaseDirectory,
         fileDbConf.databaseName, fileDbConf.username, fileDbConf.password).build();
 
     this.memDbDataSource = createH2DataSource(factory.getInMemoryModeJdbcUrl(),
@@ -169,7 +170,7 @@ public class GoApplication {
     });
   }
 
-  private void prepareTable(LocalDataSourceFactory dsFactory) {
+  private void prepareTable(H2LocalDataSourceFactory dsFactory) {
     this.problemsTable = new ProblemsTable(memDbDataSource);
     problemsTable.dropAndInsertInitialProblemsToTable(PROBLEM_DIR);
 
@@ -467,10 +468,10 @@ public class GoApplication {
       u = session.getUserId().map(userId -> usersTable.readByPrimaryKey(userId)).orElse(null);
     }
     if (u == null) {
-      throw new RuntimeException(MessageUtils.newMessage("User not found"));
+      throw new RuntimeException(ParameterizedStringUtils.newString("User not found"));
     }
     if (!u.isAdmin()) {
-      throw new RuntimeException(MessageUtils.newMessage("User is not admin"));
+      throw new RuntimeException(ParameterizedStringUtils.newString("User is not admin"));
     }
 
 
