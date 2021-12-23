@@ -1,13 +1,14 @@
 package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
+import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
 import java.util.List;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.json.VoteResult;
 import org.nkjmlab.go.javalin.model.row.Vote;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.sql.schema.TableSchema;
+import org.nkjmlab.sorm4j.table.TableSchema;
 
 public class VotesTable {
 
@@ -40,10 +41,10 @@ public class VotesTable {
 
     if (problemId != -1) {
       return sorm.readList(VoteResult.class,
-          sql + where(cond(PROBLEM_ID, "=", "?") + groupBy(VOTE_ID)), problemId);
+          sql + WHERE + cond(PROBLEM_ID, "=", "?") + groupBy(VOTE_ID), problemId);
     } else {
       return sorm.readList(VoteResult.class,
-          sql + where(cond(GAME_ID, "=", "?") + groupBy(VOTE_ID)), gameId);
+          sql + where(cond(GAME_ID, "=", "?")) + groupBy(VOTE_ID), gameId);
     }
   }
 

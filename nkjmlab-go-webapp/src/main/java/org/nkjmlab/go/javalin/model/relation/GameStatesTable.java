@@ -2,7 +2,7 @@ package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.sql.SelectSql.*;
 import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
-import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
@@ -12,8 +12,8 @@ import java.util.Set;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.row.GameState;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.sql.schema.TableSchema;
-import org.nkjmlab.util.h2.H2StatementUtils;
+import org.nkjmlab.sorm4j.table.TableSchema;
+import org.nkjmlab.util.h2.H2SqlUtils;
 
 public class GameStatesTable {
   private static final org.apache.logging.log4j.Logger log =
@@ -61,7 +61,7 @@ public class GameStatesTable {
 
   Optional<GameState> getLatestGameStateFromDb(String gameId) {
     GameState gameState = sorm.readFirst(GameState.class,
-        selectFrom(TABLE_NAME) + where(GAME_ID + "=?") + orderByDesc(ID) + limit(1), gameId);
+        selectStarFrom(TABLE_NAME) + where(GAME_ID + "=?") + orderByDesc(ID) + limit(1), gameId);
     return gameState == null ? Optional.empty() : Optional.of(gameState);
   }
 
@@ -88,10 +88,9 @@ public class GameStatesTable {
 
     File outputFile = new File(backUpDir, TABLE_NAME + System.currentTimeMillis() + ".csv");
     String selectSql =
-        selectFrom(TABLE_NAME) + where(cond(ROWNUM, "<=", deleteRowNum)) + orderBy(ID);
+        selectStarFrom(TABLE_NAME) + where(cond(ROWNUM, "<=", deleteRowNum)) + orderBy(ID);
 
-    String st = H2StatementUtils.getCsvWriteSql(outputFile, selectSql,
-        StandardCharsets.UTF_8, ",");
+    String st = H2SqlUtils.getCsvWriteSql(outputFile, StandardCharsets.UTF_8, ",", selectSql);
     log.info("{}", st);
     sorm.executeUpdate(st);
 

@@ -2,13 +2,13 @@ package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.sql.SelectSql.*;
 import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
-import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
 import java.util.List;
 import java.util.stream.IntStream;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.row.HandUp;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.sql.schema.TableSchema;
+import org.nkjmlab.sorm4j.table.TableSchema;
 
 public class HandsUpTable {
 
@@ -44,7 +44,7 @@ public class HandsUpTable {
   }
 
   public int readOrder(String gameId) {
-    List<HandUp> list = sorm.readList(HandUp.class, selectFrom(TABLE_NAME) + orderBy(CREATED_AT));
+    List<HandUp> list = sorm.readList(HandUp.class, selectStarFrom(TABLE_NAME) + orderBy(CREATED_AT));
 
     return IntStream.range(0, list.size()).map(i -> list.get(i).getGameId().equals(gameId) ? i : -1)
         .max().orElse(-1);
@@ -52,7 +52,7 @@ public class HandsUpTable {
   }
 
   public String getNextQuestion(String currentGameId) {
-    List<HandUp> qs = sorm.readList(HandUp.class, selectFrom(TABLE_NAME) + orderBy(CREATED_AT));
+    List<HandUp> qs = sorm.readList(HandUp.class, selectStarFrom(TABLE_NAME) + orderBy(CREATED_AT));
     for (int i = 0; i < qs.size() - 1; i++) {
       if (qs.get(i).getGameId().equals(currentGameId)) {
         return qs.get((i + 1) % qs.size()).getGameId();

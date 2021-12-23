@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -14,7 +14,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.sql.schema.TableSchema;
+import org.nkjmlab.sorm4j.table.TableSchema;
 
 public class LoginsTable {
 
@@ -43,7 +43,7 @@ public class LoginsTable {
 
 
   private List<Login> readAllLastLoginsOrderByUserId() {
-    return sorm.readList(Login.class, selectFrom(TABLE_NAME)
+    return sorm.readList(Login.class, selectStarFrom(TABLE_NAME)
         + where("ID IN (SELECT MAX(ID) FROM LOGINS GROUP BY USER_ID)") + orderBy(USER_ID));
   }
 
