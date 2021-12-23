@@ -2,7 +2,7 @@ package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.sql.SelectSql.*;
 import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
-import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +11,7 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.json.MatchingRequestJson;
 import org.nkjmlab.go.javalin.model.row.MatchingRequest;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.sql.schema.TableSchema;
+import org.nkjmlab.sorm4j.table.TableSchema;
 
 public class MatchingRequestsTable {
   private static final org.apache.logging.log4j.Logger log =
@@ -55,13 +55,17 @@ public class MatchingRequestsTable {
   }
 
   public List<String> readUserIdsOfUnpairedRequestOrdereByCreatedAt() {
-    return sorm.readList(String.class, select(USER_ID) + from(TABLE_NAME)
-        + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
+    return sorm.readList(String.class,
+        select(USER_ID) + from(TABLE_NAME)
+            + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED)))
+            + orderByAsc(CREATED_AT));
   }
 
   public List<MatchingRequest> readUnpairedRequestsOrderByCreatedAt() {
-    return sorm.readList(MatchingRequest.class, selectFrom(TABLE_NAME)
-        + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
+    return sorm.readList(MatchingRequest.class,
+        selectStarFrom(TABLE_NAME)
+            + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED)))
+            + orderByAsc(CREATED_AT));
   }
 
 

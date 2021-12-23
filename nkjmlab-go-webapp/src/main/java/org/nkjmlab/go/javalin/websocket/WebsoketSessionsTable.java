@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin.websocket;
 
 import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
-import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +18,7 @@ import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.sql.OrderedParameterSql;
 import org.nkjmlab.sorm4j.sql.ParameterizedSql;
-import org.nkjmlab.sorm4j.sql.schema.TableSchema;
+import org.nkjmlab.sorm4j.table.TableSchema;
 
 public class WebsoketSessionsTable {
   private static final org.apache.logging.log4j.Logger log =

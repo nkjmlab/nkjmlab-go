@@ -1,8 +1,9 @@
 package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.go.javalin.GoApplication.*;
+import static org.nkjmlab.sorm4j.sql.SelectSql.*;
 import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
-import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -17,11 +18,11 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
+import org.nkjmlab.sorm4j.common.Tuple2;
 import org.nkjmlab.sorm4j.sql.OrderedParameterSql;
 import org.nkjmlab.sorm4j.sql.ParameterizedSql;
-import org.nkjmlab.sorm4j.sql.result.Tuple2;
-import org.nkjmlab.sorm4j.sql.schema.TableSchema;
-import org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword;
+import org.nkjmlab.sorm4j.table.TableSchema;
+import org.nkjmlab.sorm4j.table.TableSchema.Keyword;
 import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils;
 import org.nkjmlab.util.orangesignal_csv.Row;
 import com.orangesignal.csv.CsvConfig;
@@ -51,13 +52,12 @@ public class UsersTable {
 
   public UsersTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema =
-        new TableSchema.Builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
-            .addColumnDefinition(EMAIL, VARCHAR, Keyword.UNIQUE)
-            .addColumnDefinition(USER_NAME, VARCHAR).addColumnDefinition(ROLE, VARCHAR)
-            .addColumnDefinition(SEAT_ID, VARCHAR).addColumnDefinition(RANK, INT)
-            .addColumnDefinition(CREATED_AT, TIMESTAMP).addIndexDefinition(EMAIL).addIndexDefinition(ROLE)
-            .build();
+    this.schema = new TableSchema.Builder(TABLE_NAME)
+        .addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
+        .addColumnDefinition(EMAIL, VARCHAR, Keyword.UNIQUE).addColumnDefinition(USER_NAME, VARCHAR)
+        .addColumnDefinition(ROLE, VARCHAR).addColumnDefinition(SEAT_ID, VARCHAR)
+        .addColumnDefinition(RANK, INT).addColumnDefinition(CREATED_AT, TIMESTAMP)
+        .addIndexDefinition(EMAIL).addIndexDefinition(ROLE).build();
     createTableAndIndexesIfNotExists();
   }
 
@@ -87,12 +87,12 @@ public class UsersTable {
   }
 
   private List<User> readAllOrderedUsers() {
-    return sorm.readList(User.class, "SELECT * FROM " + TABLE_NAME + " ORDER BY " + USER_ID);
+    return sorm.readList(User.class, selectStarFrom(TABLE_NAME) + " ORDER BY " + USER_ID);
 
   }
 
   public User readByEmail(String email) {
-    return sorm.readOne(User.class, SELECT_STAR + FROM + TABLE_NAME + WHERE + EMAIL + "=?", email);
+    return sorm.readOne(User.class, selectStarFrom(TABLE_NAME) + WHERE + EMAIL + "=?", email);
   }
 
 

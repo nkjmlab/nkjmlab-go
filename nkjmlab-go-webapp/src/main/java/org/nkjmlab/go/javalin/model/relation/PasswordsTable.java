@@ -1,13 +1,13 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.sql.schema.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.sql.schema.TableSchema;
+import org.nkjmlab.sorm4j.table.TableSchema;
 import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils;
 import org.nkjmlab.util.orangesignal_csv.Row;
 import com.orangesignal.csv.CsvConfig;
