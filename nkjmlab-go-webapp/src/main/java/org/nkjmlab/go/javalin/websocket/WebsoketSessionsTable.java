@@ -1,7 +1,6 @@
 package org.nkjmlab.go.javalin.websocket;
 
-import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
-import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,7 @@ import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.sql.OrderedParameterSql;
 import org.nkjmlab.sorm4j.sql.ParameterizedSql;
-import org.nkjmlab.sorm4j.table.TableSchema;
+import org.nkjmlab.sorm4j.util.table.TableSchema;
 
 public class WebsoketSessionsTable {
   private static final org.apache.logging.log4j.Logger log =
@@ -40,11 +39,11 @@ public class WebsoketSessionsTable {
 
   public WebsoketSessionsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = new TableSchema.Builder(TABLE_NAME)
-        .addColumnDefinition(SESSION_ID, INT, PRIMARY_KEY).addColumnDefinition(USER_ID, VARCHAR)
-        .addColumnDefinition(GAME_ID, VARCHAR).addColumnDefinition(CREATED_AT, TIMESTAMP)
-        .addColumnDefinition(GLOBAL_MESSAGE_COUNT, INT).addIndexDefinition(GAME_ID).build();
-    schema.createTableAndIndexesIfNotExists(sorm);
+    this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(SESSION_ID, INT, PRIMARY_KEY)
+        .addColumnDefinition(USER_ID, VARCHAR).addColumnDefinition(GAME_ID, VARCHAR)
+        .addColumnDefinition(CREATED_AT, TIMESTAMP).addColumnDefinition(GLOBAL_MESSAGE_COUNT, INT)
+        .addIndexDefinition(GAME_ID).build();
+    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
   }
 
 
@@ -87,7 +86,7 @@ public class WebsoketSessionsTable {
 
 
   List<Session> getAllSessions() {
-    List<Session> result = sorm.readAll(WebSocketSession.class).stream()
+    List<Session> result = sorm.selectAll(WebSocketSession.class).stream()
         .map(session -> sessions.get(session.getSessionId())).filter(s -> Objects.nonNull(s))
         .collect(Collectors.toList());
     return result;
@@ -115,7 +114,7 @@ public class WebsoketSessionsTable {
     for (Entry<Integer, Session> e : sessions.entrySet()) {
       if (e.getValue().equals(session)) {
         sessions.remove(e.getKey());
-        WebSocketSession gs = sorm.readByPrimaryKey(WebSocketSession.class, e.getKey());
+        WebSocketSession gs = sorm.selectByPrimaryKey(WebSocketSession.class, e.getKey());
         sorm.delete(gs);
         return Optional.of(gs.getGameId());
       }

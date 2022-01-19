@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
+import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -14,7 +14,7 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.table.TableSchema;
+import org.nkjmlab.sorm4j.util.table.TableSchema;
 
 public class LoginsTable {
 
@@ -32,12 +32,12 @@ public class LoginsTable {
 
   public LoginsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = TableSchema.builder(TABLE_NAME)
-        .addColumnDefinition(ID, BIGINT, AUTO_INCREMENT, PRIMARY_KEY)
-        .addColumnDefinition(USER_ID, VARCHAR).addColumnDefinition(SEAT_ID, VARCHAR)
-        .addColumnDefinition(USER_NAME, VARCHAR).addColumnDefinition(LOGGED_IN_AT, TIMESTAMP)
-        .addColumnDefinition(REMOTE_ADDR, VARCHAR).addIndexDefinition(USER_ID).build();
-    schema.createTableAndIndexesIfNotExists(sorm);
+    this.schema =
+        TableSchema.builder(TABLE_NAME).addColumnDefinition(ID, BIGINT, AUTO_INCREMENT, PRIMARY_KEY)
+            .addColumnDefinition(USER_ID, VARCHAR).addColumnDefinition(SEAT_ID, VARCHAR)
+            .addColumnDefinition(USER_NAME, VARCHAR).addColumnDefinition(LOGGED_IN_AT, TIMESTAMP)
+            .addColumnDefinition(REMOTE_ADDR, VARCHAR).addIndexDefinition(USER_ID).build();
+    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
   }
 
 
@@ -93,8 +93,13 @@ public class LoginsTable {
   }
 
   public Optional<Login> readLastLogin(String userId) {
-    Login ret = sorm.applyWithLogging(conn -> conn.readFirst(Login.class,
-        "SELECT * FROM LOGINS WHERE USER_ID=? ORDER BY LOGGED_IN_AT DESC LIMIT 1", userId));
+    Login ret = sorm.applyHandler(conn -> {
+      sorm.getContext().getLoggerContext().enableForceLogging();
+      Login l = conn.readFirst(Login.class,
+          "SELECT * FROM LOGINS WHERE USER_ID=? ORDER BY LOGGED_IN_AT DESC LIMIT 1", userId);
+      sorm.getContext().getLoggerContext().disableForceLogging();
+      return l;
+    });
     return Optional.ofNullable(ret);
 
   }

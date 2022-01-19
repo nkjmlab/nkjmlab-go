@@ -1,9 +1,8 @@
 package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.go.javalin.GoApplication.*;
-import static org.nkjmlab.sorm4j.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
-import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
+import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -18,11 +17,10 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.common.Tuple2;
+import org.nkjmlab.sorm4j.result.Tuple2;
 import org.nkjmlab.sorm4j.sql.OrderedParameterSql;
 import org.nkjmlab.sorm4j.sql.ParameterizedSql;
-import org.nkjmlab.sorm4j.table.TableSchema;
-import org.nkjmlab.sorm4j.table.TableSchema.Keyword;
+import org.nkjmlab.sorm4j.util.table.TableSchema;
 import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils;
 import org.nkjmlab.util.orangesignal_csv.Row;
 import com.orangesignal.csv.CsvConfig;
@@ -52,9 +50,8 @@ public class UsersTable {
 
   public UsersTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = new TableSchema.Builder(TABLE_NAME)
-        .addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
-        .addColumnDefinition(EMAIL, VARCHAR, Keyword.UNIQUE).addColumnDefinition(USER_NAME, VARCHAR)
+    this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
+        .addColumnDefinition(EMAIL, VARCHAR, UNIQUE).addColumnDefinition(USER_NAME, VARCHAR)
         .addColumnDefinition(ROLE, VARCHAR).addColumnDefinition(SEAT_ID, VARCHAR)
         .addColumnDefinition(RANK, INT).addColumnDefinition(CREATED_AT, TIMESTAMP)
         .addIndexDefinition(EMAIL).addIndexDefinition(ROLE).build();
@@ -67,12 +64,12 @@ public class UsersTable {
 
 
   public void createTableAndIndexesIfNotExists() {
-    schema.createTableAndIndexesIfNotExists(sorm);
+    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
   }
 
 
   public User getUser(String uid) {
-    User entry = sorm.readByPrimaryKey(User.class, uid);
+    User entry = sorm.selectByPrimaryKey(User.class, uid);
     return entry;
   }
 
@@ -138,12 +135,12 @@ public class UsersTable {
   }
 
   public boolean isAdmin(String userId) {
-    return sorm.readByPrimaryKey(User.class, userId).isAdmin();
+    return sorm.selectByPrimaryKey(User.class, userId).isAdmin();
   }
 
 
   public User readByPrimaryKey(String userId) {
-    return sorm.readByPrimaryKey(User.class, userId);
+    return sorm.selectByPrimaryKey(User.class, userId);
   }
 
 
@@ -190,7 +187,7 @@ public class UsersTable {
   }
 
   public List<User> readAll() {
-    return sorm.readAll(User.class);
+    return sorm.selectAll(User.class);
   }
 
   public List<Tuple2<User, Login>> readAllWithLastLogin() {

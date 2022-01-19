@@ -1,13 +1,13 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.table.TableSchema;
+import org.nkjmlab.sorm4j.util.table.TableSchema;
 import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils;
 import org.nkjmlab.util.orangesignal_csv.Row;
 import com.orangesignal.csv.CsvConfig;
@@ -31,9 +31,8 @@ public class PasswordsTable {
 
   public PasswordsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema =
-        new TableSchema.Builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
-            .addColumnDefinition(PASSWORD, VARCHAR).build();
+    this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
+        .addColumnDefinition(PASSWORD, VARCHAR).build();
     createTableAndIndexesIfNotExists();
   }
 
@@ -43,11 +42,11 @@ public class PasswordsTable {
 
 
   public void createTableAndIndexesIfNotExists() {
-    schema.createTableAndIndexesIfNotExists(sorm);
+    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
   }
 
   public boolean isValid(String userId, String password) {
-    return Optional.ofNullable(sorm.readByPrimaryKey(Password.class, userId))
+    return Optional.ofNullable(sorm.selectByPrimaryKey(Password.class, userId))
         .map(p -> password.equals(p.password)).orElse(false);
   }
 

@@ -1,14 +1,13 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
-import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
+import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
 import java.util.List;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.json.VoteResult;
 import org.nkjmlab.go.javalin.model.row.Vote;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.table.TableSchema;
+import org.nkjmlab.sorm4j.util.table.TableSchema;
 
 public class VotesTable {
 
@@ -27,12 +26,12 @@ public class VotesTable {
 
   public VotesTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = new TableSchema.Builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR)
+    this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR)
         .addColumnDefinition(PROBLEM_ID, BIGINT).addColumnDefinition(VOTE, VARCHAR)
         .addColumnDefinition(VOTE_ID, VARCHAR).addColumnDefinition(GAME_ID, VARCHAR)
         .addColumnDefinition(CREATED_AT, TIMESTAMP).setPrimaryKey(USER_ID, PROBLEM_ID, GAME_ID)
         .build();
-    schema.createTableAndIndexesIfNotExists(sorm);
+    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
   }
 
 
