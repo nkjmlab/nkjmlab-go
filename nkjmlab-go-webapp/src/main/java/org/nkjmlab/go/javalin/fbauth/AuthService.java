@@ -4,7 +4,7 @@ import static org.nkjmlab.go.javalin.model.row.User.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.nkjmlab.go.javalin.model.json.UserJson;
@@ -54,7 +54,7 @@ public class AuthService implements AuthServiceInterface {
     u.setSeatId(seatId);
     usersTable.merge(u);
     loginsTable
-        .insert(new Login(userId, seatId, u.getUserName(), new Timestamp(new Date().getTime()),
+        .insert(new Login(userId, seatId, u.getUserName(), Timestamp.valueOf(LocalDateTime.now()),
             HttpRequestUtils.getXForwardedFor(request).orElseGet(() -> request.getRemoteAddr())));
     return true;
   }
@@ -92,8 +92,8 @@ public class AuthService implements AuthServiceInterface {
       log.error("Try guest siginup but userId [{}] conflict with a regular user", userId);
       return false;
     }
-    usersTable.merge(
-        new User(userId, userId + "-guest@example.com", username, GUEST, seatId, 30, new Date()));
+    usersTable.merge(new User(userId, userId + "-guest@example.com", username, GUEST, seatId, 30,
+        LocalDateTime.now()));
 
     registerAttendance(userId, seatId);
     UsersTable.createIcon(userId);

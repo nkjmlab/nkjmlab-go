@@ -7,9 +7,9 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.util.table.TableSchema;
+import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils;
-import org.nkjmlab.util.orangesignal_csv.Row;
+import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils.Row;
 import com.orangesignal.csv.CsvConfig;
 
 /***
@@ -27,12 +27,13 @@ public class PasswordsTable {
   private static final String PASSWORD = "password";
 
   private Sorm sorm;
-  private TableSchema schema;
+  private TableDefinition schema;
 
   public PasswordsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
-        .addColumnDefinition(PASSWORD, VARCHAR).build();
+    this.schema =
+        TableDefinition.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
+            .addColumnDefinition(PASSWORD, VARCHAR).build();
     createTableAndIndexesIfNotExists();
   }
 

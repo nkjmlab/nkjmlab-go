@@ -15,9 +15,10 @@ import org.eclipse.jetty.websocket.api.Session;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.sql.OrderedParameterSql;
+import org.nkjmlab.sorm4j.sql.OrderedParameterSqlParser;
 import org.nkjmlab.sorm4j.sql.ParameterizedSql;
-import org.nkjmlab.sorm4j.util.table.TableSchema;
+import org.nkjmlab.sorm4j.sql.ParameterizedSqlParser;
+import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 
 public class WebsoketSessionsTable {
   private static final org.apache.logging.log4j.Logger log =
@@ -25,7 +26,7 @@ public class WebsoketSessionsTable {
 
   private Sorm sorm;
 
-  private TableSchema schema;
+  private TableDefinition schema;
 
   public static final String TABLE_NAME = "WEBSOCKET_SESSIONS";
 
@@ -39,7 +40,7 @@ public class WebsoketSessionsTable {
 
   public WebsoketSessionsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(SESSION_ID, INT, PRIMARY_KEY)
+    this.schema = TableDefinition.builder(TABLE_NAME).addColumnDefinition(SESSION_ID, INT, PRIMARY_KEY)
         .addColumnDefinition(USER_ID, VARCHAR).addColumnDefinition(GAME_ID, VARCHAR)
         .addColumnDefinition(CREATED_AT, TIMESTAMP).addColumnDefinition(GLOBAL_MESSAGE_COUNT, INT)
         .addIndexDefinition(GAME_ID).build();
@@ -76,7 +77,7 @@ public class WebsoketSessionsTable {
     if (userIds.size() == 0) {
       return Collections.emptyList();
     }
-    ParameterizedSql psql = ParameterizedSql
+    ParameterizedSql psql = ParameterizedSqlParser
         .parse("select * from " + TABLE_NAME + " where " + USER_ID + " IN(<?>) ", userIds);
     return sorm.readList(WebSocketSession.class, psql.getSql(), psql.getParameters()).stream()
         .map(session -> sessions.get(session.getSessionId())).filter(s -> Objects.nonNull(s))
@@ -136,7 +137,7 @@ public class WebsoketSessionsTable {
   }
 
   public List<String> readActiveGameIdsOrderByGameId(UsersTable usersTable) {
-    ParameterizedSql psql = ParameterizedSql.parse(
+    ParameterizedSql psql = ParameterizedSqlParser.parse(
         SELECT + DISTINCT + GAME_ID + FROM + TABLE_NAME + WHERE + GAME_ID + LIKE + "?", "%-vs-%");
     return sorm.readList(String.class, psql).stream()
         .filter(gid -> readUsers(usersTable, gid).size() > 0).sorted().collect(Collectors.toList());
@@ -152,7 +153,7 @@ public class WebsoketSessionsTable {
     if (ids.size() == 0) {
       return Collections.emptyList();
     }
-    ParameterizedSql st = OrderedParameterSql
+    ParameterizedSql st = OrderedParameterSqlParser
         .parse("select * from " + TABLE_NAME + " where " + USER_ID + " IN (<?>)", ids);
     return sorm.readList(WebSocketSession.class, st.getSql(), st.getParameters()).stream()
         .map(ws -> sessions.get(ws.getSessionId())).filter(Objects::nonNull)

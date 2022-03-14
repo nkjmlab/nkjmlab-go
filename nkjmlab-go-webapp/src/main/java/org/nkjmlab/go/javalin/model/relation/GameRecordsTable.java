@@ -1,8 +1,5 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
-import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
@@ -10,11 +7,10 @@ import org.nkjmlab.go.javalin.model.row.GameRecord;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.result.RowMap;
-import org.nkjmlab.sorm4j.util.sql.SelectSql;
-import org.nkjmlab.sorm4j.util.table.TableSchema;
-import org.nkjmlab.util.h2.H2SqlUtils;
+import org.nkjmlab.sorm4j.util.h2.BasicH2TableWithDefinition;
+import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 
-public class GameRecordsTable {
+public class GameRecordsTable extends BasicH2TableWithDefinition<GameRecord> {
 
   public static final String TABLE_NAME = "GAME_RECORDS";
   private static final String ID = "id";
@@ -26,24 +22,23 @@ public class GameRecordsTable {
   private static final String MESSAGE = "message";
   private static final String RANK = "rank";
   private static final String POINT = "point";
-  private Sorm sorm;
-  private TableSchema schema;
 
 
   public GameRecordsTable(DataSource dataSource) {
-    this.sorm = Sorm.create(dataSource);
-    this.schema =
-        TableSchema.builder(TABLE_NAME).addColumnDefinition(ID, INT, AUTO_INCREMENT, PRIMARY_KEY)
+    super(Sorm.create(dataSource), GameRecord.class,
+        TableDefinition.builder(TABLE_NAME)
+            .addColumnDefinition(ID, INT, AUTO_INCREMENT, PRIMARY_KEY)
             .addColumnDefinition(CREATED_AT, "TIMESTAMP AS CURRENT_TIMESTAMP")
             .addColumnDefinition(USER_ID, VARCHAR).addColumnDefinition(OPPONENT_USER_ID, VARCHAR)
             .addColumnDefinition(JADGE, VARCHAR).addColumnDefinition(MEMO, VARCHAR)
             .addColumnDefinition(RANK, INT).addColumnDefinition(POINT, INT)
-            .addColumnDefinition(MESSAGE, VARCHAR).build();
-    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
+            .addColumnDefinition(MESSAGE, VARCHAR).build());
+    createTableIfNotExists();
+    createIndexesIfNotExists();
   }
 
   public void recalculateAndUpdateRank(UsersTable usersTable) {
-    sorm.readList(RowMap.class,
+    getOrm().readList(RowMap.class,
         "SELECT USER_ID, MIN(RANK) AS RANK FROM GAME_RECORDS GROUP BY USER_ID").forEach(m -> {
           String userId = m.get(USER_ID.toLowerCase()).toString();
           Integer rank = Integer.valueOf(m.get(RANK.toLowerCase()).toString());
@@ -59,8 +54,8 @@ public class GameRecordsTable {
 
   public int registerRecordAndGetRank(UsersTable usersTable, String userId, String opponentUserId,
       String jadge, String memo) {
-    GameRecord lastRecords = sorm.readFirst(GameRecord.class, "select * from " + TABLE_NAME
-        + " where " + USER_ID + "=?" + " order by " + CREATED_AT + " desc limit 1", userId);
+    GameRecord lastRecords = readFirst("select * from " + TABLE_NAME + " where " + USER_ID + "=?"
+        + " order by " + CREATED_AT + " desc limit 1", userId);
 
 
     int rank = lastRecords == null
@@ -77,7 +72,7 @@ public class GameRecordsTable {
       message = rank + "級に昇級 <i class='fas fa-trophy'></i>";
     }
 
-    sorm.insert(new GameRecord(userId, opponentUserId, jadge, memo, rank, point, message));
+    insert(new GameRecord(userId, opponentUserId, jadge, memo, rank, point, message));
     return rank;
   }
 
@@ -110,18 +105,9 @@ public class GameRecordsTable {
   }
 
   public List<GameRecord> readByUserId(String userId) {
-    return sorm.readList(GameRecord.class,
+    return readList(
         "select * from " + TABLE_NAME + " where " + USER_ID + "=? order by " + CREATED_AT + " DESC",
         userId);
   }
-
-  public void backupToCsv(File backupDir) {
-    String stmt =
-        H2SqlUtils.getCallCsvWriteSql(new File(backupDir, System.currentTimeMillis() + ".csv"),
-            StandardCharsets.UTF_8, ",", SelectSql.selectStarFrom(TABLE_NAME));
-    sorm.executeUpdate(stmt);
-  }
-
-
 
 }

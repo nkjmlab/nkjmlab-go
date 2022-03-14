@@ -10,7 +10,7 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.json.MatchingRequestJson;
 import org.nkjmlab.go.javalin.model.row.MatchingRequest;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.util.table.TableSchema;
+import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 
 public class MatchingRequestsTable {
   private static final org.apache.logging.log4j.Logger log =
@@ -27,11 +27,11 @@ public class MatchingRequestsTable {
 
   private Sorm sorm;
 
-  private TableSchema schema;
+  private TableDefinition schema;
 
   public MatchingRequestsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
+    this.schema = TableDefinition.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
         .addColumnDefinition(SEAT_ID, VARCHAR).addColumnDefinition(USER_NAME, VARCHAR)
         .addColumnDefinition(RANK, INT).addColumnDefinition(GAME_ID, VARCHAR)
         .addColumnDefinition(CREATED_AT, TIMESTAMP).addIndexDefinition(GAME_ID).build();

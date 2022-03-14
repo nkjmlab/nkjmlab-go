@@ -10,7 +10,7 @@ import org.nkjmlab.go.javalin.model.problem.ProblemFactory;
 import org.nkjmlab.go.javalin.model.problem.ProblemGroupsNode;
 import org.nkjmlab.go.javalin.model.row.Problem;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.util.table.TableSchema;
+import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 import org.nkjmlab.util.jackson.JacksonMapper;
 
 public class ProblemsTable {
@@ -18,7 +18,7 @@ public class ProblemsTable {
       org.apache.logging.log4j.LogManager.getLogger();
 
   private Sorm sorm;
-  private TableSchema schema;
+  private TableDefinition schema;
 
   public static final String TABLE_NAME = "PROBLEMS";
 
@@ -37,7 +37,7 @@ public class ProblemsTable {
 
   public ProblemsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(ID, BIGINT, PRIMARY_KEY)
+    this.schema = TableDefinition.builder(TABLE_NAME).addColumnDefinition(ID, BIGINT, PRIMARY_KEY)
         .addColumnDefinition(CREATED_AT, TIMESTAMP).addColumnDefinition(GROUP_ID, VARCHAR, NOT_NULL)
         .addColumnDefinition(NAME, VARCHAR, NOT_NULL).addColumnDefinition(CELLS, VARCHAR, NOT_NULL)
         .addColumnDefinition(SYMBOLS, VARCHAR, NOT_NULL)

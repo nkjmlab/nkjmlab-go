@@ -1,6 +1,6 @@
 package org.nkjmlab.go.javalin.model.json;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import org.nkjmlab.go.javalin.model.row.User;
 
 public class UserJson {
@@ -9,7 +9,7 @@ public class UserJson {
   private String userName;
   private String seatId;
   private int rank;
-  private Date createdAt;
+  private LocalDateTime createdAt;
   public boolean attendance;
 
   public UserJson() {}
@@ -30,11 +30,11 @@ public class UserJson {
     this.userId = userId;
   }
 
-  public Date getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public void setCreatedAt(Date modifiedAt) {
+  public void setCreatedAt(LocalDateTime modifiedAt) {
     this.createdAt = modifiedAt;
   }
 

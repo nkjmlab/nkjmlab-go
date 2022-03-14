@@ -28,7 +28,7 @@ public class ProblemFactory {
   public static void main(String[] args) {
     AtomicInteger order = new AtomicInteger(0);
     List<ProblemJson> ret =
-        readProblemJsonFiles(ResourceUtils.getFile("/problem/").toPath()).stream().map(file -> {
+        readProblemJsonFiles(ResourceUtils.getResourceAsFile("/problem/").toPath()).stream().map(file -> {
           ProblemJson problem = JacksonMapper.getDefaultMapper().toObject(file, ProblemJson.class);
           return problem;
         }).collect(Collectors.toList());

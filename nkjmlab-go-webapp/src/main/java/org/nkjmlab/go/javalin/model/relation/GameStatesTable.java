@@ -1,5 +1,6 @@
 package org.nkjmlab.go.javalin.model.relation;
 
+import static org.nkjmlab.sorm4j.util.h2.sql.H2CsvFunctions.*;
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
 import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
 import java.io.File;
@@ -11,8 +12,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.row.GameState;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.util.table.TableSchema;
-import org.nkjmlab.util.h2.H2SqlUtils;
+import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 
 public class GameStatesTable {
   private static final org.apache.logging.log4j.Logger log =
@@ -36,11 +36,11 @@ public class GameStatesTable {
 
 
   private Sorm sorm;
-  private TableSchema schema;
+  private TableDefinition schema;
 
   public GameStatesTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = TableSchema.builder(TABLE_NAME)
+    this.schema = TableDefinition.builder(TABLE_NAME)
         .addColumnDefinition(ID, BIGINT, AUTO_INCREMENT, PRIMARY_KEY)
         .addColumnDefinition(CREATED_AT, TIMESTAMP).addColumnDefinition(GAME_ID, VARCHAR, NOT_NULL)
         .addColumnDefinition(BLACK_PLAYER_ID, VARCHAR, NOT_NULL)
@@ -89,7 +89,7 @@ public class GameStatesTable {
     String selectSql =
         selectStarFrom(TABLE_NAME) + where(cond(ROWNUM, "<=", deleteRowNum)) + orderBy(ID);
 
-    String st = H2SqlUtils.getCallCsvWriteSql(outputFile, StandardCharsets.UTF_8, ",", selectSql);
+    String st = getCallCsvWriteSql(outputFile, selectSql, StandardCharsets.UTF_8, ",");
     log.info("{}", st);
     sorm.executeUpdate(st);
 

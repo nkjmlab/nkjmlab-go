@@ -34,12 +34,11 @@ import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
+import org.nkjmlab.sorm4j.common.Tuple.Tuple2;
 import org.nkjmlab.sorm4j.internal.util.ParameterizedStringUtils;
 import org.nkjmlab.sorm4j.internal.util.Try;
-import org.nkjmlab.sorm4j.result.Tuple2;
 import org.nkjmlab.util.h2.H2LocalDataSourceFactory;
 import org.nkjmlab.util.h2.H2ServerUtils;
-import org.nkjmlab.util.h2.H2ServerUtils.H2TcpServerProperties;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
 import org.nkjmlab.util.java.io.SystemFileUtils;
@@ -64,7 +63,7 @@ public class GoApplication {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
-  private static final File APP_ROOT_DIR = ResourceUtils.getFile("/");
+  private static final File APP_ROOT_DIR = ResourceUtils.getResourceAsFile("/");
   private static final String WEBROOT_DIR_NAME = "/webroot";
   private static final File WEBROOT_DIR = new File(APP_ROOT_DIR, WEBROOT_DIR_NAME);
   private static final File USER_HOME_DIR = SystemFileUtils.getUserHomeDirectory();
@@ -102,7 +101,8 @@ public class GoApplication {
 
 
   static {
-    H2ServerUtils.startServerProcessAndWaitFor(H2TcpServerProperties.builder().build());
+    H2ServerUtils.startDefaultTcpServerProcessAndWaitFor();
+    H2ServerUtils.startDefaultWebConsoleServerProcessAndWaitFor();
   }
 
   public static void main(String[] args) {
@@ -125,21 +125,22 @@ public class GoApplication {
     FileDatabaseConfigJson fileDbConf;
     try {
       fileDbConf = JacksonMapper.getDefaultMapper()
-          .toObject(ResourceUtils.getFile("/conf/h2.json"), FileDatabaseConfigJson.Builder.class)
+          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json"), FileDatabaseConfigJson.Builder.class)
           .build();
     } catch (Exception e) {
       log.warn("Try to load h2.json.default");
       fileDbConf =
-          JacksonMapper.getDefaultMapper().toObject(ResourceUtils.getFile("/conf/h2.json.default"),
+          JacksonMapper.getDefaultMapper().toObject(ResourceUtils.getResourceAsFile("/conf/h2.json.default"),
               FileDatabaseConfigJson.Builder.class).build();
     }
 
-    H2LocalDataSourceFactory factory = H2LocalDataSourceFactory.builder(fileDbConf.databaseDirectory,
-        fileDbConf.databaseName, fileDbConf.username, fileDbConf.password).build();
+    H2LocalDataSourceFactory factory =
+        H2LocalDataSourceFactory.builder(fileDbConf.databaseDirectory, fileDbConf.databaseName,
+            fileDbConf.username, fileDbConf.password).build();
 
     this.memDbDataSource = createH2DataSource(factory.getInMemoryModeJdbcUrl(),
         factory.getUsername(), factory.getPassword());
-    this.fileDbDataSource = createHikariDataSource(factory.getMixedModeJdbcUrl(),
+    this.fileDbDataSource = createHikariDataSource(factory.getServerModeJdbcUrl(),
         factory.getUsername(), factory.getPassword());
     // H2Server.openBrowser(memDbDataSource, true);
 
@@ -175,20 +176,22 @@ public class GoApplication {
     problemsTable.dropAndInsertInitialProblemsToTable(PROBLEM_DIR);
 
     this.loginsTable = new LoginsTable(fileDbDataSource);
+    loginsTable.writeCsv(new File(BACKUP_DIR, "logins-" + System.currentTimeMillis() + ".csv"));
+
+
 
     this.handsUpTable = new HandsUpTable(memDbDataSource);
-    handsUpTable.dropTableIfExists();
     handsUpTable.createTableAndIndexesIfNotExists();
 
     this.usersTable = new UsersTable(fileDbDataSource);
     usersTable.dropTableIfExists();
     usersTable.createTableAndIndexesIfNotExists();
     try {
-      File f = ResourceUtils.getFile("/conf/users.csv");
+      File f = ResourceUtils.getResourceAsFile("/conf/users.csv");
       usersTable.readFromFileAndMerge(f);
     } catch (Exception e) {
       log.warn("load users.csv.default ...");
-      File f = ResourceUtils.getFile("/conf/users.csv.default");
+      File f = ResourceUtils.getResourceAsFile("/conf/users.csv.default");
       usersTable.readFromFileAndMerge(f);
     }
 
@@ -196,11 +199,11 @@ public class GoApplication {
     this.passwordsTable = new PasswordsTable(fileDbDataSource);
 
     try {
-      File f = ResourceUtils.getFile("/conf/passwords.csv");
+      File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv");
       passwordsTable.readFromFileAndMerge(f);
     } catch (Exception e) {
       log.warn("load password.csv.default ...");
-      File f = ResourceUtils.getFile("/conf/passwords.csv.default");
+      File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv.default");
       passwordsTable.readFromFileAndMerge(f);
     }
 
@@ -222,7 +225,8 @@ public class GoApplication {
     this.votesTable = new VotesTable(memDbDataSource);
 
     this.gameRecordsTable = new GameRecordsTable(fileDbDataSource);
-    this.gameRecordsTable.backupToCsv(BACKUP_DIR);
+    this.gameRecordsTable
+        .writeCsv(new File(BACKUP_DIR, "game-record" + System.currentTimeMillis() + ".csv"));
 
 
     this.websoketSessionsTable = new WebsoketSessionsTable(memDbDataSource);
@@ -272,7 +276,7 @@ public class GoApplication {
     JsonRpcService jsonRpcService = new JsonRpcService(mapper);
 
     app.post("/app/json/GoJsonRpcService", ctx -> {
-      JsonRpcRequest jreq = JsonRpcService.toJsonRpcRequest(mapper, ctx.req);
+      JsonRpcRequest jreq = jsonRpcService.toJsonRpcRequest(ctx.req);
       Object srv = AuthServiceInterface.getDeclaredMethodNames().contains(jreq.getMethod())
           ? new AuthService(usersTable, loginsTable, passwordsTable, ctx.req)
           : goJsonRpcService;
@@ -286,8 +290,8 @@ public class GoApplication {
   private boolean prepareFirebase() {
     try {
       String url =
-          Files.readAllLines(ResourceUtils.getFile("/conf/firebase-url.conf").toPath()).get(0);
-      AuthService.initialize(url, ResourceUtils.getFile("/conf/firebase.json"));
+          Files.readAllLines(ResourceUtils.getResourceAsFile("/conf/firebase-url.conf").toPath()).get(0);
+      AuthService.initialize(url, ResourceUtils.getResourceAsFile("/conf/firebase.json"));
       return true;
     } catch (Exception e) {
       log.warn("Skip firebase settings");

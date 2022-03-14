@@ -7,11 +7,11 @@ import java.util.stream.IntStream;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.row.HandUp;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.util.table.TableSchema;
+import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 
 public class HandsUpTable {
 
-  private final TableSchema schema;
+  private final TableDefinition schema;
   private final Sorm sorm;
 
   public static final String TABLE_NAME = "HANDS_UP";
@@ -22,7 +22,7 @@ public class HandsUpTable {
 
   public HandsUpTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(GAME_ID, VARCHAR, PRIMARY_KEY)
+    this.schema = TableDefinition.builder(TABLE_NAME).addColumnDefinition(GAME_ID, VARCHAR, PRIMARY_KEY)
         .addColumnDefinition(CREATED_AT, TIMESTAMP).addColumnDefinition(MESSAGE, VARCHAR).build();
     schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
   }

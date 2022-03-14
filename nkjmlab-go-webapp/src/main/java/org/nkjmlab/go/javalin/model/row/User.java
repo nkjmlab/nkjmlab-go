@@ -1,6 +1,6 @@
 package org.nkjmlab.go.javalin.model.row;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
@@ -24,7 +24,7 @@ public class User {
   private String seatId;
   private String role = GUEST;
   private int rank;
-  private Date createdAt;
+  private LocalDateTime createdAt;
 
   public User() {}
 
@@ -33,7 +33,7 @@ public class User {
   }
 
   public User(String userId, String email, String userName, String role, String seatId, int rank,
-      Date createdAt) {
+      LocalDateTime createdAt) {
     this(userId);
     this.email = email;
     this.userName = userName;
@@ -56,11 +56,11 @@ public class User {
     return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
   }
 
-  public Date getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public void setCreatedAt(Date created) {
+  public void setCreatedAt(LocalDateTime created) {
     this.createdAt = created;
   }
 
