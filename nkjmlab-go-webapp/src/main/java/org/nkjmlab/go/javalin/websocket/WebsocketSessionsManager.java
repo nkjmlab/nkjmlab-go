@@ -36,7 +36,8 @@ import org.nkjmlab.util.java.function.Try;
 import org.nkjmlab.util.java.json.JsonMapper;
 
 public class WebsocketSessionsManager {
-  private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
+  private static final org.apache.logging.log4j.Logger log =
+      org.apache.logging.log4j.LogManager.getLogger();
 
   private final ProblemsTable problemsTable;
   private final GameStatesTables gameStatesTables;
@@ -213,7 +214,8 @@ public class WebsocketSessionsManager {
 
 
   private static class WebSocketJsonSenderService {
-    private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
+    private static final org.apache.logging.log4j.Logger log =
+        org.apache.logging.log4j.LogManager.getLogger();
 
     private ExecutorService srv =
         Executors.newFixedThreadPool(ForkJoinPoolUtils.getAvailableProcessorsMinus(2));
@@ -303,6 +305,10 @@ public class WebsocketSessionsManager {
         this.content = content;
       }
 
+      @Override
+      public String toString() {
+        return "WebsocketJson [method=" + method + ", content=" + content + "]";
+      }
 
     }
 

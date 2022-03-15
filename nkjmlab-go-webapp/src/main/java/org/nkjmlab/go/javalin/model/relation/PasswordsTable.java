@@ -1,15 +1,15 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.table.TableSchema;
+import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils;
-import org.nkjmlab.util.orangesignal_csv.Row;
+import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils.Row;
 import com.orangesignal.csv.CsvConfig;
 
 /***
@@ -18,8 +18,6 @@ import com.orangesignal.csv.CsvConfig;
  *
  */
 public class PasswordsTable {
-  private static final org.apache.logging.log4j.Logger log =
-      org.apache.logging.log4j.LogManager.getLogger();
 
   public static final String TABLE_NAME = "PASSWORDS";
 
@@ -27,12 +25,12 @@ public class PasswordsTable {
   private static final String PASSWORD = "password";
 
   private Sorm sorm;
-  private TableSchema schema;
+  private TableDefinition schema;
 
   public PasswordsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
     this.schema =
-        new TableSchema.Builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
+        TableDefinition.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
             .addColumnDefinition(PASSWORD, VARCHAR).build();
     createTableAndIndexesIfNotExists();
   }
@@ -43,11 +41,11 @@ public class PasswordsTable {
 
 
   public void createTableAndIndexesIfNotExists() {
-    schema.createTableAndIndexesIfNotExists(sorm);
+    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
   }
 
   public boolean isValid(String userId, String password) {
-    return Optional.ofNullable(sorm.readByPrimaryKey(Password.class, userId))
+    return Optional.ofNullable(sorm.selectByPrimaryKey(Password.class, userId))
         .map(p -> password.equals(p.password)).orElse(false);
   }
 

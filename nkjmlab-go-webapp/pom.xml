@@ -1,6 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <packaging>war</packaging>
   <groupId>org.nkjmlab</groupId>
   <artifactId>nkjmlab-go-webapp</artifactId>
   <version>0.9.2</version>
@@ -27,18 +26,18 @@
   </scm>
 
   <properties>
-    <nkjmlab-utils-version>0.1.7</nkjmlab-utils-version>
-    <sorm-version>1.4.0-rc7</sorm-version>
+    <nkjmlab-utils-version>0.8.0</nkjmlab-utils-version>
+    <sorm4j-version>1.4.7</sorm4j-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <downloadSources>true</downloadSources>
     <downloadJavadocs>true</downloadJavadocs>
   </properties>
 
   <dependencies>
-    <!-- https://mvnrepository.com/artifact/org.nkjmlab/nkjmlab-utils-helper -->
+    <!-- https://mvnrepository.com/artifact/org.nkjmlab/nkjmlab-utils-core -->
     <dependency>
       <groupId>org.nkjmlab</groupId>
-      <artifactId>nkjmlab-utils-helper</artifactId>
+      <artifactId>nkjmlab-utils-core</artifactId>
       <version>${nkjmlab-utils-version}</version>
     </dependency>
 
@@ -46,7 +45,7 @@
     <dependency>
       <groupId>org.nkjmlab</groupId>
       <artifactId>sorm4j</artifactId>
-      <version>${sorm-version}</version>
+      <version>${sorm4j-version}</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/javax.servlet/javax.servlet-api -->
     <dependency>
@@ -59,7 +58,7 @@
     <dependency>
       <groupId>io.javalin</groupId>
       <artifactId>javalin</artifactId>
-      <version>4.1.1</version>
+      <version>4.3.0</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
@@ -72,7 +71,7 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>2.0.202</version>
+      <version>2.1.210</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
@@ -86,7 +85,7 @@
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf</artifactId>
-      <version>3.0.14.RELEASE</version>
+      <version>3.0.15.RELEASE</version>
     </dependency>
 
     <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
@@ -112,21 +111,40 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.13.0</version>
+      <version>2.13.2</version>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.datatype</groupId>
+      <artifactId>jackson-datatype-jsr310</artifactId>
+      <version>2.13.2</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j-impl -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j-impl</artifactId>
-      <version>2.17.0</version>
+      <version>2.17.2</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.17.0</version>
+      <version>2.17.2</version>
     </dependency>
-
+    <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-engine</artifactId>
+      <version>5.8.2</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
+    <dependency>
+      <groupId>org.assertj</groupId>
+      <artifactId>assertj-core</artifactId>
+      <version>3.22.0</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
   <build>
     <plugins>
@@ -135,14 +153,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <release>11</release>
-        </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <version>3.3.1</version>
-        <configuration>
-          <failOnMissingWebXml>false</failOnMissingWebXml>
+          <release>17</release>
         </configuration>
       </plugin>
     </plugins>

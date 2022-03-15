@@ -1,8 +1,7 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
-import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
+import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -11,7 +10,7 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.json.MatchingRequestJson;
 import org.nkjmlab.go.javalin.model.row.MatchingRequest;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.table.TableSchema;
+import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 
 public class MatchingRequestsTable {
   private static final org.apache.logging.log4j.Logger log =
@@ -28,26 +27,26 @@ public class MatchingRequestsTable {
 
   private Sorm sorm;
 
-  private TableSchema schema;
+  private TableDefinition schema;
 
   public MatchingRequestsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
+    this.schema = TableDefinition.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
         .addColumnDefinition(SEAT_ID, VARCHAR).addColumnDefinition(USER_NAME, VARCHAR)
         .addColumnDefinition(RANK, INT).addColumnDefinition(GAME_ID, VARCHAR)
         .addColumnDefinition(CREATED_AT, TIMESTAMP).addIndexDefinition(GAME_ID).build();
-    schema.createTableAndIndexesIfNotExists(sorm);
+    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
   }
 
 
   public List<MatchingRequestJson> readRequests() {
-    List<MatchingRequestJson> result = sorm.readAll(MatchingRequest.class).stream()
+    List<MatchingRequestJson> result = sorm.selectAll(MatchingRequest.class).stream()
         .map(wr -> new MatchingRequestJson(wr)).collect(Collectors.toList());
     return result;
   }
 
   public boolean empty() {
-    return sorm.readAll(MatchingRequest.class).size() == 0;
+    return sorm.selectAll(MatchingRequest.class).size() == 0;
   }
 
   public List<String> readAllUserIds() {
@@ -83,7 +82,7 @@ public class MatchingRequestsTable {
 
     List<String> ret = new ArrayList<>();
     for (String uid : reqs) {
-      MatchingRequest target = sorm.readByPrimaryKey(MatchingRequest.class, uid);
+      MatchingRequest target = sorm.selectByPrimaryKey(MatchingRequest.class, uid);
 
       if (!target.isUnpaired()) {
         continue;
@@ -140,7 +139,7 @@ public class MatchingRequestsTable {
 
 
   public MatchingRequest readByPrimaryKey(String userId) {
-    return sorm.readByPrimaryKey(MatchingRequest.class, userId);
+    return sorm.selectByPrimaryKey(MatchingRequest.class, userId);
   }
 
 

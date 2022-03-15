@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
+import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
 import java.io.File;
 import java.util.List;
 import javax.sql.DataSource;
@@ -10,7 +10,7 @@ import org.nkjmlab.go.javalin.model.problem.ProblemFactory;
 import org.nkjmlab.go.javalin.model.problem.ProblemGroupsNode;
 import org.nkjmlab.go.javalin.model.row.Problem;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.table.TableSchema;
+import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 import org.nkjmlab.util.jackson.JacksonMapper;
 
 public class ProblemsTable {
@@ -18,7 +18,7 @@ public class ProblemsTable {
       org.apache.logging.log4j.LogManager.getLogger();
 
   private Sorm sorm;
-  private TableSchema schema;
+  private TableDefinition schema;
 
   public static final String TABLE_NAME = "PROBLEMS";
 
@@ -37,14 +37,14 @@ public class ProblemsTable {
 
   public ProblemsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = TableSchema.builder(TABLE_NAME).addColumnDefinition(ID, BIGINT, PRIMARY_KEY)
+    this.schema = TableDefinition.builder(TABLE_NAME).addColumnDefinition(ID, BIGINT, PRIMARY_KEY)
         .addColumnDefinition(CREATED_AT, TIMESTAMP).addColumnDefinition(GROUP_ID, VARCHAR, NOT_NULL)
         .addColumnDefinition(NAME, VARCHAR, NOT_NULL).addColumnDefinition(CELLS, VARCHAR, NOT_NULL)
         .addColumnDefinition(SYMBOLS, VARCHAR, NOT_NULL)
         .addColumnDefinition(AGEHAMA, VARCHAR, NOT_NULL)
         .addColumnDefinition(HAND_HISTORY, VARCHAR, NOT_NULL)
         .addColumnDefinition(MESSAGE, VARCHAR, NOT_NULL).addIndexDefinition(GROUP_ID).build();
-    schema.createTableAndIndexesIfNotExists(sorm);
+    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
   }
 
 
@@ -113,7 +113,7 @@ public class ProblemsTable {
   }
 
   public Problem readByPrimaryKey(long pid) {
-    return sorm.readByPrimaryKey(Problem.class, pid);
+    return sorm.selectByPrimaryKey(Problem.class, pid);
   }
 
   public void merge(Problem p) {

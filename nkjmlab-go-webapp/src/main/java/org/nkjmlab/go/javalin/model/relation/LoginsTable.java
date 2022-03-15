@@ -1,7 +1,6 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.Collections;
@@ -14,9 +13,12 @@ import org.apache.commons.lang3.time.DateUtils;
 import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.table.TableSchema;
+import org.nkjmlab.sorm4j.context.SormContext;
+import org.nkjmlab.sorm4j.util.h2.BasicH2TableWithDefinition;
+import org.nkjmlab.sorm4j.util.logger.LoggerContext;
+import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 
-public class LoginsTable {
+public class LoginsTable extends BasicH2TableWithDefinition<Login> {
 
   public static final String TABLE_NAME = "LOGINS";
 
@@ -27,23 +29,25 @@ public class LoginsTable {
   private static final String LOGGED_IN_AT = "logged_in_at";
   private static final String REMOTE_ADDR = "remote_addr";
 
-  private Sorm sorm;
-  private TableSchema schema;
+  private Sorm loggerableSorm;
 
   public LoginsTable(DataSource dataSource) {
-    this.sorm = Sorm.create(dataSource);
-    this.schema = TableSchema.builder(TABLE_NAME)
-        .addColumnDefinition(ID, BIGINT, AUTO_INCREMENT, PRIMARY_KEY)
-        .addColumnDefinition(USER_ID, VARCHAR).addColumnDefinition(SEAT_ID, VARCHAR)
-        .addColumnDefinition(USER_NAME, VARCHAR).addColumnDefinition(LOGGED_IN_AT, TIMESTAMP)
-        .addColumnDefinition(REMOTE_ADDR, VARCHAR).addIndexDefinition(USER_ID).build();
-    schema.createTableAndIndexesIfNotExists(sorm);
+    super(Sorm.create(dataSource), Login.class,
+        TableDefinition.builder(TABLE_NAME)
+            .addColumnDefinition(ID, BIGINT, AUTO_INCREMENT, PRIMARY_KEY)
+            .addColumnDefinition(USER_ID, VARCHAR).addColumnDefinition(SEAT_ID, VARCHAR)
+            .addColumnDefinition(USER_NAME, VARCHAR).addColumnDefinition(LOGGED_IN_AT, TIMESTAMP)
+            .addColumnDefinition(REMOTE_ADDR, VARCHAR).addIndexDefinition(USER_ID).build());
+    this.loggerableSorm = Sorm.create(dataSource, SormContext.builder()
+        .setLoggerContext(LoggerContext.builder().enableAll().build()).build());
+    createTableIfNotExists();
+    createIndexesIfNotExists();
   }
 
 
 
   private List<Login> readAllLastLoginsOrderByUserId() {
-    return sorm.readList(Login.class, selectStarFrom(TABLE_NAME)
+    return readList(selectStarFrom(TABLE_NAME)
         + where("ID IN (SELECT MAX(ID) FROM LOGINS GROUP BY USER_ID)") + orderBy(USER_ID));
   }
 
@@ -88,13 +92,14 @@ public class LoginsTable {
   }
 
 
-  public void insert(Login login) {
-    sorm.insert(login);
-  }
 
   public Optional<Login> readLastLogin(String userId) {
-    Login ret = sorm.applyWithLogging(conn -> conn.readFirst(Login.class,
-        "SELECT * FROM LOGINS WHERE USER_ID=? ORDER BY LOGGED_IN_AT DESC LIMIT 1", userId));
+
+    Login ret = loggerableSorm.applyHandler(conn -> {
+      Login l = conn.readFirst(Login.class,
+          "SELECT * FROM LOGINS WHERE USER_ID=? ORDER BY LOGGED_IN_AT DESC LIMIT 1", userId);
+      return l;
+    });
     return Optional.ofNullable(ret);
 
   }

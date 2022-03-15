@@ -1,15 +1,14 @@
 package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.go.javalin.GoApplication.*;
-import static org.nkjmlab.sorm4j.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.sql.SqlKeyword.*;
-import static org.nkjmlab.sorm4j.table.TableSchema.Keyword.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
+import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
@@ -18,13 +17,13 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.common.Tuple2;
-import org.nkjmlab.sorm4j.sql.OrderedParameterSql;
+import org.nkjmlab.sorm4j.common.Tuple.Tuple2;
+import org.nkjmlab.sorm4j.sql.OrderedParameterSqlParser;
 import org.nkjmlab.sorm4j.sql.ParameterizedSql;
-import org.nkjmlab.sorm4j.table.TableSchema;
-import org.nkjmlab.sorm4j.table.TableSchema.Keyword;
+import org.nkjmlab.sorm4j.sql.ParameterizedSqlParser;
+import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils;
-import org.nkjmlab.util.orangesignal_csv.Row;
+import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils.Row;
 import com.orangesignal.csv.CsvConfig;
 
 /***
@@ -48,16 +47,16 @@ public class UsersTable {
   private static final String CREATED_AT = "created_at";
 
   private Sorm sorm;
-  private TableSchema schema;
+  private TableDefinition schema;
 
   public UsersTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = new TableSchema.Builder(TABLE_NAME)
-        .addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
-        .addColumnDefinition(EMAIL, VARCHAR, Keyword.UNIQUE).addColumnDefinition(USER_NAME, VARCHAR)
-        .addColumnDefinition(ROLE, VARCHAR).addColumnDefinition(SEAT_ID, VARCHAR)
-        .addColumnDefinition(RANK, INT).addColumnDefinition(CREATED_AT, TIMESTAMP)
-        .addIndexDefinition(EMAIL).addIndexDefinition(ROLE).build();
+    this.schema =
+        TableDefinition.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
+            .addColumnDefinition(EMAIL, VARCHAR, UNIQUE).addColumnDefinition(USER_NAME, VARCHAR)
+            .addColumnDefinition(ROLE, VARCHAR).addColumnDefinition(SEAT_ID, VARCHAR)
+            .addColumnDefinition(RANK, INT).addColumnDefinition(CREATED_AT, TIMESTAMP)
+            .addIndexDefinition(EMAIL).addIndexDefinition(ROLE).build();
     createTableAndIndexesIfNotExists();
   }
 
@@ -67,12 +66,12 @@ public class UsersTable {
 
 
   public void createTableAndIndexesIfNotExists() {
-    schema.createTableAndIndexesIfNotExists(sorm);
+    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
   }
 
 
   public User getUser(String uid) {
-    User entry = sorm.readByPrimaryKey(User.class, uid);
+    User entry = sorm.selectByPrimaryKey(User.class, uid);
     return entry;
   }
 
@@ -111,7 +110,8 @@ public class UsersTable {
 
   private static List<User> transformToUser(List<Row> rows) {
     return rows.stream().map(row -> {
-      User user = new User(row.get(0), row.get(1), row.get(2), row.get(3), "-1", 30, new Date());
+      User user =
+          new User(row.get(0), row.get(1), row.get(2), row.get(3), "-1", 30, LocalDateTime.now());
       return user;
     }).collect(Collectors.toList());
   }
@@ -120,9 +120,9 @@ public class UsersTable {
     if (uids.size() == 0) {
       return Collections.emptyList();
     }
-    ParameterizedSql st =
-        OrderedParameterSql.from("SELECT * from " + TABLE_NAME + " where " + USER_ID + " IN (<?>)")
-            .addParameter(uids).parse();
+    ParameterizedSql st = OrderedParameterSqlParser
+        .of("SELECT * from " + TABLE_NAME + " where " + USER_ID + " IN (<?>)").addParameter(uids)
+        .parse();
     return sorm.readList(User.class, st.getSql(), st.getParameters());
   }
 
@@ -138,12 +138,12 @@ public class UsersTable {
   }
 
   public boolean isAdmin(String userId) {
-    return sorm.readByPrimaryKey(User.class, userId).isAdmin();
+    return sorm.selectByPrimaryKey(User.class, userId).isAdmin();
   }
 
 
   public User readByPrimaryKey(String userId) {
-    return sorm.readByPrimaryKey(User.class, userId);
+    return sorm.selectByPrimaryKey(User.class, userId);
   }
 
 
@@ -190,11 +190,11 @@ public class UsersTable {
   }
 
   public List<User> readAll() {
-    return sorm.readAll(User.class);
+    return sorm.selectAll(User.class);
   }
 
   public List<Tuple2<User, Login>> readAllWithLastLogin() {
-    ParameterizedSql stmt = ParameterizedSql.parse(
+    ParameterizedSql stmt = ParameterizedSqlParser.parse(
         "SELECT * except(r.USER_NAME) FROM PLAYERS  LEFT JOIN (SELECT * FROM LOGINS  WHERE ID IN (SELECT MAX(ID) FROM LOGINS GROUP BY USER_ID)) r USING(USER_ID) ORDER BY USER_ID");
     return sorm.readTupleList(User.class, Login.class, stmt);
   }
