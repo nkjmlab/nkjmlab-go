@@ -121,7 +121,7 @@ public class AuthService implements AuthServiceInterface {
 
   public static void initialize(String url, File firebaseJson) {
     try (FileInputStream serviceAccount = new FileInputStream(firebaseJson)) {
-      FirebaseOptions options = new FirebaseOptions.Builder()
+      FirebaseOptions options = FirebaseOptions.builder()
           .setCredentials(GoogleCredentials.fromStream(serviceAccount)).setDatabaseUrl(url).build();
       FirebaseApp.initializeApp(options);
     } catch (Exception e) {

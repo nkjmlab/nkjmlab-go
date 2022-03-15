@@ -20,20 +20,11 @@ import org.nkjmlab.go.javalin.model.json.HandType;
 import org.nkjmlab.go.javalin.model.json.ProblemJson;
 import org.nkjmlab.go.javalin.model.json.TsukadaHand;
 import org.nkjmlab.util.jackson.JacksonMapper;
-import org.nkjmlab.util.java.lang.ResourceUtils;
 
 public class ProblemFactory {
-  private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
+  private static final org.apache.logging.log4j.Logger log =
+      org.apache.logging.log4j.LogManager.getLogger();
 
-  public static void main(String[] args) {
-    AtomicInteger order = new AtomicInteger(0);
-    List<ProblemJson> ret =
-        readProblemJsonFiles(ResourceUtils.getResourceAsFile("/problem/").toPath()).stream().map(file -> {
-          ProblemJson problem = JacksonMapper.getDefaultMapper().toObject(file, ProblemJson.class);
-          return problem;
-        }).collect(Collectors.toList());
-    System.out.println(ret);
-  }
 
   private static final Queue<Long> ids = new ConcurrentLinkedQueue<>();
 

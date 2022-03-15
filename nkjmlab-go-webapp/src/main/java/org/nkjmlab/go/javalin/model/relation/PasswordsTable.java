@@ -18,8 +18,6 @@ import com.orangesignal.csv.CsvConfig;
  *
  */
 public class PasswordsTable {
-  private static final org.apache.logging.log4j.Logger log =
-      org.apache.logging.log4j.LogManager.getLogger();
 
   public static final String TABLE_NAME = "PASSWORDS";
 

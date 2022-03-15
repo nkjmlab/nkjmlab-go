@@ -45,6 +45,7 @@ import org.nkjmlab.util.java.io.SystemFileUtils;
 import org.nkjmlab.util.java.json.FileDatabaseConfigJson;
 import org.nkjmlab.util.java.lang.ProcessUtils;
 import org.nkjmlab.util.java.lang.ResourceUtils;
+import org.nkjmlab.util.java.lang.SystemPropertyUtils;
 import org.nkjmlab.util.javax.servlet.JsonRpcService;
 import org.nkjmlab.util.javax.servlet.UserSession;
 import org.nkjmlab.util.javax.servlet.ViewModel;
@@ -117,21 +118,22 @@ public class GoApplication {
 
   private void start(int port) {
     app.start(port);
-    log.info("start");
-
+    log.info("start: {}", SystemPropertyUtils.getJavaProperties());
   }
 
   public GoApplication() {
     FileDatabaseConfigJson fileDbConf;
     try {
       fileDbConf = JacksonMapper.getDefaultMapper()
-          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json"), FileDatabaseConfigJson.Builder.class)
+          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json"),
+              FileDatabaseConfigJson.Builder.class)
           .build();
     } catch (Exception e) {
       log.warn("Try to load h2.json.default");
-      fileDbConf =
-          JacksonMapper.getDefaultMapper().toObject(ResourceUtils.getResourceAsFile("/conf/h2.json.default"),
-              FileDatabaseConfigJson.Builder.class).build();
+      fileDbConf = JacksonMapper.getDefaultMapper()
+          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json.default"),
+              FileDatabaseConfigJson.Builder.class)
+          .build();
     }
 
     H2LocalDataSourceFactory factory =
@@ -289,8 +291,8 @@ public class GoApplication {
 
   private boolean prepareFirebase() {
     try {
-      String url =
-          Files.readAllLines(ResourceUtils.getResourceAsFile("/conf/firebase-url.conf").toPath()).get(0);
+      String url = Files
+          .readAllLines(ResourceUtils.getResourceAsFile("/conf/firebase-url.conf").toPath()).get(0);
       AuthService.initialize(url, ResourceUtils.getResourceAsFile("/conf/firebase.json"));
       return true;
     } catch (Exception e) {

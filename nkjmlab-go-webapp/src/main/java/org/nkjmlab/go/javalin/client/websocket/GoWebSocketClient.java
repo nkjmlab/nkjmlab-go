@@ -14,16 +14,11 @@ public class GoWebSocketClient {
   private final WebSocketClient client = new WebSocketClient();
   private final GoWebSocket webSocket = new GoWebSocket();
 
-  public static void main(String[] args) {
-    String url = "ws://localhost:4567/websocket/play";
-    new GoWebSocketClient(url).start();
-  }
-
   public GoWebSocketClient(String uri) {
     this.uri = uri;
   }
 
-  private void start() {
+  public void start() {
     try {
       client.start();
 
