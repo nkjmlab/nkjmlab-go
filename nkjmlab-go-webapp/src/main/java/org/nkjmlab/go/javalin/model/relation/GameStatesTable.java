@@ -89,7 +89,7 @@ public class GameStatesTable {
     String selectSql =
         selectStarFrom(TABLE_NAME) + where(cond(ROWNUM, "<=", deleteRowNum)) + orderBy(ID);
 
-    String st = getCallCsvWriteSql(outputFile, selectSql, StandardCharsets.UTF_8, ",");
+    String st = getCallCsvWriteSql(outputFile, selectSql, StandardCharsets.UTF_8, ',');
     log.info("{}", st);
     sorm.executeUpdate(st);
 

@@ -14,11 +14,11 @@ import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.context.SormContext;
-import org.nkjmlab.sorm4j.util.h2.BasicH2TableWithDefinition;
+import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
 import org.nkjmlab.sorm4j.util.logger.LoggerContext;
 import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 
-public class LoginsTable extends BasicH2TableWithDefinition<Login> {
+public class LoginsTable extends BasicH2Table<Login> {
 
   public static final String TABLE_NAME = "LOGINS";
 

@@ -7,10 +7,10 @@ import org.nkjmlab.go.javalin.model.row.GameRecord;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.result.RowMap;
-import org.nkjmlab.sorm4j.util.h2.BasicH2TableWithDefinition;
+import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
 import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 
-public class GameRecordsTable extends BasicH2TableWithDefinition<GameRecord> {
+public class GameRecordsTable extends BasicH2Table<GameRecord> {
 
   public static final String TABLE_NAME = "GAME_RECORDS";
   private static final String ID = "id";
