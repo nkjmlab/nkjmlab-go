@@ -80,7 +80,7 @@
               <td class="" th:text="${item.user.userName}"></td>
               <td class="" th:text="${item.user.rank}"></td>
               <td class="" th:text="${item.login.seatId}"></td>
-              <td class="small" th:text="${#dates.format(item.login.loggedInAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+              <td class="small" th:text="${#temporals.format(item.login.loggedInAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
               <td class="" th:text="${item.login.remoteAddr}"></td>
             </tr>
           </tbody>

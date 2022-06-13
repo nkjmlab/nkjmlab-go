@@ -1,6 +1,6 @@
 package org.nkjmlab.go.javalin.model.row;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -11,14 +11,14 @@ public class MatchingRequest {
   private String userName;
   private String seatId;
   private int rank;
-  private Date createdAt;
+  private LocalDateTime createdAt;
   private String gameId = "";
 
   public MatchingRequest() {
 
   }
 
-  public MatchingRequest(User u, Date createdAt) {
+  public MatchingRequest(User u, LocalDateTime createdAt) {
     this.userId = u.getUserId();
     this.createdAt = createdAt;
     this.userName = u.getUserName();
@@ -52,11 +52,11 @@ public class MatchingRequest {
     this.rank = rank;
   }
 
-  public Date getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public void setCreatedAt(Date createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 

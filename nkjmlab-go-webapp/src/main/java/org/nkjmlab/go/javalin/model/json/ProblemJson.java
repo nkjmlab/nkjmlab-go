@@ -1,7 +1,6 @@
 package org.nkjmlab.go.javalin.model.json;
 
-import java.sql.Timestamp;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -47,7 +46,7 @@ public class ProblemJson {
   }
 
   public Problem toProblem() {
-    return new Problem(problemId, Timestamp.from(Instant.now()), groupId, name, mapper.toJson(cells),
+    return new Problem(problemId, LocalDateTime.now(), groupId, name, mapper.toJson(cells),
         mapper.toJson(symbols), message, mapper.toJson(handHistory), mapper.toJson(agehama));
   }
 

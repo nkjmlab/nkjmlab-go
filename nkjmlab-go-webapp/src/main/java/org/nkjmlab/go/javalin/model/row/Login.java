@@ -1,6 +1,6 @@
 package org.nkjmlab.go.javalin.model.row;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -10,12 +10,12 @@ public class Login {
   private String userId;
   private String userName;
   private String seatId = "";
-  private Timestamp loggedInAt;
+  private LocalDateTime loggedInAt;
   private String remoteAddr;
 
   public Login() {}
 
-  public Login(String userId, String seatId, String userName, Timestamp loggedInAt,
+  public Login(String userId, String seatId, String userName, LocalDateTime loggedInAt,
       String remoteAddr) {
     this.userId = userId;
     this.seatId = seatId;
@@ -24,7 +24,7 @@ public class Login {
     this.remoteAddr = remoteAddr;
   }
 
-  public Login(User u, Timestamp loggedInAt, String remoteAddr) {
+  public Login(User u, LocalDateTime loggedInAt, String remoteAddr) {
     this(u.getUserId(), u.getSeatId(), u.getUserName(), loggedInAt, remoteAddr);
   }
 
@@ -41,11 +41,11 @@ public class Login {
     return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
   }
 
-  public Timestamp getLoggedInAt() {
+  public LocalDateTime getLoggedInAt() {
     return loggedInAt;
   }
 
-  public void setLoggedInAt(Timestamp created) {
+  public void setLoggedInAt(LocalDateTime created) {
     this.loggedInAt = created;
   }
 

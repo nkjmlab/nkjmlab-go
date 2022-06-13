@@ -32,7 +32,6 @@ public class PasswordsTable {
     this.schema =
         TableDefinition.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
             .addColumnDefinition(PASSWORD, VARCHAR).build();
-    createTableAndIndexesIfNotExists();
   }
 
   public void dropTableIfExists() {

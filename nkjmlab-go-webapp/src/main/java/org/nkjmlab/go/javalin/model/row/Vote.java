@@ -1,6 +1,6 @@
 package org.nkjmlab.go.javalin.model.row;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
@@ -10,7 +10,7 @@ public class Vote {
   private String vote;
   private String voteId;
   private String gameId;
-  private Date createdAt = new Date();
+  private LocalDateTime createdAt = LocalDateTime.now();
 
   public Vote() {}
 
@@ -59,11 +59,11 @@ public class Vote {
     this.gameId = gameId;
   }
 
-  public Date getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public void setCreatedAt(Date createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 

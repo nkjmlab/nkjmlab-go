@@ -53,6 +53,8 @@ import org.nkjmlab.util.javax.servlet.ViewModel.Builder;
 import org.nkjmlab.util.jsonrpc.JsonRpcRequest;
 import org.nkjmlab.util.jsonrpc.JsonRpcResponse;
 import org.nkjmlab.util.thymeleaf.TemplateEngineBuilder;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.javalin.Javalin;
@@ -142,6 +144,7 @@ public class GoApplication {
 
     this.memDbDataSource = createH2DataSource(factory.getInMemoryModeJdbcUrl(),
         factory.getUsername(), factory.getPassword());
+    log.info("server jdbcUrl={}", factory.getServerModeJdbcUrl());
     this.fileDbDataSource = createHikariDataSource(factory.getServerModeJdbcUrl(),
         factory.getUsername(), factory.getPassword());
     // H2Server.openBrowser(memDbDataSource, true);
@@ -162,8 +165,10 @@ public class GoApplication {
 
 
   private void prepareJavalin() {
-    JavalinThymeleaf.configure(new TemplateEngineBuilder().setPrefix("/templates/")
-        .setTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND).build());
+    TemplateEngine engine = new TemplateEngineBuilder().setPrefix("/templates/")
+        .setTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND).build();
+    engine.addDialect(new Java8TimeDialect());
+    JavalinThymeleaf.configure(engine);
 
     this.app = Javalin.create(config -> {
       config.addStaticFiles(WEBROOT_DIR_NAME, Location.CLASSPATH);
@@ -178,6 +183,8 @@ public class GoApplication {
     problemsTable.dropAndInsertInitialProblemsToTable(PROBLEM_DIR);
 
     this.loginsTable = new LoginsTable(fileDbDataSource);
+    loginsTable.createTableIfNotExists();
+    loginsTable.createIndexesIfNotExists();
     loginsTable.writeCsv(new File(BACKUP_DIR, "logins-" + System.currentTimeMillis() + ".csv"));
 
 
@@ -199,7 +206,8 @@ public class GoApplication {
 
 
     this.passwordsTable = new PasswordsTable(fileDbDataSource);
-
+    passwordsTable.dropTableIfExists();
+    passwordsTable.createTableAndIndexesIfNotExists();
     try {
       File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv");
       passwordsTable.readFromFileAndMerge(f);
@@ -211,7 +219,13 @@ public class GoApplication {
 
 
     this.gameRecordsTable = new GameRecordsTable(fileDbDataSource);
+    gameRecordsTable.createTableIfNotExists();
+    gameRecordsTable.createIndexesIfNotExists();
+    gameRecordsTable
+        .writeCsv(new File(BACKUP_DIR, "game-record" + System.currentTimeMillis() + ".csv"));
+
     gameRecordsTable.recalculateAndUpdateRank(usersTable);
+
 
     this.matchingRequestsTable = new MatchingRequestsTable(memDbDataSource);
 
@@ -223,13 +237,7 @@ public class GoApplication {
     gameStatesTableInMem.insert(gameStatesTable.readAll().toArray(GameState[]::new));
 
     this.gameStatesTables = new GameStatesTables(fileDbDataSource, memDbDataSource);
-
     this.votesTable = new VotesTable(memDbDataSource);
-
-    this.gameRecordsTable = new GameRecordsTable(fileDbDataSource);
-    this.gameRecordsTable
-        .writeCsv(new File(BACKUP_DIR, "game-record" + System.currentTimeMillis() + ".csv"));
-
 
     this.websoketSessionsTable = new WebsoketSessionsTable(memDbDataSource);
     this.wsManager = new WebsocketSessionsManager(gameStatesTables, problemsTable,

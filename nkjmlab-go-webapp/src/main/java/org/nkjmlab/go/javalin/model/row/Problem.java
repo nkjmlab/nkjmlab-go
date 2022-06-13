@@ -1,14 +1,13 @@
 package org.nkjmlab.go.javalin.model.row;
 
-import java.sql.Timestamp;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
 public class Problem {
 
   private long id;
-  private Timestamp createdAt;
+  private LocalDateTime createdAt;
   private String name = "";
   private String groupId = "";
   private String cells = "";
@@ -23,12 +22,12 @@ public class Problem {
 
   public Problem(long id) {
     this.id = id;
-    this.createdAt = Timestamp.from(Instant.now());
+    this.createdAt = LocalDateTime.now();
 
   }
 
-  public Problem(long id, Timestamp createdAt, String groupId, String name, String cells, String symbols,
-      String message, String handHistory, String agehama) {
+  public Problem(long id, LocalDateTime createdAt, String groupId, String name, String cells,
+      String symbols, String message, String handHistory, String agehama) {
     this.id = id;
     this.createdAt = createdAt;
     this.groupId = groupId;
@@ -53,11 +52,11 @@ public class Problem {
     this.id = id;
   }
 
-  public Timestamp getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public void setCreatedAt(Timestamp createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 
