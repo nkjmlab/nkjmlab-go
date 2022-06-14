@@ -31,10 +31,11 @@ public class MatchingRequestsTable {
 
   public MatchingRequestsTable(DataSource dataSource) {
     this.sorm = Sorm.create(dataSource);
-    this.schema = TableDefinition.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
-        .addColumnDefinition(SEAT_ID, VARCHAR).addColumnDefinition(USER_NAME, VARCHAR)
-        .addColumnDefinition(RANK, INT).addColumnDefinition(GAME_ID, VARCHAR)
-        .addColumnDefinition(CREATED_AT, TIMESTAMP).addIndexDefinition(GAME_ID).build();
+    this.schema =
+        TableDefinition.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
+            .addColumnDefinition(SEAT_ID, VARCHAR).addColumnDefinition(USER_NAME, VARCHAR)
+            .addColumnDefinition(RANK, INT).addColumnDefinition(GAME_ID, VARCHAR)
+            .addColumnDefinition(CREATED_AT, TIMESTAMP).addIndexDefinition(GAME_ID).build();
     schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
   }
 
@@ -54,17 +55,13 @@ public class MatchingRequestsTable {
   }
 
   public List<String> readUserIdsOfUnpairedRequestOrdereByCreatedAt() {
-    return sorm.readList(String.class,
-        select(USER_ID) + from(TABLE_NAME)
-            + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED)))
-            + orderByAsc(CREATED_AT));
+    return sorm.readList(String.class, select(USER_ID) + from(TABLE_NAME)
+        + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
   }
 
   public List<MatchingRequest> readUnpairedRequestsOrderByCreatedAt() {
-    return sorm.readList(MatchingRequest.class,
-        selectStarFrom(TABLE_NAME)
-            + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED)))
-            + orderByAsc(CREATED_AT));
+    return sorm.readList(MatchingRequest.class, selectStarFrom(TABLE_NAME)
+        + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
   }
 
 
@@ -77,7 +74,7 @@ public class MatchingRequestsTable {
 
     List<String> reqs = readUserIdsOfUnpairedRequestOrdereByCreatedAt();
 
-    log.debug("[{}] unpaired matching requests in [{}] matching requests", reqs.size(),
+    log.trace("[{}] unpaired matching requests in [{}] matching requests", reqs.size(),
         sorm.readFirst(Integer.class, SELECT + COUNT + "(*)" + FROM + TABLE_NAME));
 
     List<String> ret = new ArrayList<>();
