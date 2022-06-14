@@ -42,8 +42,7 @@ $(function () {
   const userId = getUserId();
 
   if (getSeatId() == null) {
-    $('#signup-modal').modal('show');
-    return;
+    requireSignin();
   }
 
 
@@ -121,10 +120,6 @@ $(function () {
   $("#span-current-user-id").text(getUserId());
   $("#span-current-user-icon").html(createImageTag(getUserId()));
 
-  $('#signup-modal').on('hidden.bs.modal', function () {
-    location.reload();
-  });
-
   $('#modal-records').on('show.bs.modal', function () {
     $("#current-komi-wrapper").hide();
     $.get("./fragment/game-record-table.html?userId=" + getUserId(),
@@ -143,6 +138,23 @@ $(function () {
           $("#current-komi-wrapper").show();
         })).rpc();
     }
+  });
+
+  $("#btn-attendance").on('click', function (e) {
+    swalInput('座席番号 <i class="fas fa-chair"></i>', "座席番号を半角数字で入力して下さい．<br>座席番号がない場合は0を入力して下さい．", getSeatId() ? getSeatId() : 0, "", function (_seatId) {
+      if (!_seatId) {
+        return;
+      }
+      const seatId = getFormattedSeatId(_seatId);
+      if (!seatId) {
+        swalAlert("入力エラー", (!seatId ? "座席番号" : "") + "に無効な値が入力されました", "error");
+        return;
+      }
+      new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "registerAttendance", [getUserId(), seatId], function () {
+        setSeatId(seatId);
+        location = "play.html";
+      })).rpc();
+    });
   });
 
   $("#btn-close-komi").on('click', function (e) {
@@ -384,38 +396,6 @@ $(function () {
       });
     }
   });
-
-  $('#btn-open-main-meet').on(
-    'click',
-    function (e) {
-      const MAINROOM_MEET_CODE = "yxb-acbi-tzc";
-      window.open('https://meet.google.com/' + MAINROOM_MEET_CODE,
-        'mainroom-window', 'width=1024,height=640');
-    });
-
-  $("#signup-modal-title").html('座席登録 <i class="fas fa-chair"></i>');
-  $("#signup-password-group").hide();
-  $("#btn-signup").on(
-    'click',
-    function () {
-      for (let i = 0; i < $('#signup-form input').length; i++) {
-        if (!$('#signup-form input')[i].checkValidity()) {
-          $('#signup-form .submit-for-validation').trigger("click");
-          return;
-        }
-      }
-
-      const seatId = getFormattedSeatId($("#signup-seatid").val());
-      if (!seatId) {
-        swalAlert("入力エラー", (!seatId ? "座席番号" : "") + "に無効な値が入力されました", "error");
-        return;
-      }
-
-      new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "registerAttendance", [getUserId(), seatId], function () {
-        setSeatId(seatId);
-        location = "play.html";
-      })).rpc();
-    });
 });
 
 $(function () {
