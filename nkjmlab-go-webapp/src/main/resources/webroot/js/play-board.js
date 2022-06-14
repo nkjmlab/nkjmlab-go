@@ -456,9 +456,13 @@ class GameBoard {
     setInterval(updateOffset, 500);
 
     (function () {
+      let mousedown_touchstart = false;
       $('#black-stones-cap').on(
         "mousedown touchstart",
         function (ev) {
+          if (mousedown_touchstart) { return; }
+          mousedown_touchstart = true;
+          setTimeout(e => mousedown_touchstart = false, 500);
           const e = ev.originalEvent;
           if (gameState.agehama.black == 0) { return; }
           setMoving('#moving-white-stone');
@@ -473,9 +477,13 @@ class GameBoard {
     })();
 
     (function () {
+      let mousedown_touchstart = false;
       $('#white-stones-cap').on(
         "mousedown touchstart",
         function (ev) {
+          if (mousedown_touchstart) { return; }
+          mousedown_touchstart = true;
+          setTimeout(e => mousedown_touchstart = false, 500);
           const e = ev.originalEvent;
           if (gameState.agehama.white == 0) { return; }
           setMoving('#moving-black-stone');
@@ -490,7 +498,11 @@ class GameBoard {
     })();
 
     (function () {
+      let mousedown_touchstart = false;
       $('#game-board').on("mousedown touchstart", function (ev) {
+        if (mousedown_touchstart) { return; }
+        mousedown_touchstart = true;
+        setTimeout(e => mousedown_touchstart = false, 500);
         const e = ev.originalEvent;
         const x = getCellX(e);
         const y = getCellY(e);
@@ -521,7 +533,11 @@ class GameBoard {
         C_STONES_SELECTOR, X_STONES_SELECTOR, CIRCLE_STONES_SELECTOR,
         RECTANGLE_STONES_SELECTOR, TRIANGLE_STONES_SELECTOR];
 
+      let mousedown_touchstart = false;
       $(CODE_SYMBOL_SELECTORS.join(",")).on('mousedown touchstart', function (e) {
+        if (mousedown_touchstart) { return; }
+        mousedown_touchstart = true;
+        setTimeout(e => mousedown_touchstart = false, 500);
         setMoving("#moving-" + $(this).attr("id").replace("stones", "stone"));
         showAndUpdateStonePosition(e.originalEvent);
         setPressedFromPod();
@@ -530,7 +546,12 @@ class GameBoard {
     })();
 
     (function () {
+      let mousedown_touchstart = false;
       $(['#black-stones', '#moving-black-stone'].join(",")).on('mousedown touchstart', function (e) {
+        if (mousedown_touchstart) { return; }
+        mousedown_touchstart = true;
+        setTimeout(e => mousedown_touchstart = false, 500);
+
         setMoving('#moving-black-stone');
         jqMoving.offset({
           left: jqMoving.offset().left,
@@ -542,7 +563,11 @@ class GameBoard {
       });
     })();
     (function () {
+      let mousedown_touchstart = false;
       $(['#white-stones', '#moving-white-stone'].join(",")).on('mousedown touchstart', function (e) {
+        if (mousedown_touchstart) { return; }
+        mousedown_touchstart = true;
+        setTimeout(e => mousedown_touchstart = false, 500);
         setMoving('#moving-white-stone');
         jqMoving.offset({
           left: jqMoving.offset().left,
@@ -657,16 +682,18 @@ class GameBoard {
 
       const MOVING_SELECTORS =
         ["black", "white", "a", "b", "c", "x", "circle", "rectangle", "triangle"].map(e => "#moving-" + e + "-stone");
-
+      const MOVING_SELECTORS_JOIN = MOVING_SELECTORS.join(",");
+      let mouseup_touchend = false;
       $('body').on('mouseup touchend', function (e) {
         if (!pressed) { return; }
-        $(MOVING_SELECTORS.join(",")).fadeOut(200);
+        if (mouseup_touchend) { return; }
+        mouseup_touchend = true;
+        setTimeout(e => mouseup_touchend = false, 500);
+        $(MOVING_SELECTORS_JOIN).fadeOut(200);
         if (procStoneOnCap(e, pressed)) {
-          self.repaintBoard();
-          setPressed(false);
-          return;
+        } else {
+          procStoneNotOnCap(e);
         }
-        procStoneNotOnCap(e);
         self.repaintBoard();
         setPressed(false);
       });
