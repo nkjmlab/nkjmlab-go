@@ -29,6 +29,7 @@ import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.Base64Utils;
+import org.nkjmlab.util.java.json.JsonMapper;
 import org.nkjmlab.util.java.lang.ParameterizedStringUtils;
 import org.nkjmlab.util.javax.imageio.ImageIoUtils;
 
@@ -47,7 +48,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   private final HandsUpTable handsUpTable;
   private final GameRecordsTable gameRecordsTable;
 
-  private static final JacksonMapper mapper = JacksonMapper.getDefaultMapper();
+  private static final JsonMapper mapper = JacksonMapper.getIgnoreUnknownPropertiesMapper();
 
 
   public GoJsonRpcService(WebsocketSessionsManager wsManager, GameStatesTables gameStatesTables,
