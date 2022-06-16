@@ -76,15 +76,18 @@ function refreshWaitingRequestFragment() {
       function (data) {
         $('#btn-find-opponent').prop("disabled", true);
         $("#tbl-waiting-requests-wrapper").html(data);
-        $(".game-link").on(
-          'click',
-          function () {
-            var link = $(this);
+        const gameLink = $(data).find(".game-link").attr('data-url');
+        if (!gameLink) {
+          return;
+        }
+        swalAlert("次の対局", gameLink.split("=")[1], "info",
+          function (e) {
             new JsonRpcClient(new JsonRpcRequest(getBaseUrl(),
               "exitWaitingRoom", [getUserId()], function (data) {
-                location.href = link.attr('data-url');
+                location.href = gameLink;
               })).rpc();
           });
+
       });
   }
 }
