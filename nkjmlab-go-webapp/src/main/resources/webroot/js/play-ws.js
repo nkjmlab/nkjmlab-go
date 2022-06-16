@@ -198,19 +198,24 @@ class PlayWebSocket {
 
     connection.onerror = function (e) {
       console.error("connection has an error.");
-      console.error(stringifyEvent(e));
+      let reconTimer;
+      clearTimeout(reconTimer);
+      swalAlert("サーバとの接続に問題が発生しました", "リロードします", "error", function () {
+        reconTimer = setTimeout(() => {
+          self.startNewWsConnection(gameBoard);
+        }, 2000);
+      });
+
     };
 
 
     connection.onclose = function (e) {
-      let reconTimer;
       console.warn("connection is closed.");
+      let reconTimer;
       clearTimeout(reconTimer);
-      reconTimer = setTimeout(function () {
+      reconTimer = setTimeout(() => {
         self.startNewWsConnection(gameBoard);
-      }, 1000);
-      $("#spinner-loading-wrapper").show();
-      console.warn(stringifyEvent(e));
+      }, 500);
     };
   }
 
