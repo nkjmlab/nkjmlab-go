@@ -1,4 +1,10 @@
 $(function () {
+    $("form input").on('keypress', function (ev) {
+        if ((ev.which && ev.which === 13) || (ev.keyCode && ev.keyCode === 13)) {
+            ev.preventDefault();
+        }
+    });
+
     $('#signup-modal').on('hidden.bs.modal', function () {
         location.reload();
     });
@@ -7,18 +13,18 @@ $(function () {
     $("#btn-guest-login").on(
         'click',
         function () {
-		    $("#signup-modal-title").html('ゲスト <i class="far fa-address-card"></i>');
-		    $(".signin-guest").show();
-		    $(".signin-user").hide();
-	});
+            $("#signup-modal-title").html('ゲスト <i class="far fa-address-card"></i>');
+            $(".signin-guest").show();
+            $(".signin-user").hide();
+        });
 
     $("#btn-user-login").on(
         'click',
         function () {
-		    $("#signup-modal-title").html('ユーザ <i class="far fa-address-card"></i>');
-		    $(".signin-user").show();
-		    $(".signin-guest").hide();
-	});
+            $("#signup-modal-title").html('ユーザ <i class="far fa-address-card"></i>');
+            $(".signin-user").show();
+            $(".signin-guest").hide();
+        });
 
     $("#btn-guest-signin").on(
         'click',
@@ -72,13 +78,13 @@ $(function () {
                 return;
             }
 
-			const password =$("#signup-password").val();
+            const password = $("#signup-password").val();
             new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "signinWithoutFirebase", [
                 stdId, password, seatId], function (data) {
-					if(data.result==null){
-						swalAlert("エラー", "ログイン失敗", "error");
+                    if (data.result == null) {
+                        swalAlert("エラー", "ログイン失敗", "error");
                         return;
-					}
+                    }
                     setUserId(stdId);
                     setUserName(data.result.userName);
                     setSeatId(seatId);

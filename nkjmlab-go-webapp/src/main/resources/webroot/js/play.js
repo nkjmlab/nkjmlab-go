@@ -760,7 +760,7 @@ function initView() {
     }
     vGames.push($("<span>")
       .append(
-        $("<a>").addClass("text-secondary").attr("href",
+        $("<a>").addClass("btn btn-sm btn-light").attr("href",
           "play.html?game_id=" + getVisitedGameIds()[i])
           .html(
             ' <i class="far fa-handshake"></i> '
