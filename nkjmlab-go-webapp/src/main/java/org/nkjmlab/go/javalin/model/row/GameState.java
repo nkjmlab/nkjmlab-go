@@ -1,11 +1,11 @@
 package org.nkjmlab.go.javalin.model.row;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class GameState {
 
   private long id;
-  private Date createdAt;
+  private LocalDateTime createdAt;
   private String gameId;
   private String blackPlayerId;
   private String whitePlayerId;
@@ -23,9 +23,9 @@ public class GameState {
     this.gameId = gameId;
   }
 
-  public GameState(Date createdAt, String gameId, String blackPlayerId, String whitePlayerId,
-      int handNumber, String lastHand, String agehama, String cells, String symbols,
-      String handHistory, long problemId, String options) {
+  public GameState(LocalDateTime createdAt, String gameId, String blackPlayerId,
+      String whitePlayerId, int handNumber, String lastHand, String agehama, String cells,
+      String symbols, String handHistory, long problemId, String options) {
     this.createdAt = createdAt;
     this.gameId = gameId;
     this.blackPlayerId = blackPlayerId;
@@ -47,11 +47,11 @@ public class GameState {
     this.id = id;
   }
 
-  public Date getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public void setCreatedAt(Date createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 

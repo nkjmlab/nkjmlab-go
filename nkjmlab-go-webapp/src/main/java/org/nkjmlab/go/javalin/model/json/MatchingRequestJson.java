@@ -1,14 +1,14 @@
 package org.nkjmlab.go.javalin.model.json;
 
 import static org.nkjmlab.go.javalin.model.row.MatchingRequest.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 import org.nkjmlab.go.javalin.model.row.MatchingRequest;
 
 public class MatchingRequestJson {
 
   private String userId;
   private int rank;
-  private Date createdAt;
+  private LocalDateTime createdAt;
   private String seatId;
   private String userName;
   private String gameId = UNPAIRED;
@@ -47,11 +47,11 @@ public class MatchingRequestJson {
     this.rank = rank;
   }
 
-  public Date getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public void setCreatedAt(Date createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 

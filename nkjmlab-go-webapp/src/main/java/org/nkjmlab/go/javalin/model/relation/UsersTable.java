@@ -6,13 +6,13 @@ import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
@@ -57,7 +57,6 @@ public class UsersTable {
             .addColumnDefinition(ROLE, VARCHAR).addColumnDefinition(SEAT_ID, VARCHAR)
             .addColumnDefinition(RANK, INT).addColumnDefinition(CREATED_AT, TIMESTAMP)
             .addIndexDefinition(EMAIL).addIndexDefinition(ROLE).build();
-    createTableAndIndexesIfNotExists();
   }
 
   public void dropTableIfExists() {
@@ -170,9 +169,17 @@ public class UsersTable {
     File uploadedIcon = new File(UPLOADED_ICON_DIR, userId + ".png");
     File initialIcon = new File(INITIAL_ICON_DIR, userId + ".png");
 
-    File srcFile = uploadedIcon.exists() ? uploadedIcon
-        : (initialIcon.exists() ? initialIcon
-            : getRandom(Arrays.asList(RANDOM_ICON_DIR.listFiles())).orElseThrow());
+    File srcFile =
+        uploadedIcon
+            .exists()
+                ? uploadedIcon
+                : (initialIcon
+                    .exists()
+                        ? initialIcon
+                        : getRandom(Stream.of(RANDOM_ICON_DIR.listFiles())
+                            .filter(f -> f.getName().toLowerCase().endsWith(".png")
+                                || f.getName().toLowerCase().endsWith(".jpg"))
+                            .toList()).orElseThrow());
     try {
       org.apache.commons.io.FileUtils.copyFile(srcFile,
           new File(CURRENT_ICON_DIR, userId + ".png"));

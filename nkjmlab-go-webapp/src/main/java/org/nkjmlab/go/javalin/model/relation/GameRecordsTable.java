@@ -7,10 +7,10 @@ import org.nkjmlab.go.javalin.model.row.GameRecord;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.result.RowMap;
-import org.nkjmlab.sorm4j.util.h2.BasicH2TableWithDefinition;
+import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
 import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 
-public class GameRecordsTable extends BasicH2TableWithDefinition<GameRecord> {
+public class GameRecordsTable extends BasicH2Table<GameRecord> {
 
   public static final String TABLE_NAME = "GAME_RECORDS";
   private static final String ID = "id";
@@ -28,13 +28,10 @@ public class GameRecordsTable extends BasicH2TableWithDefinition<GameRecord> {
     super(Sorm.create(dataSource), GameRecord.class,
         TableDefinition.builder(TABLE_NAME)
             .addColumnDefinition(ID, INT, AUTO_INCREMENT, PRIMARY_KEY)
-            .addColumnDefinition(CREATED_AT, "TIMESTAMP AS CURRENT_TIMESTAMP")
-            .addColumnDefinition(USER_ID, VARCHAR).addColumnDefinition(OPPONENT_USER_ID, VARCHAR)
-            .addColumnDefinition(JADGE, VARCHAR).addColumnDefinition(MEMO, VARCHAR)
-            .addColumnDefinition(RANK, INT).addColumnDefinition(POINT, INT)
-            .addColumnDefinition(MESSAGE, VARCHAR).build());
-    createTableIfNotExists();
-    createIndexesIfNotExists();
+            .addColumnDefinition(CREATED_AT, TIMESTAMP).addColumnDefinition(USER_ID, VARCHAR)
+            .addColumnDefinition(OPPONENT_USER_ID, VARCHAR).addColumnDefinition(JADGE, VARCHAR)
+            .addColumnDefinition(MEMO, VARCHAR).addColumnDefinition(RANK, INT)
+            .addColumnDefinition(POINT, INT).addColumnDefinition(MESSAGE, VARCHAR).build());
   }
 
   public void recalculateAndUpdateRank(UsersTable usersTable) {

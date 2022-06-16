@@ -42,7 +42,7 @@
           <span class="label label-success" th:text="${req.rank}"></span>
         </h6>
       </td>
-      <td class="small"><div th:text="${#dates.format(req.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></div></td>
+      <td class="small"><div th:text="${#temporals.format(req.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></div></td>
     </tr>
   </tbody>
 </table>

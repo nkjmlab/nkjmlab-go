@@ -1,24 +1,22 @@
 package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
-import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import org.apache.commons.lang3.time.DateUtils;
 import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.context.SormContext;
-import org.nkjmlab.sorm4j.util.h2.BasicH2TableWithDefinition;
+import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
 import org.nkjmlab.sorm4j.util.logger.LoggerContext;
 import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
 
-public class LoginsTable extends BasicH2TableWithDefinition<Login> {
+public class LoginsTable extends BasicH2Table<Login> {
 
   public static final String TABLE_NAME = "LOGINS";
 
@@ -40,8 +38,6 @@ public class LoginsTable extends BasicH2TableWithDefinition<Login> {
             .addColumnDefinition(REMOTE_ADDR, VARCHAR).addIndexDefinition(USER_ID).build());
     this.loggerableSorm = Sorm.create(dataSource, SormContext.builder()
         .setLoggerContext(LoggerContext.builder().enableAll().build()).build());
-    createTableIfNotExists();
-    createIndexesIfNotExists();
   }
 
 
@@ -52,10 +48,11 @@ public class LoginsTable extends BasicH2TableWithDefinition<Login> {
   }
 
   public List<Login> readOrderedActiveStudentLogins(UsersTable usersTable) {
-    Date now = new Date();
+    LocalDate nowDate = LocalDate.now();
     return readAllLastLoginsOrderByUserId().stream()
         .filter(l -> Optional.ofNullable(usersTable.readByPrimaryKey(l.getUserId()))
-            .map(u -> u.isStudent()).orElse(false) && DateUtils.isSameDay(l.getLoggedInAt(), now))
+            .map(u -> u.isStudent()).orElse(false)
+            && l.getLoggedInAt().toLocalDate().equals(nowDate))
         .collect(Collectors.toList());
   }
 
@@ -88,7 +85,7 @@ public class LoginsTable extends BasicH2TableWithDefinition<Login> {
   }
 
   public void login(User u, String remoteAddr) {
-    insert(new Login(u, new Timestamp(new Date().getTime()), remoteAddr));
+    insert(new Login(u, LocalDateTime.now(), remoteAddr));
   }
 
 
@@ -105,8 +102,7 @@ public class LoginsTable extends BasicH2TableWithDefinition<Login> {
   }
 
   public boolean isAttendance(String userId) {
-    return readLastLogin(userId)
-        .map(l -> l.getLoggedInAt().toLocalDateTime().toLocalDate().equals(LocalDate.now()))
+    return readLastLogin(userId).map(l -> l.getLoggedInAt().toLocalDate().equals(LocalDate.now()))
         .orElse(false);
   }
 

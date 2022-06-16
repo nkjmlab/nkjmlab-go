@@ -1,8 +1,8 @@
 package org.nkjmlab.go.javalin.model.json;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +28,7 @@ public class GameStateJson {
   private List<HandJson> handHistory = new ArrayList<>();
   private long problemId = -1;
   private Map<String, Object> options = new HashMap<>();
-  private Date createdAt = new Date();
+  private LocalDateTime createdAt = LocalDateTime.now();
 
   private static final JsonMapper mapper = JacksonMapper.getDefaultMapper();
 
@@ -67,8 +67,8 @@ public class GameStateJson {
   }
 
   public GameState toGameState() {
-    return new GameState(new Date(), gameId, blackPlayerId, whitePlayerId, lastHand.getNumber(),
-        mapper.toJson(lastHand), mapper.toJson(agehama), mapper.toJson(cells),
+    return new GameState(LocalDateTime.now(), gameId, blackPlayerId, whitePlayerId,
+        lastHand.getNumber(), mapper.toJson(lastHand), mapper.toJson(agehama), mapper.toJson(cells),
         mapper.toJson(symbols), mapper.toJson(handHistory), problemId, mapper.toJson(options));
   }
 
@@ -167,11 +167,11 @@ public class GameStateJson {
     this.problemId = problemId;
   }
 
-  public Date getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public void setCreatedAt(Date createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 

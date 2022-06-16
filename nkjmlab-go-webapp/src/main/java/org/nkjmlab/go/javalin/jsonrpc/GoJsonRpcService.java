@@ -2,8 +2,7 @@ package org.nkjmlab.go.javalin.jsonrpc;
 
 import static org.nkjmlab.go.javalin.GoApplication.*;
 import java.io.File;
-import java.sql.Timestamp;
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -30,6 +29,7 @@ import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.Base64Utils;
+import org.nkjmlab.util.java.json.JsonMapper;
 import org.nkjmlab.util.java.lang.ParameterizedStringUtils;
 import org.nkjmlab.util.javax.imageio.ImageIoUtils;
 
@@ -48,7 +48,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   private final HandsUpTable handsUpTable;
   private final GameRecordsTable gameRecordsTable;
 
-  private static final JacksonMapper mapper = JacksonMapper.getDefaultMapper();
+  private static final JsonMapper mapper = JacksonMapper.getIgnoreUnknownPropertiesMapper();
 
 
   public GoJsonRpcService(WebsocketSessionsManager wsManager, GameStatesTables gameStatesTables,
@@ -119,7 +119,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       autoBackupProblemJsonToFile(ProblemJson.createFrom(p));
       p.setAgehama(mapper.toJson(currentState.getAgehama()));
       p.setCells(mapper.toJson(currentState.getCells()));
-      p.setCreatedAt(Timestamp.from(Instant.now()));
+      p.setCreatedAt(LocalDateTime.now());
       p.setHandHistory(mapper.toJson(currentState.getHandHistory()));
       p.setSymbols(mapper.toJson(currentState.getSymbols()));
       p.setName(name);
@@ -127,8 +127,8 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       p.setMessage(message);
       problemsTable.merge(p);
     } else {
-      p = new Problem(problemId == -1 ? ProblemFactory.getNewId() : problemId,
-          Timestamp.from(Instant.now()), groupId, name, mapper.toJson(currentState.getCells()),
+      p = new Problem(problemId == -1 ? ProblemFactory.getNewId() : problemId, LocalDateTime.now(),
+          groupId, name, mapper.toJson(currentState.getCells()),
           mapper.toJson(currentState.getSymbols()), message == null ? "" : message,
           mapper.toJson(currentState.getHandHistory()), mapper.toJson(currentState.getAgehama()));
       problemsTable.insert(p);
@@ -259,7 +259,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       }
       usersTable.update(u);
 
-      MatchingRequest matchingReq = new MatchingRequest(u, new Date());
+      MatchingRequest matchingReq = new MatchingRequest(u, LocalDateTime.now());
       if (!matchingRequestsTable.exists(matchingReq)) {
         matchingRequestsTable.insert(matchingReq);
       } else {
@@ -321,7 +321,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     if (handUp) {
       HandUp h = handsUpTable.readByPrimaryKey(gameId);
       if (h == null) {
-        handsUpTable.insert(new HandUp(gameId, new Date(), message));
+        handsUpTable.insert(new HandUp(gameId, LocalDateTime.now(), message));
       } else {
         h.setMessage(h.getMessage() + "<br>" + message);
         handsUpTable.update(h);

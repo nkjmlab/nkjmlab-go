@@ -14,7 +14,7 @@ $(function () {
     }
   });
 
-  checkWebsocketWithEchoService();
+  checkWebsocket();
   checkDevice();
   if (isEnableLocalStorage()) {
     $("#localStorage").html(
@@ -36,29 +36,6 @@ $(function () {
     $("#btn-login").prop("disabled", true);
   }
 
-  function checkWebsocketWithEchoService(outputSelector) {
-    const uri = new parseUri(location);
-    const wsUrl = uri.protocol === "https" ? "wss://echo.websocket.org/"
-      : "ws://echo.websocket.org/";
-    checkWebsocket(wsUrl, outputSelector);
-  }
-  function checkWebsocket(wsUrl, outputSelector) {
-    const connection = new WebSocket(wsUrl);
-    connection.onopen = function (e) {
-      $(outputSelector).html(
-        $('<span>').html(
-          '<span class="badge badge-success">OK</span> ' + wsUrl
-          + "に接続しました．ネットワーク環境は正常です．"));
-      connection.close();
-      $("#btn-login").removeClass("disabled");
-    };
-    connection.onerror = function (e) {
-      $(outputSelector).html(
-        $('<div class="alert alert-danger">').html(
-          '<span class="badge badge-danger">WARN</span> '
-          + "Websocketによる通信が出来ません．"));
-    };
-  }
   function checkWebsocket() {
     const wsUrl = getWebSocketBaseUrl()+"/checkcon";
     const connection = new WebSocket(wsUrl);

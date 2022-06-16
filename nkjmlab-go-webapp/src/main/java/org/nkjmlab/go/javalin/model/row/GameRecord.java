@@ -1,6 +1,6 @@
 package org.nkjmlab.go.javalin.model.row;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.sorm4j.annotation.OrmTable;
 
@@ -8,7 +8,7 @@ import org.nkjmlab.sorm4j.annotation.OrmTable;
 public class GameRecord {
 
   private int id;
-  private Timestamp createdAt;
+  private LocalDateTime createdAt = LocalDateTime.now();
   private String userId;
   private String opponentUserId;
   private String jadge;
@@ -41,7 +41,7 @@ public class GameRecord {
     return id;
   }
 
-  public Timestamp getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
@@ -75,7 +75,7 @@ public class GameRecord {
   }
 
 
-  public void setCreatedAt(Timestamp createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 

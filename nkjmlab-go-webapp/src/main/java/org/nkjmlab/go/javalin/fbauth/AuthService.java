@@ -3,7 +3,6 @@ package org.nkjmlab.go.javalin.fbauth;
 import static org.nkjmlab.go.javalin.model.row.User.*;
 import java.io.File;
 import java.io.FileInputStream;
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
@@ -53,9 +52,8 @@ public class AuthService implements AuthServiceInterface {
     User u = usersTable.readByPrimaryKey(userId);
     u.setSeatId(seatId);
     usersTable.merge(u);
-    loginsTable
-        .insert(new Login(userId, seatId, u.getUserName(), Timestamp.valueOf(LocalDateTime.now()),
-            HttpRequestUtils.getXForwardedFor(request).orElseGet(() -> request.getRemoteAddr())));
+    loginsTable.insert(new Login(userId, seatId, u.getUserName(), LocalDateTime.now(),
+        HttpRequestUtils.getXForwardedFor(request).orElseGet(() -> request.getRemoteAddr())));
     return true;
   }
 
