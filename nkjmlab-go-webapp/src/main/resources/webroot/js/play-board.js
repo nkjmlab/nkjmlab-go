@@ -1,4 +1,6 @@
 
+const EVENT_PREVENT_TIME = 500;
+
 class GameBoard {
 
   constructor() {
@@ -452,17 +454,28 @@ class GameBoard {
         stone: stone
       });
     }
+    function sendGameStateWithOnBoardHand(connection, gameState, x, y, stone) {
+      sendGameStateWithLastHand(connection, gameState, {
+        "type": "putOnBoard",
+        "x": x,
+        "y": y,
+        "stone": stone
+      });
+    }
 
     setInterval(updateOffset, 500);
 
     (function () {
-      let mousedown_touchstart = false;
+      let preventTimer = null;
       $('#black-stones-cap').on(
         "mousedown touchstart",
         function (ev) {
-          if (mousedown_touchstart) { return; }
-          mousedown_touchstart = true;
-          setTimeout(e => mousedown_touchstart = false, 500);
+          if (preventTimer) {
+            clearTimeout(preventTimer);
+            preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
+            return;
+          }
+          preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
           const e = ev.originalEvent;
           if (gameState.agehama.black == 0) { return; }
           setMoving('#moving-white-stone');
@@ -477,13 +490,16 @@ class GameBoard {
     })();
 
     (function () {
-      let mousedown_touchstart = false;
+      let preventTimer = null;
       $('#white-stones-cap').on(
         "mousedown touchstart",
         function (ev) {
-          if (mousedown_touchstart) { return; }
-          mousedown_touchstart = true;
-          setTimeout(e => mousedown_touchstart = false, 500);
+          if (preventTimer) {
+            clearTimeout(preventTimer);
+            preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
+            return;
+          }
+          preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
           const e = ev.originalEvent;
           if (gameState.agehama.white == 0) { return; }
           setMoving('#moving-black-stone');
@@ -498,11 +514,14 @@ class GameBoard {
     })();
 
     (function () {
-      let mousedown_touchstart = false;
+      let preventTimer = null;
       $('#game-board').on("mousedown touchstart", function (ev) {
-        if (mousedown_touchstart) { return; }
-        mousedown_touchstart = true;
-        setTimeout(e => mousedown_touchstart = false, 500);
+        if (preventTimer) {
+          clearTimeout(preventTimer);
+          preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
+          return;
+        }
+        preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
         const e = ev.originalEvent;
         const x = getCellX(e);
         const y = getCellY(e);
@@ -533,11 +552,14 @@ class GameBoard {
         C_STONES_SELECTOR, X_STONES_SELECTOR, CIRCLE_STONES_SELECTOR,
         RECTANGLE_STONES_SELECTOR, TRIANGLE_STONES_SELECTOR];
 
-      let mousedown_touchstart = false;
+      let preventTimer = null;
       $(CODE_SYMBOL_SELECTORS.join(",")).on('mousedown touchstart', function (e) {
-        if (mousedown_touchstart) { return; }
-        mousedown_touchstart = true;
-        setTimeout(e => mousedown_touchstart = false, 500);
+        if (preventTimer) {
+          clearTimeout(preventTimer);
+          preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
+          return;
+        }
+        preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
         setMoving("#moving-" + $(this).attr("id").replace("stones", "stone"));
         showAndUpdateStonePosition(e.originalEvent);
         setPressedFromPod();
@@ -546,11 +568,14 @@ class GameBoard {
     })();
 
     (function () {
-      let mousedown_touchstart = false;
+      let preventTimer = null;
       $(['#black-stones', '#moving-black-stone'].join(",")).on('mousedown touchstart', function (e) {
-        if (mousedown_touchstart) { return; }
-        mousedown_touchstart = true;
-        setTimeout(e => mousedown_touchstart = false, 500);
+        if (preventTimer) {
+          clearTimeout(preventTimer);
+          preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
+          return;
+        }
+        preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
 
         setMoving('#moving-black-stone');
         jqMoving.offset({
@@ -563,11 +588,15 @@ class GameBoard {
       });
     })();
     (function () {
-      let mousedown_touchstart = false;
+      let preventTimer = null;
       $(['#white-stones', '#moving-white-stone'].join(",")).on('mousedown touchstart', function (e) {
-        if (mousedown_touchstart) { return; }
-        mousedown_touchstart = true;
-        setTimeout(e => mousedown_touchstart = false, 500);
+        if (preventTimer) {
+          clearTimeout(preventTimer);
+          preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
+          return;
+        }
+        preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
+
         setMoving('#moving-white-stone');
         jqMoving.offset({
           left: jqMoving.offset().left,
@@ -646,7 +675,7 @@ class GameBoard {
         const stone = getTargetStone();
 
         if (!self._isValidCellIndex(x, y)) {
-          // ここで誤った盤外ドロップを防ぎたいが，工夫しないと碁笥にも戻せなくなってしまう
+          // 盤外へドロップ
           return;
         }
 
@@ -683,12 +712,16 @@ class GameBoard {
       const MOVING_SELECTORS =
         ["black", "white", "a", "b", "c", "x", "circle", "rectangle", "triangle"].map(e => "#moving-" + e + "-stone");
       const MOVING_SELECTORS_JOIN = MOVING_SELECTORS.join(",");
-      let mouseup_touchend = false;
+      let preventTimer = null;
+
       $('body').on('mouseup touchend', function (e) {
         if (!pressed) { return; }
-        if (mouseup_touchend) { return; }
-        mouseup_touchend = true;
-        setTimeout(e => mouseup_touchend = false, 500);
+        if (preventTimer) {
+          clearTimeout(preventTimer);
+          preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
+          return;
+        }
+        preventTimer = setTimeout(() => preventTimer = null, EVENT_PREVENT_TIME);
         $(MOVING_SELECTORS_JOIN).fadeOut(200);
         if (procStoneOnCap(e, pressed)) {
         } else {

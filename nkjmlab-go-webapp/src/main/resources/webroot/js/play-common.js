@@ -159,15 +159,6 @@ function sendGameStateWithLastHand(connection, gameState, hand) {
   sendGameState(connection, gameState);
 }
 
-function sendGameStateWithOnBoardHand(connection, gameState, x, y, stone) {
-  sendGameStateWithLastHand(connection, gameState, {
-    "type": "putOnBoard",
-    "x": x,
-    "y": y,
-    "stone": stone
-  });
-}
-
 function sendNewGame(gameState, ro, callback) {
   if (!callback) {
     callback = function(data) {
