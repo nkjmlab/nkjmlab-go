@@ -252,11 +252,11 @@ public class GoApplication {
       });
     });
     app.ws("/websocket/play", ws -> {
-      ws.onConnect(ctx -> {
-        wsManager.onConnect(ctx.session, ctx.queryParam("userId"), ctx.queryParam("gameId"));
-      });
+      ws.onConnect(ctx -> wsManager.onConnect(ctx.session, ctx.queryParam("userId"),
+          ctx.queryParam("gameId")));
       ws.onClose(ctx -> wsManager.onClose(ctx.session, ctx.status(), ctx.reason()));
       ws.onError(ctx -> wsManager.onError(ctx.session, ctx.error()));
+      ws.onMessage(ctx -> wsManager.onMessage(ctx.queryParam("gameId"), ctx));
     });
 
 

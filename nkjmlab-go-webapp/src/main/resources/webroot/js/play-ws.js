@@ -198,7 +198,8 @@ class PlayWebSocket {
 
     connection.onerror = function (e) {
       console.error("connection has an error.");
-      swalAlert("サーバとの接続に問題が発生しました", "少し待ってページを再読み込みして下さい", "error", function () {
+      swalAlert("ページを再読み込みします", "", "info", function () {
+        location.reload();
       });
     };
 

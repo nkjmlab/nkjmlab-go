@@ -105,16 +105,16 @@ function getFormattedRank(text) {
 }
 
 function promptInputUserId(title, text, ph, uid, callback) {
-  swalInput(title, text, uid, ph, function(inputValue) {
+  swalInput(title, text, uid, ph, function (inputValue) {
     if (!inputValue || inputValue === "") {
       location.href = "play.html";
       return;
     }
     const uid = getFormattedStdId(inputValue);
     if (!uid) {
-      setTimeout(function() {
-        swalAlert("入力エラー", "無効な値が入力されました", "error", function() {
-          setTimeout(function() {
+      setTimeout(function () {
+        swalAlert("入力エラー", "無効な値が入力されました", "error", function () {
+          setTimeout(function () {
             promptInputUserId(title, text, ph, null, callback);
           }, 300);
         })
@@ -132,53 +132,59 @@ function setGameStateOptions(gameState) {
   }
 }
 
-function sendGameState(connection, gameState) {
+
+function sendGameStateByWs(connection, gameState) {
+  connection.send(JSON.stringify(gameState));
+}
+
+function sendGameStateByJsonRpc(gameState) {
+  new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "sendGameState", [
+    getGameId(), gameState], function (data) {
+    }, function (data, textStatus, errorThrown) {
+      swalAlert("ページを再読み込みします", "", "info", function () {
+        location.reload();
+      });
+    })).rpc();
+}
+
+
+function sendGameStateWithLastHand(connection, gameState, hand) {
   if (getGameId() == null) { return; }
   if (gameState.handHistory == null) {
     gameState.handHistory = new Array();
   }
+  gameState.lastHand = hand;
   gameState.lastHand.number = gameState.handHistory.length;
   gameState.handHistory.push(gameState.lastHand);
   gameState.blackPlayerId = getGameId().split("-vs-")[0] ? getGameId().split(
-          "-vs-")[0] : getUserId();
+    "-vs-")[0] : getUserId();
   gameState.whitePlayerId = getGameId().split("-vs-")[1] ? getGameId().split(
-          "-vs-")[1] : getUserId();
+    "-vs-")[1] : getUserId();
 
-  new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "sendGameState", [
-      getGameId(), gameState], function(data) {
-  }, function(data, textStatus, errorThrown) {
-    sendLog("データの送信に失敗. " + textStatus + ', ' + errorThrown + '.');
-    swalAlert("ページを再読み込みします", "", "info", function() {
-      location.reload();
-    });
-  })).rpc();
-}
-
-function sendGameStateWithLastHand(connection, gameState, hand) {
-  gameState.lastHand = hand;
-  sendGameState(connection, gameState);
+  //sendGameStateByJsonRpc(gameState);
+  sendGameStateByWs(connection, gameState);
 }
 
 function sendNewGame(gameState, ro, callback) {
   if (!callback) {
-    callback = function(data) {
+    callback = function (data) {
     };
   }
   setGameStateOptions(gameState);
   new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "newGame", [getGameId(),
-      gameState], callback)).rpc();
+    gameState], callback)).rpc();
 }
 
 function notifyLoginToBoard() {
   new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "notifyLoginToBoard", [
-      getGameId(), getUserId()], function(data) {
-  })).rpc();
+    getGameId(), getUserId()], function (data) {
+    })).rpc();
 }
 
 function goBack(gameState, callback) {
   new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "goBack", [getGameId(),
-      gameState], function(data) {
-  })).rpc();
+    gameState], function (data) {
+    })).rpc();
 }
 
 function getStoneColor(stone) {
@@ -201,7 +207,7 @@ function selectorToStone(selector) {
 function getBaseUrl() {
   const u = parseUri(document.URL);
   const urlPrefix = u.protocol + "://" + u.authority + "/"
-          + u.directory.split("/")[1] + "/";
+    + u.directory.split("/")[1] + "/";
   return urlPrefix + "json/GoJsonRpcService";
 }
 
@@ -243,17 +249,17 @@ function _setGameIdWithPlayers(p1, p2) {
 
 function syncGameState(sessionId) {
   new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "syncGameState", [
-      sessionId, getGameId(), getUserId()], function(data) {
-    initView();
-    refreshProblemInfo();
-  })).rpc();
+    sessionId, getGameId(), getUserId()], function (data) {
+      initView();
+      refreshProblemInfo();
+    })).rpc();
 
 }
 
 function createImageTag(uid) {
   const fallback = "this.onerror=null;this.src='../img/icon/no-player-icon.png'";
   const imgTag = '<img class="player-icon rounded" src="../img/icon/' + uid
-          + '.png?' + dateNow + '" onerror=' + fallback + '>';
+    + '.png?' + dateNow + '" onerror=' + fallback + '>';
   return imgTag;
 }
 
@@ -267,8 +273,8 @@ function loadProblemOnCurrentBoard(problemId, callback) {
 
 function callLoadProblem(gameId, problemId, callback) {
   if (problemId == null) { return; }
-  callback = callback != null ? callback : function(data) {
+  callback = callback != null ? callback : function (data) {
   };
   new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "loadProblem", [gameId,
-      problemId], callback)).rpc();
+    problemId], callback)).rpc();
 }

@@ -32,6 +32,7 @@ import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
 import org.nkjmlab.util.java.json.JsonMapper;
+import io.javalin.websocket.WsMessageContext;
 
 public class WebsocketSessionsManager {
   private static final org.apache.logging.log4j.Logger log =
@@ -60,6 +61,11 @@ public class WebsocketSessionsManager {
     this.matchingRequestsTable = matchingRequestsTable;
   }
 
+
+  public void onMessage(String gameId, WsMessageContext ctx) {
+    GameStateJson gs = ctx.messageAsClass(GameStateJson.class);
+    sendGameState(gameId, gs);
+  }
 
   public void onClose(Session session, int statusCode, String reason) {
     session.close();
@@ -311,11 +317,7 @@ public class WebsocketSessionsManager {
       public String toString() {
         return "WebsocketJson [method=" + method + ", content=" + content + "]";
       }
-
     }
-
-
-
   }
 
 }
