@@ -198,14 +198,8 @@ class PlayWebSocket {
 
     connection.onerror = function (e) {
       console.error("connection has an error.");
-      let reconTimer;
-      clearTimeout(reconTimer);
-      swalAlert("サーバとの接続に問題が発生しました", "リロードします", "error", function () {
-        reconTimer = setTimeout(() => {
-          self.startNewWsConnection(gameBoard);
-        }, 2000);
+      swalAlert("サーバとの接続に問題が発生しました", "少し待ってページを再読み込みして下さい", "error", function () {
       });
-
     };
 
 
