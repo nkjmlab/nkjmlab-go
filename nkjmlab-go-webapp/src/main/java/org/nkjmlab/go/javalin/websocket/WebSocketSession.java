@@ -1,6 +1,6 @@
 package org.nkjmlab.go.javalin.websocket;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.nkjmlab.sorm4j.annotation.OrmTable;
@@ -11,7 +11,7 @@ public class WebSocketSession {
   private int sessionId;
   private String gameId;
   private String userId;
-  private Date createdAt = new Date();
+  private LocalDateTime createdAt = LocalDateTime.now();
   public int globalMessageCount = 0;
 
   public WebSocketSession() {}
@@ -51,11 +51,11 @@ public class WebSocketSession {
     this.userId = userId;
   }
 
-  public Date getCreatedAt() {
+  public LocalDateTime getCreatedAt() {
     return createdAt;
   }
 
-  public void setCreatedAt(Date createdAt) {
+  public void setCreatedAt(LocalDateTime createdAt) {
     this.createdAt = createdAt;
   }
 
