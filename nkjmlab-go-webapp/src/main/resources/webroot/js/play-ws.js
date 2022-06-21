@@ -198,24 +198,13 @@ class PlayWebSocket {
 
     connection.onerror = function (e) {
       console.error("connection has an error.");
-      let reconTimer;
-      clearTimeout(reconTimer);
-      swalAlert("サーバとの接続に問題が発生しました", "リロードします", "error", function () {
-        reconTimer = setTimeout(() => {
-          self.startNewWsConnection(gameBoard);
-        }, 2000);
-      });
-
+      swalAlert("ページを再読み込みします", "", "info", e=> location.reload());
     };
 
 
     connection.onclose = function (e) {
       console.warn("connection is closed.");
-      let reconTimer;
-      clearTimeout(reconTimer);
-      reconTimer = setTimeout(() => {
-        self.startNewWsConnection(gameBoard);
-      }, 500);
+      setTimeout(() => location.reload() , 500);
     };
   }
 

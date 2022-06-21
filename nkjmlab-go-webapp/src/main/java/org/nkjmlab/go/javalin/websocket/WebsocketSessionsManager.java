@@ -11,10 +11,10 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.WriteCallback;
 import org.nkjmlab.go.javalin.model.json.AgehamaJson;
 import org.nkjmlab.go.javalin.model.json.GameStateJson;
 import org.nkjmlab.go.javalin.model.json.GameStateUtils;
@@ -31,9 +31,8 @@ import org.nkjmlab.go.javalin.model.row.Problem;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
-import org.nkjmlab.util.java.concurrent.RetryUtils;
-import org.nkjmlab.util.java.function.Try;
 import org.nkjmlab.util.java.json.JsonMapper;
+import io.javalin.websocket.WsMessageContext;
 
 public class WebsocketSessionsManager {
   private static final org.apache.logging.log4j.Logger log =
@@ -62,6 +61,11 @@ public class WebsocketSessionsManager {
     this.matchingRequestsTable = matchingRequestsTable;
   }
 
+
+  public void onMessage(String gameId, WsMessageContext ctx) {
+    GameStateJson gs = ctx.messageAsClass(GameStateJson.class);
+    sendGameState(gameId, gs);
+  }
 
   public void onClose(Session session, int statusCode, String reason) {
     session.close();
@@ -217,9 +221,9 @@ public class WebsocketSessionsManager {
     private static final org.apache.logging.log4j.Logger log =
         org.apache.logging.log4j.LogManager.getLogger();
 
-    private ExecutorService srv =
+    private static final ExecutorService srv =
         Executors.newFixedThreadPool(ForkJoinPoolUtils.getAvailableProcessorsMinus(2));
-    private JsonMapper mapper = JacksonMapper.getDefaultMapper();
+    private static final JsonMapper mapper = JacksonMapper.getDefaultMapper();
 
     private enum MethodName {
       GAME_STATE, INIT_SESSION, GLOBAL_MESSAGE, HAND_UP, HAND_UP_ORDER, ENTRIES, UPDATE_HAND_UP_TABLE, UPDATE_WAITING_REQUEST_STATUS, REQUEST_TO_LOGIN
@@ -278,21 +282,25 @@ public class WebsocketSessionsManager {
     }
 
     private void submitText(Session session, MethodName methodName, String text) {
-      srv.submit(Try.createRunnable(() -> sendText(session, text), e -> log.error(e, e)));
+      srv.submit(() -> sendText(session, text));
     }
 
     private void sendText(Session session, String text) {
       RemoteEndpoint b = session.getRemote();
       synchronized (b) {
-        RetryUtils.retry(() -> {
-          try {
-            b.sendString(text);
-          } catch (IOException e) {
-            log.warn(e.getMessage());
-          } catch (Exception e) {
-            log.error(e, e);
+        b.sendString(text, new WriteCallback() {
+          @Override
+          public void writeFailed(Throwable x) {
+            try {
+              b.sendString(text);
+            } catch (IOException e) {
+              log.error(e.getMessage());
+            }
           }
-        }, 2, 2, TimeUnit.SECONDS);
+
+          @Override
+          public void writeSuccess() {}
+        });
       }
     }
 
@@ -309,11 +317,7 @@ public class WebsocketSessionsManager {
       public String toString() {
         return "WebsocketJson [method=" + method + ", content=" + content + "]";
       }
-
     }
-
-
-
   }
 
 }

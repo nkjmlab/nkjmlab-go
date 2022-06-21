@@ -17,8 +17,8 @@ public class ProblemsTable {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
-  private Sorm sorm;
-  private TableDefinition schema;
+  private final Sorm sorm;
+  private final TableDefinition schema;
 
   public static final String TABLE_NAME = "PROBLEMS";
 
