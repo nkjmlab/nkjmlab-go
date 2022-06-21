@@ -15,12 +15,12 @@ import org.nkjmlab.go.javalin.model.problem.ProblemFactory;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
 import org.nkjmlab.go.javalin.model.relation.HandsUpTable;
+import org.nkjmlab.go.javalin.model.relation.HandsUpTable.HandUp;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
-import org.nkjmlab.go.javalin.model.row.HandUp;
 import org.nkjmlab.go.javalin.model.row.MatchingRequest;
 import org.nkjmlab.go.javalin.model.row.Problem;
 import org.nkjmlab.go.javalin.model.row.User;
@@ -212,7 +212,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public UserJson getUser(String userId) {
-    User u = usersTable.readByPrimaryKey(userId);
+    User u = usersTable.selectByPrimaryKey(userId);
     if (u == null) {
       UserJson uj = new UserJson();
       uj.setUserId(userId);
@@ -252,7 +252,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   @Override
   public void enterWaitingRoom(String userId) {
     try {
-      User u = usersTable.readByPrimaryKey(userId);
+      User u = usersTable.selectByPrimaryKey(userId);
       if (u == null) {
         log.error("userId {} is not found.", userId);
         return;
@@ -319,16 +319,18 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   @Override
   public void handUp(String gameId, boolean handUp, String message) {
     if (handUp) {
-      HandUp h = handsUpTable.readByPrimaryKey(gameId);
-      if (h == null) {
-        handsUpTable.insert(new HandUp(gameId, LocalDateTime.now(), message));
-      } else {
-        h.setMessage(h.getMessage() + "<br>" + message);
-        handsUpTable.update(h);
+      {
+        HandUp h = handsUpTable.selectByPrimaryKey(gameId);
+        if (h == null) {
+          handsUpTable.insert(new HandUp(gameId, LocalDateTime.now(), message));
+        } else {
+          handsUpTable
+              .update(new HandUp(h.gameId(), h.createdAt(), h.message() + "<br>" + message));
+        }
       }
       wsManager.sendHandUp(gameId, handUp, handsUpTable.readOrder(gameId));
     } else {
-      handsUpTable.delete(HandUp.createAsPrimaryKey(gameId));
+      handsUpTable.deleteByPrimaryKey(gameId);
       wsManager.sendHandDown(gameId);
 
       handsUpTable.readAllGameIds().stream().forEach(handupGameId -> wsManager
@@ -343,7 +345,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     int rank =
         gameRecordsTable.registerRecordAndGetRank(usersTable, userId, opponentUserId, jadge, memo);
 
-    User u = usersTable.readByPrimaryKey(userId);
+    User u = usersTable.selectByPrimaryKey(userId);
     if (u.getRank() != rank) {
       u.setRank(rank);
       usersTable.update(u);
@@ -367,8 +369,8 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     String msg = "";
     try {
       GameStateJson gs = gameStatesTables.readLatestGameStateJson(gameId);
-      User bp = usersTable.readByPrimaryKey(gs.getBlackPlayerId());
-      User wp = usersTable.readByPrimaryKey(gs.getWhitePlayerId());
+      User bp = usersTable.selectByPrimaryKey(gs.getBlackPlayerId());
+      User wp = usersTable.selectByPrimaryKey(gs.getWhitePlayerId());
       int diff = Math.abs(wp.getRank() - bp.getRank());
       int ro = gs.getCells()[0].length;
       String roCol = ro == 19 ? "lg" : "sm";

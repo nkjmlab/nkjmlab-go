@@ -2,7 +2,7 @@ package org.nkjmlab.go.javalin.model;
 
 public class Stone {
 
-  public enum Color {
+  public static enum Color {
     BLANK(0), BLACK(1), WHITE(2);
 
     private final int id;
@@ -26,7 +26,7 @@ public class Stone {
     }
   }
 
-  public enum Symbol {
+  public static enum Symbol {
 
     BLANK(0), A(40), B(50), C(60), RECTANGLE(10), TRIANGLE(20), X(30), CIRCLE(70);
 
@@ -69,8 +69,8 @@ public class Stone {
 
   public void setId(int id) {
     this.id = id;
-    color = Color.of(id);
-    symbol = Symbol.of(id);
+    this.color = Color.of(id);
+    this.symbol = Symbol.of(id);
   }
 
   public Color getColor() {

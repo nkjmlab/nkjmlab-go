@@ -93,9 +93,9 @@ public class WebsocketSessionsManager {
     websoketSessionsTable.registerSession(gameId, userId, session);
 
     jsonSenderService.submitInitSession(session, session.hashCode(),
-        usersTable.readByPrimaryKey(userId));
+        usersTable.selectByPrimaryKey(userId));
 
-    Optional.ofNullable(handsUpTable.readByPrimaryKey(gameId)).ifPresent(h -> jsonSenderService
+    Optional.ofNullable(handsUpTable.selectByPrimaryKey(gameId)).ifPresent(h -> jsonSenderService
         .submitHandUpOrDown(List.of(session), true, handsUpTable.readOrder(gameId)));
 
     Optional.ofNullable(matchingRequestsTable.readByPrimaryKey(userId))

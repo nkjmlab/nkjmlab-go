@@ -190,7 +190,6 @@ public class GoApplication {
 
 
     this.handsUpTable = new HandsUpTable(memDbDataSource);
-    handsUpTable.createTableAndIndexesIfNotExists();
 
     this.usersTable = new UsersTable(fileDbDataSource);
     usersTable.dropTableIfExists();
@@ -363,7 +362,7 @@ public class GoApplication {
           List<GameStateViewJson> tmp = gameStatesTables.readTodayGameJsons().stream().map(gsj -> {
             GameStateViewJson json = new GameStateViewJson(gsj);
             String gameId = gsj.getGameId();
-            json.setHandUp(handsUpTable.readByPrimaryKey(gameId));
+            json.setHandUp(handsUpTable.selectByPrimaryKey(gameId));
             json.setWatchingStudentsNum(
                 websoketSessionsTable.getWatchingUniqueStudentsNum(usersTable, gameId));
             return json;
@@ -378,7 +377,7 @@ public class GoApplication {
               gids.stream().map(gid -> gameStatesTables.readLatestGameStateJson(gid)).map(gsj -> {
                 GameStateViewJson json = new GameStateViewJson(gsj);
                 String gameId = gsj.getGameId();
-                json.setHandUp(handsUpTable.readByPrimaryKey(gameId));
+                json.setHandUp(handsUpTable.selectByPrimaryKey(gameId));
                 json.setWatchingStudentsNum(
                     websoketSessionsTable.getWatchingUniqueStudentsNum(usersTable, gameId));
                 return json;
@@ -400,7 +399,7 @@ public class GoApplication {
               gameStatesTables.readLatestBoardsJson(gids).stream().map(gsj -> {
                 GameStateViewJson json = new GameStateViewJson(gsj);
                 String gameId = gsj.getGameId();
-                json.setHandUp(handsUpTable.readByPrimaryKey(gameId));
+                json.setHandUp(handsUpTable.selectByPrimaryKey(gameId));
                 return json;
               }).collect(Collectors.toList());
           model.put("games", tmp);
@@ -468,7 +467,7 @@ public class GoApplication {
 
   private User getCurrentUserAccount(UsersTable usersTable, HttpServletRequest request) {
     Optional<User> u = UserSession.wrap(request.getSession()).getUserId()
-        .map(uid -> usersTable.readByPrimaryKey(uid));
+        .map(uid -> usersTable.selectByPrimaryKey(uid));
     return u.orElse(new User());
   }
 
@@ -479,7 +478,7 @@ public class GoApplication {
       String email = session.getEmail();
       u = usersTable.readByEmail(email);
     } else if (session.isLogined()) {
-      u = session.getUserId().map(userId -> usersTable.readByPrimaryKey(userId)).orElse(null);
+      u = session.getUserId().map(userId -> usersTable.selectByPrimaryKey(userId)).orElse(null);
     }
     if (u == null) {
       throw new RuntimeException(ParameterizedStringUtils.newString("User not found"));

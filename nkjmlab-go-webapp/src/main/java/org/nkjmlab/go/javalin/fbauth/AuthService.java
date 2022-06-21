@@ -49,7 +49,7 @@ public class AuthService implements AuthServiceInterface {
   public boolean registerAttendance(String userId, String seatId) {
     UserSession session = UserSession.wrap(request.getSession());
     session.setUserId(userId);
-    User u = usersTable.readByPrimaryKey(userId);
+    User u = usersTable.selectByPrimaryKey(userId);
     u.setSeatId(seatId);
     usersTable.merge(u);
     loginsTable.insert(new Login(userId, seatId, u.getUserName(), LocalDateTime.now(),
@@ -85,7 +85,7 @@ public class AuthService implements AuthServiceInterface {
       return false;
     }
 
-    User u = usersTable.readByPrimaryKey(userId);
+    User u = usersTable.selectByPrimaryKey(userId);
     if (u != null && !u.isGuest()) {
       log.error("Try guest siginup but userId [{}] conflict with a regular user", userId);
       return false;
@@ -110,7 +110,7 @@ public class AuthService implements AuthServiceInterface {
       return null;
     }
 
-    User u = usersTable.readByPrimaryKey(userId);
+    User u = usersTable.selectByPrimaryKey(userId);
     registerAttendance(userId, seatId);
     UsersTable.createIcon(userId);
     return new UserJson(u);

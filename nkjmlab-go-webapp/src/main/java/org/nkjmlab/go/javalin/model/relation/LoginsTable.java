@@ -50,7 +50,7 @@ public class LoginsTable extends BasicH2Table<Login> {
   public List<Login> readOrderedActiveStudentLogins(UsersTable usersTable) {
     LocalDate nowDate = LocalDate.now();
     return readAllLastLoginsOrderByUserId().stream()
-        .filter(l -> Optional.ofNullable(usersTable.readByPrimaryKey(l.getUserId()))
+        .filter(l -> Optional.ofNullable(usersTable.selectByPrimaryKey(l.getUserId()))
             .map(u -> u.isStudent()).orElse(false)
             && l.getLoggedInAt().toLocalDate().equals(nowDate))
         .collect(Collectors.toList());

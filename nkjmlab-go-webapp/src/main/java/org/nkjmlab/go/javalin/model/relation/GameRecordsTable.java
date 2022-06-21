@@ -30,7 +30,7 @@ public class GameRecordsTable extends BasicH2Table<GameRecord> {
         "SELECT USER_ID, MIN(RANK) AS RANK FROM GAME_RECORDS GROUP BY USER_ID").forEach(m -> {
           String userId = m.get(USER_ID.toLowerCase()).toString();
           Integer rank = Integer.valueOf(m.get(RANK.toLowerCase()).toString());
-          User u = usersTable.readByPrimaryKey(userId);
+          User u = usersTable.selectByPrimaryKey(userId);
           if (u == null) {
             return;
           }
@@ -47,7 +47,7 @@ public class GameRecordsTable extends BasicH2Table<GameRecord> {
 
 
     int rank = lastRecords == null
-        ? Optional.ofNullable(usersTable.readByPrimaryKey(userId)).map(u -> u.getRank()).orElse(30)
+        ? Optional.ofNullable(usersTable.selectByPrimaryKey(userId)).map(u -> u.getRank()).orElse(30)
         : lastRecords.rank();
     int point = lastRecords == null ? 0 : lastRecords.point();
     String message = "";

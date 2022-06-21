@@ -141,7 +141,7 @@ public class UsersTable {
   }
 
 
-  public User readByPrimaryKey(String userId) {
+  public User selectByPrimaryKey(String userId) {
     return sorm.selectByPrimaryKey(User.class, userId);
   }
 
