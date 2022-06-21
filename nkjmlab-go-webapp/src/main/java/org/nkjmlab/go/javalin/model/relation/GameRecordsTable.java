@@ -7,6 +7,7 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
+import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
 import org.nkjmlab.sorm4j.util.table_def.annotation.AutoIncrement;
@@ -99,6 +100,7 @@ public class GameRecordsTable extends BasicH2Table<GameRecord> {
   }
 
 
+  @OrmRecord
   public static record GameRecord(@PrimaryKey @AutoIncrement int id, LocalDateTime createdAt,
       String userId, String opponentUserId, String jadge, String memo, int rank, int point,
       String message) {

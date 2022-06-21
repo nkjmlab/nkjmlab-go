@@ -16,6 +16,7 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable.WebSocketSession;
 import org.nkjmlab.sorm4j.Sorm;
+import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.sql.OrderedParameterSqlParser;
 import org.nkjmlab.sorm4j.sql.ParameterizedSql;
 import org.nkjmlab.sorm4j.sql.ParameterizedSqlParser;
@@ -26,7 +27,6 @@ import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 public class WebsoketSessionsTable extends BasicH2Table<WebSocketSession> {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
-
 
 
   private static final String USER_ID = "user_id";
@@ -150,7 +150,7 @@ public class WebsoketSessionsTable extends BasicH2Table<WebSocketSession> {
   }
 
 
-
+  @OrmRecord
   public static record WebSocketSession(@PrimaryKey int sessionId, String userId,
       @Index String gameId, LocalDateTime createdAt) {
 
