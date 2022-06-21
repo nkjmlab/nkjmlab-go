@@ -141,9 +141,7 @@ function sendGameStateByJsonRpc(gameState) {
   new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "sendGameState", [
     getGameId(), gameState], function (data) {
     }, function (data, textStatus, errorThrown) {
-      swalAlert("ページを再読み込みします", "", "info", function () {
-        location.reload();
-      });
+      swalAlert("ページを再読み込みします", "", "info", e => location.reload());
     })).rpc();
 }
 
@@ -161,8 +159,8 @@ function sendGameStateWithLastHand(connection, gameState, hand) {
   gameState.whitePlayerId = getGameId().split("-vs-")[1] ? getGameId().split(
     "-vs-")[1] : getUserId();
 
-  //sendGameStateByJsonRpc(gameState);
-  sendGameStateByWs(connection, gameState);
+  sendGameStateByJsonRpc(gameState);
+  //sendGameStateByWs(connection, gameState);
 }
 
 function sendNewGame(gameState, ro, callback) {

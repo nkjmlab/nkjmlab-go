@@ -609,7 +609,7 @@ class GameBoard {
     })();
 
     (function () {
-      $("body").on({
+      $('body').on({
         "mousemove touchmove": function (e) {
           if (!pressed) { return; }
           updateStonePosition(e.originalEvent);

@@ -472,11 +472,11 @@ function getBaseUrl(depth) {
 }
 
 
+/*
 window.onerror = function (msg, file, line, col, error) {
   StackTrace.fromError(error)
     .then(function (stackFrames) {
-      const errorMsg = msg + '\n';
-      errorMsg += stackFrames.map(function (sf) {
+      const errorMsg = msg + '\n' + stackFrames.map(function (sf) {
         return sf.toString();
       }).join('\n');
       console.error(errorMsg);
@@ -487,6 +487,7 @@ window.onerror = function (msg, file, line, col, error) {
       console.log(errorMsg);
     });
 };
+*/
 
 function sendError(msg) {
   sendLog(msg, "ERROR", 4);
