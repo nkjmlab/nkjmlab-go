@@ -8,36 +8,26 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import org.nkjmlab.go.javalin.model.row.Login;
+import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.context.SormContext;
+import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
-import org.nkjmlab.sorm4j.util.logger.LoggerContext;
-import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
+import org.nkjmlab.sorm4j.util.table_def.annotation.AutoIncrement;
+import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
+import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 public class LoginsTable extends BasicH2Table<Login> {
 
   public static final String TABLE_NAME = "LOGINS";
 
-  private static final String ID = "id";
   private static final String USER_ID = "user_id";
-  private static final String SEAT_ID = "seat_id";
-  private static final String USER_NAME = "user_name";
-  private static final String LOGGED_IN_AT = "logged_in_at";
-  private static final String REMOTE_ADDR = "remote_addr";
 
-  private Sorm loggerableSorm;
 
   public LoginsTable(DataSource dataSource) {
-    super(Sorm.create(dataSource), Login.class,
-        TableDefinition.builder(TABLE_NAME)
-            .addColumnDefinition(ID, BIGINT, AUTO_INCREMENT, PRIMARY_KEY)
-            .addColumnDefinition(USER_ID, VARCHAR).addColumnDefinition(SEAT_ID, VARCHAR)
-            .addColumnDefinition(USER_NAME, VARCHAR).addColumnDefinition(LOGGED_IN_AT, TIMESTAMP)
-            .addColumnDefinition(REMOTE_ADDR, VARCHAR).addIndexDefinition(USER_ID).build());
-    this.loggerableSorm = Sorm.create(dataSource, SormContext.builder()
-        .setLoggerContext(LoggerContext.builder().enableAll().build()).build());
+    super(Sorm.create(dataSource), Login.class);
   }
 
 
@@ -50,9 +40,8 @@ public class LoginsTable extends BasicH2Table<Login> {
   public List<Login> readOrderedActiveStudentLogins(UsersTable usersTable) {
     LocalDate nowDate = LocalDate.now();
     return readAllLastLoginsOrderByUserId().stream()
-        .filter(l -> Optional.ofNullable(usersTable.selectByPrimaryKey(l.getUserId()))
-            .map(u -> u.isStudent()).orElse(false)
-            && l.getLoggedInAt().toLocalDate().equals(nowDate))
+        .filter(l -> Optional.ofNullable(usersTable.selectByPrimaryKey(l.userId()))
+            .map(u -> u.isStudent()).orElse(false) && l.loggedInAt().toLocalDate().equals(nowDate))
         .collect(Collectors.toList());
   }
 
@@ -85,27 +74,31 @@ public class LoginsTable extends BasicH2Table<Login> {
   }
 
   public void login(User u, String remoteAddr) {
-    insert(new Login(u, LocalDateTime.now(), remoteAddr));
+    insert(new Login(-1, u.getUserId(), u.getSeatId(), u.getUserName(), LocalDateTime.now(),
+        remoteAddr));
   }
 
 
 
   public Optional<Login> readLastLogin(String userId) {
 
-    Login ret = loggerableSorm.applyHandler(conn -> {
-      Login l = conn.readFirst(Login.class,
-          "SELECT * FROM LOGINS WHERE USER_ID=? ORDER BY LOGGED_IN_AT DESC LIMIT 1", userId);
-      return l;
-    });
-    return Optional.ofNullable(ret);
+    return Optional.ofNullable(readFirst(
+        "SELECT * FROM LOGINS WHERE USER_ID=? ORDER BY LOGGED_IN_AT DESC LIMIT 1", userId));
 
   }
 
   public boolean isAttendance(String userId) {
-    return readLastLogin(userId).map(l -> l.getLoggedInAt().toLocalDate().equals(LocalDate.now()))
+    return readLastLogin(userId).map(l -> l.loggedInAt().toLocalDate().equals(LocalDate.now()))
         .orElse(false);
   }
 
+
+  @OrmRecord
+  @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+  public static record Login(@PrimaryKey @AutoIncrement long id, @Index String userId,
+      String seatId, String userName, LocalDateTime loggedInAt, String remoteAddr) {
+
+  }
 
 
 }

@@ -8,9 +8,9 @@ import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
 import org.nkjmlab.go.javalin.model.json.UserJson;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
+import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.PasswordsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
-import org.nkjmlab.go.javalin.model.row.Login;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.util.javax.servlet.HttpRequestUtils;
 import org.nkjmlab.util.javax.servlet.UserSession;
@@ -52,7 +52,7 @@ public class AuthService implements AuthServiceInterface {
     User u = usersTable.selectByPrimaryKey(userId);
     u.setSeatId(seatId);
     usersTable.merge(u);
-    loginsTable.insert(new Login(userId, seatId, u.getUserName(), LocalDateTime.now(),
+    loginsTable.insert(new Login(-1, userId, seatId, u.getUserName(), LocalDateTime.now(),
         HttpRequestUtils.getXForwardedFor(request).orElseGet(() -> request.getRemoteAddr())));
     return true;
   }
