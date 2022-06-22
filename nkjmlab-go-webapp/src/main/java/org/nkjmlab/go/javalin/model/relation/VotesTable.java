@@ -1,55 +1,53 @@
 package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
+import java.time.LocalDateTime;
 import java.util.List;
 import javax.sql.DataSource;
-import org.nkjmlab.go.javalin.model.json.VoteResult;
-import org.nkjmlab.go.javalin.model.row.Vote;
+import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
+import org.nkjmlab.sorm4j.annotation.OrmRecord;
+import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.sql.SelectSql;
+import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKeyColumns;
 
-public class VotesTable {
+public class VotesTable extends BasicH2Table<Vote> {
 
-  public static final String TABLE_NAME = "VOTES";
 
-  private static final String USER_ID = "user_id";
   private static final String PROBLEM_ID = "problem_id";
-  private static final String VOTE = "vote";
   private static final String VOTE_ID = "vote_id";
   private static final String GAME_ID = "game_id";
-  private static final String CREATED_AT = "created_at";
 
-  private Sorm sorm;
-
-  private TableDefinition schema;
 
   public VotesTable(DataSource dataSource) {
-    this.sorm = Sorm.create(dataSource);
-    this.schema = TableDefinition.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR)
-        .addColumnDefinition(PROBLEM_ID, BIGINT).addColumnDefinition(VOTE, VARCHAR)
-        .addColumnDefinition(VOTE_ID, VARCHAR).addColumnDefinition(GAME_ID, VARCHAR)
-        .addColumnDefinition(CREATED_AT, TIMESTAMP).setPrimaryKey(USER_ID, PROBLEM_ID, GAME_ID)
-        .build();
-    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
+    super(Sorm.create(dataSource), Vote.class);
+    createTableIfNotExists().createIndexesIfNotExists();
   }
 
 
   public List<VoteResult> readVoteResults(long problemId, String gameId) {
-    final String sql = select(VOTE_ID, as(count("*"), "NUM_OF_VOTE")) + from(TABLE_NAME);
+    final String sql =
+        select(VOTE_ID, as(SelectSql.count("*"), "NUM_OF_VOTE")) + from(getTableName());
 
     if (problemId != -1) {
-      return sorm.readList(VoteResult.class,
+      return getOrm().readList(VoteResult.class,
           sql + WHERE + cond(PROBLEM_ID, "=", "?") + groupBy(VOTE_ID), problemId);
     } else {
-      return sorm.readList(VoteResult.class,
+      return getOrm().readList(VoteResult.class,
           sql + where(cond(GAME_ID, "=", "?")) + groupBy(VOTE_ID), gameId);
     }
   }
 
+  @OrmRecord
+  public static record VoteResult(String voteId, int numOfVote) {
+  }
 
-  public void merge(Vote vote) {
-    sorm.merge(vote);
+
+  @OrmRecord
+  @PrimaryKeyColumns({"USER_ID", "PROBLEM_ID", "GAME_ID"})
+  public static record Vote(String userId, long problemId, String vote, String voteId,
+      String gameId, LocalDateTime createdAt) {
+
   }
 
 }

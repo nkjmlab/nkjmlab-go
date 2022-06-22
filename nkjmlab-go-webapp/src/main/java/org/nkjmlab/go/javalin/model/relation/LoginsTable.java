@@ -16,8 +16,6 @@ import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
 import org.nkjmlab.sorm4j.util.table_def.annotation.AutoIncrement;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 public class LoginsTable extends BasicH2Table<Login> {
 
@@ -94,7 +92,6 @@ public class LoginsTable extends BasicH2Table<Login> {
 
 
   @OrmRecord
-  @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
   public static record Login(@PrimaryKey @AutoIncrement long id, @Index String userId,
       String seatId, String userName, LocalDateTime loggedInAt, String remoteAddr) {
 

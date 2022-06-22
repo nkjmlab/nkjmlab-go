@@ -23,7 +23,7 @@ import org.nkjmlab.go.javalin.model.json.HandType;
 import org.nkjmlab.go.javalin.model.json.ProblemJson;
 import org.nkjmlab.go.javalin.model.json.UserJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
-import org.nkjmlab.go.javalin.model.relation.HandsUpTable;
+import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
@@ -42,7 +42,7 @@ public class WebsocketSessionsManager {
   private final GameStatesTables gameStatesTables;
   private final WebsoketSessionsTable websoketSessionsTable;
   private final UsersTable usersTable;
-  private final HandsUpTable handsUpTable;
+  private final HandUpsTable handsUpTable;
   private final MatchingRequestsTable matchingRequestsTable;
 
 
@@ -51,7 +51,7 @@ public class WebsocketSessionsManager {
 
 
   public WebsocketSessionsManager(GameStatesTables gameStatesTables, ProblemsTable problemsTable,
-      WebsoketSessionsTable websoketSessionsTable, UsersTable usersTable, HandsUpTable handsUpTable,
+      WebsoketSessionsTable websoketSessionsTable, UsersTable usersTable, HandUpsTable handsUpTable,
       MatchingRequestsTable matchingRequestsTable) {
     this.gameStatesTables = gameStatesTables;
     this.problemsTable = problemsTable;

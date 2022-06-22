@@ -15,8 +15,6 @@ import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
 public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
   private static final org.apache.logging.log4j.Logger log =
@@ -132,7 +130,6 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
 
 
   @OrmRecord
-  @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
   public static record MatchingRequest(@PrimaryKey String userId, String seatId, String userName,
       int rank, @Index String gameId, LocalDateTime createdAt) {
 

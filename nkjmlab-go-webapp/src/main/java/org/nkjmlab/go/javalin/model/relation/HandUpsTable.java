@@ -5,16 +5,14 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
 import javax.sql.DataSource;
-import org.nkjmlab.go.javalin.model.relation.HandsUpTable.HandUp;
+import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.PropertyNamingStrategies;
-import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-public class HandsUpTable extends BasicH2Table<HandUp> {
+public class HandUpsTable extends BasicH2Table<HandUp> {
 
 
   public static final String TABLE_NAME = "HAND_UPS";
@@ -22,7 +20,7 @@ public class HandsUpTable extends BasicH2Table<HandUp> {
   private static final String GAME_ID = "game_id";
   private static final String CREATED_AT = "created_at";
 
-  public HandsUpTable(DataSource dataSource) {
+  public HandUpsTable(DataSource dataSource) {
     super(Sorm.create(dataSource), HandUp.class);
     createTableIfNotExists().createIndexesIfNotExists();
   }
@@ -53,7 +51,6 @@ public class HandsUpTable extends BasicH2Table<HandUp> {
 
 
   @OrmRecord
-  @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
   public static record HandUp(@PrimaryKey String gameId,
       @JsonProperty("created_at") LocalDateTime createdAt, String message) {
 

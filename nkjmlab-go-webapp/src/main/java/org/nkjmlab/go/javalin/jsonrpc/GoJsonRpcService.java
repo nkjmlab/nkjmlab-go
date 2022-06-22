@@ -10,21 +10,21 @@ import java.util.Map;
 import org.nkjmlab.go.javalin.model.json.GameStateJson;
 import org.nkjmlab.go.javalin.model.json.ProblemJson;
 import org.nkjmlab.go.javalin.model.json.UserJson;
-import org.nkjmlab.go.javalin.model.json.VoteResult;
 import org.nkjmlab.go.javalin.model.problem.ProblemFactory;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
-import org.nkjmlab.go.javalin.model.relation.HandsUpTable;
-import org.nkjmlab.go.javalin.model.relation.HandsUpTable.HandUp;
+import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
+import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
+import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
+import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
 import org.nkjmlab.go.javalin.model.row.Problem;
 import org.nkjmlab.go.javalin.model.row.User;
-import org.nkjmlab.go.javalin.model.row.Vote;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
 import org.nkjmlab.util.jackson.JacksonMapper;
@@ -45,7 +45,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   private final VotesTable votesTable;
   private final WebsocketSessionsManager wsManager;
   private final WebsoketSessionsTable websoketSessionsTable;
-  private final HandsUpTable handsUpTable;
+  private final HandUpsTable handsUpTable;
   private final GameRecordsTable gameRecordsTable;
 
   private static final JsonMapper mapper = JacksonMapper.getIgnoreUnknownPropertiesMapper();
@@ -53,7 +53,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   public GoJsonRpcService(WebsocketSessionsManager wsManager, GameStatesTables gameStatesTables,
       ProblemsTable problemsTable, UsersTable usersTable, LoginsTable loginsTable,
-      MatchingRequestsTable matchingRequestsTable, VotesTable votesTable, HandsUpTable handsUpTable,
+      MatchingRequestsTable matchingRequestsTable, VotesTable votesTable, HandUpsTable handsUpTable,
       WebsoketSessionsTable websoketSessionsTable, GameRecordsTable gameRecordsTable) {
     this.gameStatesTables = gameStatesTables;
     this.problemsTable = problemsTable;
@@ -308,12 +308,13 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public void vote(String gameId, String userId, long problemId, String vote, String voteId) {
-    votesTable.merge(new Vote(userId, problemId, vote, voteId, gameId));
+    votesTable.merge(new Vote(userId, problemId, vote, voteId, gameId, LocalDateTime.now()));
   }
 
   @Override
   public List<VoteResult> getVoteResult(long problemId, String gameId) {
-    return votesTable.readVoteResults(problemId, gameId);
+    List<VoteResult> ret = votesTable.readVoteResults(problemId, gameId);
+    return ret;
   }
 
   @Override

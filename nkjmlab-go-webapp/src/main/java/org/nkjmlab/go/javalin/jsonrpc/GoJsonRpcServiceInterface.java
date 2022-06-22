@@ -5,7 +5,7 @@ import java.util.List;
 import org.nkjmlab.go.javalin.model.json.GameStateJson;
 import org.nkjmlab.go.javalin.model.json.ProblemJson;
 import org.nkjmlab.go.javalin.model.json.UserJson;
-import org.nkjmlab.go.javalin.model.json.VoteResult;
+import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
 
 public interface GoJsonRpcServiceInterface {
 

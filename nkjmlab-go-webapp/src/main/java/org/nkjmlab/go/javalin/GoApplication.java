@@ -21,7 +21,7 @@ import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
-import org.nkjmlab.go.javalin.model.relation.HandsUpTable;
+import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
@@ -88,7 +88,7 @@ public class GoApplication {
 
   private Javalin app;
   private ProblemsTable problemsTable;
-  private HandsUpTable handsUpTable;
+  private HandUpsTable handsUpTable;
   private UsersTable usersTable;
   private PasswordsTable passwordsTable;
   private MatchingRequestsTable matchingRequestsTable;
@@ -189,7 +189,7 @@ public class GoApplication {
 
 
 
-    this.handsUpTable = new HandsUpTable(memDbDataSource);
+    this.handsUpTable = new HandUpsTable(memDbDataSource);
 
     this.usersTable = new UsersTable(fileDbDataSource);
     usersTable.dropTableIfExists();
