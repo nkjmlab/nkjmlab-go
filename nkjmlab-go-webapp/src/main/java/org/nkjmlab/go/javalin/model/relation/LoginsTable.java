@@ -9,7 +9,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
-import org.nkjmlab.go.javalin.model.row.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
@@ -72,8 +72,7 @@ public class LoginsTable extends BasicH2Table<Login> {
   }
 
   public void login(User u, String remoteAddr) {
-    insert(new Login(-1, u.getUserId(), u.getSeatId(), u.getUserName(), LocalDateTime.now(),
-        remoteAddr));
+    insert(new Login(-1, u.userId(), u.seatId(), u.userName(), LocalDateTime.now(), remoteAddr));
   }
 
 

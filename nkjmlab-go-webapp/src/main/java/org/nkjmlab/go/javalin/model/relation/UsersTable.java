@@ -2,7 +2,6 @@ package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.go.javalin.GoApplication.*;
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -15,13 +14,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
-import org.nkjmlab.go.javalin.model.row.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
+import org.nkjmlab.sorm4j.annotation.OrmRecord;
+import org.nkjmlab.sorm4j.annotation.OrmTable;
 import org.nkjmlab.sorm4j.common.Tuple.Tuple2;
 import org.nkjmlab.sorm4j.sql.OrderedParameterSqlParser;
 import org.nkjmlab.sorm4j.sql.ParameterizedSql;
 import org.nkjmlab.sorm4j.sql.ParameterizedSqlParser;
-import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
+import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
+import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
+import org.nkjmlab.sorm4j.util.table_def.annotation.Unique;
 import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils;
 import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils.Row;
 import com.orangesignal.csv.CsvConfig;
@@ -32,52 +36,37 @@ import com.orangesignal.csv.CsvConfig;
  * @author nkjm
  *
  */
-public class UsersTable {
+public class UsersTable extends BasicH2Table<User> {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
+
 
   public static final String TABLE_NAME = "PLAYERS";
 
   private static final String EMAIL = "email";
   private static final String USER_ID = "user_id";
-  private static final String USER_NAME = "user_name";
   private static final String ROLE = "role";
-  private static final String SEAT_ID = "seat_id";
-  private static final String RANK = "rank";
-  private static final String CREATED_AT = "created_at";
-
-  private Sorm sorm;
-  private TableDefinition schema;
 
   public UsersTable(DataSource dataSource) {
-    this.sorm = Sorm.create(dataSource);
-    this.schema =
-        TableDefinition.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
-            .addColumnDefinition(EMAIL, VARCHAR, UNIQUE).addColumnDefinition(USER_NAME, VARCHAR)
-            .addColumnDefinition(ROLE, VARCHAR).addColumnDefinition(SEAT_ID, VARCHAR)
-            .addColumnDefinition(RANK, INT).addColumnDefinition(CREATED_AT, TIMESTAMP)
-            .addIndexDefinition(EMAIL).addIndexDefinition(ROLE).build();
+    super(Sorm.create(dataSource), User.class);
   }
 
-  public void dropTableIfExists() {
-    schema.dropTableIfExists(sorm);
-  }
 
 
   public void createTableAndIndexesIfNotExists() {
-    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
+    createTableIfNotExists().createIndexesIfNotExists();
   }
 
 
   public User getUser(String uid) {
-    User entry = sorm.selectByPrimaryKey(User.class, uid);
+    User entry = selectByPrimaryKey(uid);
     return entry;
   }
 
   public User getNextUser(String userId) {
     List<User> users = readAllOrderedUsers();
     for (int i = 0; i < users.size() - 1; i++) {
-      if (users.get(i).getUserId().equals(userId)) {
+      if (users.get(i).userId().equals(userId)) {
         return users.get((i + 1) % users.size());
       }
     }
@@ -85,12 +74,12 @@ public class UsersTable {
   }
 
   private List<User> readAllOrderedUsers() {
-    return sorm.readList(User.class, selectStarFrom(TABLE_NAME) + " ORDER BY " + USER_ID);
+    return readList(selectStarFrom(TABLE_NAME) + " ORDER BY " + USER_ID);
 
   }
 
   public User readByEmail(String email) {
-    return sorm.readOne(User.class, selectStarFrom(TABLE_NAME) + WHERE + EMAIL + "=?", email);
+    return readOne(selectStarFrom(TABLE_NAME) + WHERE + EMAIL + "=?", email);
   }
 
 
@@ -100,8 +89,8 @@ public class UsersTable {
     conf.setSkipLines(1);
     List<Row> users = OrangeSignalCsvUtils.readAllRows(usersCsvFile, conf);
     transformToUser(users).forEach(user -> {
-      createIcon(user.getUserId());
-      sorm.insert(user);
+      createIcon(user.userId());
+      insert(user);
     });
   }
 
@@ -122,48 +111,25 @@ public class UsersTable {
     ParameterizedSql st = OrderedParameterSqlParser
         .of("SELECT * from " + TABLE_NAME + " where " + USER_ID + " IN (<?>)").addParameter(uids)
         .parse();
-    return sorm.readList(User.class, st.getSql(), st.getParameters());
+    return readList(st.getSql(), st.getParameters());
   }
 
   public List<String> getAdminUserIds() {
-    return sorm.readList(String.class,
+    return getOrm().readList(String.class,
         "select " + USER_ID + " from " + TABLE_NAME + " where " + ROLE + "=?", User.ADMIN);
 
   }
 
   public List<String> getStudentUserIds() {
-    return sorm.readList(String.class,
+    return getOrm().readList(String.class,
         "select " + USER_ID + " from " + TABLE_NAME + " where " + ROLE + "=?", User.STUDENT);
   }
 
   public boolean isAdmin(String userId) {
-    return sorm.selectByPrimaryKey(User.class, userId).isAdmin();
+    return selectByPrimaryKey(userId).isAdmin();
   }
 
 
-  public User selectByPrimaryKey(String userId) {
-    return sorm.selectByPrimaryKey(User.class, userId);
-  }
-
-
-  public void merge(User u) {
-    sorm.merge(u);
-  }
-
-
-  public void update(User u) {
-    sorm.update(u);
-  }
-
-
-  public void insert(User user) {
-    sorm.insert(user);
-  }
-
-
-  public boolean exists(User user) {
-    return sorm.exists(user);
-  }
 
   public static void createIcon(String userId) {
     File uploadedIcon = new File(UPLOADED_ICON_DIR, userId + ".png");
@@ -197,15 +163,41 @@ public class UsersTable {
   }
 
   public List<User> readAll() {
-    return sorm.selectAll(User.class);
+    return selectAll();
   }
 
   public List<Tuple2<User, Login>> readAllWithLastLogin() {
     ParameterizedSql stmt = ParameterizedSqlParser.parse(
         "SELECT * except(r.USER_NAME) FROM PLAYERS  LEFT JOIN (SELECT * FROM LOGINS  WHERE ID IN (SELECT MAX(ID) FROM LOGINS GROUP BY USER_ID)) r USING(USER_ID) ORDER BY USER_ID");
-    return sorm.readTupleList(User.class, Login.class, stmt);
+    return getOrm().readTupleList(User.class, Login.class, stmt);
   }
 
 
+  @OrmRecord
+  @OrmTable(TABLE_NAME)
+  public static record User(@PrimaryKey String userId, @Unique @Index String email, String userName,
+      @Index String role, String seatId, int rank, LocalDateTime createdAt) {
+
+    public static final String ADMIN = "ADMIN";
+    public static final String STUDENT = "STUDENT";
+    public static final String TA = "TA";
+    public static final String GUEST = "GUEST";
+
+    public User() {
+      this("", "", "", STUDENT, "", 30, LocalDateTime.MIN);
+    }
+
+    public boolean isAdmin() {
+      return role != null && role.equalsIgnoreCase(ADMIN);
+    }
+
+    public boolean isStudent() {
+      return role != null && role.equalsIgnoreCase(STUDENT);
+    }
+
+    public boolean isGuest() {
+      return role != null && role.equalsIgnoreCase(GUEST);
+    }
+  }
 
 }

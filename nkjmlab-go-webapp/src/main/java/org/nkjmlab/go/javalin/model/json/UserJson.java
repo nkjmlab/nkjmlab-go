@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin.model.json;
 
 import java.time.LocalDateTime;
-import org.nkjmlab.go.javalin.model.row.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 
 public class UserJson {
 
@@ -15,11 +15,11 @@ public class UserJson {
   public UserJson() {}
 
   public UserJson(User user) {
-    this.userId = user.getUserId();
-    this.seatId = user.getSeatId();
-    this.userName = user.getUserName();
-    this.createdAt = user.getCreatedAt();
-    this.rank = user.getRank();
+    this.userId = user.userId();
+    this.seatId = user.seatId();
+    this.userName = user.userName();
+    this.createdAt = user.createdAt();
+    this.rank = user.rank();
   }
 
   public String getUserId() {

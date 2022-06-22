@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
-import org.nkjmlab.go.javalin.model.row.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.result.RowMap;
@@ -136,7 +136,7 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
     public static final String UNPAIRED = "UNPAIRED";
 
     public static MatchingRequest createUnpaired(User u) {
-      return new MatchingRequest(u.getUserId(), u.getSeatId(), u.getUserName(), u.getRank(),
+      return new MatchingRequest(u.userId(), u.seatId(), u.userName(), u.rank(),
           UNPAIRED, LocalDateTime.now());
     }
 

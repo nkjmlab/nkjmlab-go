@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin.model.json;
 
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
-import org.nkjmlab.go.javalin.model.row.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 
 public class LoginJson {
 

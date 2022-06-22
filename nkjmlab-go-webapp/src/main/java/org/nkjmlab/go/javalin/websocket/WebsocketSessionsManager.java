@@ -28,7 +28,7 @@ import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
-import org.nkjmlab.go.javalin.model.row.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
 import org.nkjmlab.util.java.json.JsonMapper;
@@ -85,7 +85,7 @@ public class WebsocketSessionsManager {
 
   public void onConnect(Session session, String userId, String gameId) {
 
-    if (!usersTable.exists(new User(userId))) {
+    if (!usersTable.exists(userId)) {
       log.info("userId=[{}] dose not exists", userId);
       jsonSenderService.submitRequestToLogin(session, userId);
       return;

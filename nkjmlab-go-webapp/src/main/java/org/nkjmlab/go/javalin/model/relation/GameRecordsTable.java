@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
-import org.nkjmlab.go.javalin.model.row.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.result.RowMap;
@@ -34,8 +34,7 @@ public class GameRecordsTable extends BasicH2Table<GameRecord> {
           if (u == null) {
             return;
           }
-          u.setRank(rank);
-          usersTable.update(u);
+          usersTable.updateByPrimaryKey(RowMap.of("rank", rank), u.userId());
         });
 
   }
@@ -46,9 +45,11 @@ public class GameRecordsTable extends BasicH2Table<GameRecord> {
         + " order by " + CREATED_AT + " desc limit 1", userId);
 
 
-    int rank = lastRecords == null
-        ? Optional.ofNullable(usersTable.selectByPrimaryKey(userId)).map(u -> u.getRank()).orElse(30)
-        : lastRecords.rank();
+    int rank =
+        lastRecords == null
+            ? Optional.ofNullable(usersTable.selectByPrimaryKey(userId)).map(u -> u.rank())
+                .orElse(30)
+            : lastRecords.rank();
     int point = lastRecords == null ? 0 : lastRecords.point();
     String message = "";
 

@@ -21,12 +21,13 @@ import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingReque
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
-import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
+import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.Base64Utils;
 import org.nkjmlab.util.java.json.JsonMapper;
@@ -338,9 +339,8 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
         gameRecordsTable.registerRecordAndGetRank(usersTable, userId, opponentUserId, jadge, memo);
 
     User u = usersTable.selectByPrimaryKey(userId);
-    if (u.getRank() != rank) {
-      u.setRank(rank);
-      usersTable.update(u);
+    if (u.rank() != rank) {
+      usersTable.updateByPrimaryKey(RowMap.of("rank", rank), u.userId());
       return rank;
     }
     return -1;
@@ -363,7 +363,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       GameStateJson gs = gameStatesTables.readLatestGameStateJson(gameId);
       User bp = usersTable.selectByPrimaryKey(gs.getBlackPlayerId());
       User wp = usersTable.selectByPrimaryKey(gs.getWhitePlayerId());
-      int diff = Math.abs(wp.getRank() - bp.getRank());
+      int diff = Math.abs(wp.rank() - bp.rank());
       int ro = gs.getCells()[0].length;
       String roCol = ro == 19 ? "lg" : "sm";
 
@@ -372,8 +372,8 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
       msg = ParameterizedStringUtils.newString(
           "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge badge-info'>はじめから</span> {}, <span class='badge badge-info'>棋譜並べから</span> {} <br>",
-          bp.getUserId(), bp.getUserName(), bp.getRank(), wp.getUserId(), wp.getUserName(),
-          wp.getRank(), diff, ro, s1, s2);
+          bp.userId(), bp.userName(), bp.rank(), wp.userId(), wp.userName(), wp.rank(), diff, ro,
+          s1, s2);
     } catch (Exception e) {
       msg = "";
       log.error(e);

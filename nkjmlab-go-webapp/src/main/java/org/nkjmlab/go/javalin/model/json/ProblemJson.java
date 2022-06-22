@@ -17,10 +17,7 @@ public record ProblemJson(long problemId, String groupId, String name, int[][] c
     Map<String, Integer> symbols, String message, int ro, List<HandJson> handHistory,
     AgehamaJson agehama) {
 
-
   private static final JacksonMapper mapper = JacksonMapper.getIgnoreUnknownPropertiesMapper();
-
-
 
   public ProblemJson(int id) {
     this(id, null, null, null, null, null, -1, null, null);

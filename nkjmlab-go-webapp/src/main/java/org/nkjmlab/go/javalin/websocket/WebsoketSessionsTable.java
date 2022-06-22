@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.eclipse.jetty.websocket.api.Session;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
-import org.nkjmlab.go.javalin.model.row.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable.WebSocketSession;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
@@ -133,7 +133,7 @@ public class WebsoketSessionsTable extends BasicH2Table<WebSocketSession> {
   }
 
   public int getWatchingUniqueStudentsNum(UsersTable usersTable, String gameId) {
-    return (int) readStudents(usersTable, gameId).stream().map(uj -> uj.getUserId())
+    return (int) readStudents(usersTable, gameId).stream().map(uj -> uj.userId())
         .collect(Collectors.toSet()).stream().count();
   }
 
