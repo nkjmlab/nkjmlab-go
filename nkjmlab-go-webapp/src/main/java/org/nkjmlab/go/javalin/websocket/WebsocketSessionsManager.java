@@ -26,8 +26,8 @@ import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
+import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
-import org.nkjmlab.go.javalin.model.row.Problem;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
@@ -115,17 +115,17 @@ public class WebsocketSessionsManager {
   private static final JacksonMapper mapper = JacksonMapper.getDefaultMapper();
 
   public ProblemJson loadProblem(String gameId, long problemId) {
-    Problem p = problemsTable.readByPrimaryKey(problemId);
-    HandJson[] handHistory = mapper.toObject(p.getHandHistory(), HandJson[].class);
+    Problem p = problemsTable.selectByPrimaryKey(problemId);
+    HandJson[] handHistory = mapper.toObject(p.handHistory(), HandJson[].class);
     HandJson lastHand =
         handHistory.length != 0 ? handHistory[handHistory.length - 1] : new HandJson();
     GameStateJson json =
-        new GameStateJson(gameId, "", "", GameStateUtils.cellsStringToCellsArray(p.getCells()),
-            GameStateUtils.symbolsStringToSymbols(p.getSymbols()),
-            mapper.toObject(p.getAgehama(), AgehamaJson.class), lastHand,
-            Arrays.asList(handHistory), p.getId(), new HashMap<>());
+        new GameStateJson(gameId, "", "", GameStateUtils.cellsStringToCellsArray(p.cells()),
+            GameStateUtils.symbolsStringToSymbols(p.symbols()),
+            mapper.toObject(p.agehama(), AgehamaJson.class), lastHand, Arrays.asList(handHistory),
+            p.id(), new HashMap<>());
     sendGameState(gameId, json);
-    return ProblemJson.createFrom(problemsTable.readByPrimaryKey(problemId));
+    return ProblemJson.createFrom(problemsTable.selectByPrimaryKey(problemId));
   }
 
 

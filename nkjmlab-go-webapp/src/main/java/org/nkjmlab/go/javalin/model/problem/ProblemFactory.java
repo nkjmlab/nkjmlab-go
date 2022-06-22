@@ -63,7 +63,7 @@ public class ProblemFactory {
     log.info("detect [{}] problem files in [{}]", files.size(), pathToProblemJsonDir);
     return files.stream().map(file -> {
       try {
-        ProblemJson problem = JacksonMapper.getDefaultMapper().toObject(file, ProblemJson.class);
+        ProblemJson problem = JacksonMapper.getIgnoreUnknownPropertiesMapper().toObject(file, ProblemJson.class);
         return problem;
       } catch (Exception e) {
         log.error("file {}", file);
@@ -88,7 +88,7 @@ public class ProblemFactory {
         }
         try {
           List<String> lines = Files.readAllLines(file.toPath());
-          ProblemJson json = new ProblemJson();
+          ProblemJson.Builder json = new ProblemJson.Builder();
           json.setProblemId(getNewId());
           json.setGroupId(groupDir.getName());
           String name = file.getName().replace(".txt", "");
@@ -116,7 +116,7 @@ public class ProblemFactory {
             log.error(json);
             log.error(e, e);
           }
-          result.put(new File(groupDir, json.getName() + ".json"), json);
+          result.put(new File(groupDir, json.getName() + ".json"), json.build());
         } catch (IOException e) {
           log.error(e, e);
         }
@@ -125,7 +125,7 @@ public class ProblemFactory {
     return result;
   }
 
-  private static void procPut(ProblemJson json, int[] ij1, int bw, int id) {
+  private static void procPut(ProblemJson.Builder json, int[] ij1, int bw, int id) {
     if (ij1[0] == -1 || ij1[1] == -1) {
       return;
     }
@@ -197,7 +197,7 @@ public class ProblemFactory {
     number.incrementAndGet();
   }
 
-  private static void procRemove(ProblemJson json, int[] ij0, int bw) {
+  private static void procRemove(ProblemJson.Builder json, int[] ij0, int bw) {
     if (ij0.length == 0) {
       return;
     }

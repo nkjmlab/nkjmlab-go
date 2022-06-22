@@ -19,11 +19,11 @@ import org.nkjmlab.go.javalin.model.relation.LoginsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
+import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
-import org.nkjmlab.go.javalin.model.row.Problem;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
@@ -98,11 +98,8 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public ProblemJson getProblem(long problemId) {
-    Problem p = problemsTable.readByPrimaryKey(problemId);
-    if (p == null) {
-      return new ProblemJson();
-    }
-    return ProblemJson.createFrom(p);
+    Problem p = problemsTable.selectByPrimaryKey(problemId);
+    return p == null ? new ProblemJson(-1) : ProblemJson.createFrom(p);
   }
 
   @Override
@@ -113,43 +110,39 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   @Override
   public ProblemJson saveProblem(String gameId, long problemId, String groupId, String name,
       String message) {
-    Problem p = problemsTable.readByPrimaryKey(problemId);
-    GameStateJson currentState = gameStatesTables.readLatestGameStateJson(gameId);
-    if (p != null) {
-      autoBackupProblemJsonToFile(ProblemJson.createFrom(p));
-      p.setAgehama(mapper.toJson(currentState.getAgehama()));
-      p.setCells(mapper.toJson(currentState.getCells()));
-      p.setCreatedAt(LocalDateTime.now());
-      p.setHandHistory(mapper.toJson(currentState.getHandHistory()));
-      p.setSymbols(mapper.toJson(currentState.getSymbols()));
-      p.setName(name);
-      p.setGroupId(groupId);
-      p.setMessage(message);
-      problemsTable.merge(p);
-    } else {
-      p = new Problem(problemId == -1 ? ProblemFactory.getNewId() : problemId, LocalDateTime.now(),
-          groupId, name, mapper.toJson(currentState.getCells()),
-          mapper.toJson(currentState.getSymbols()), message == null ? "" : message,
-          mapper.toJson(currentState.getHandHistory()), mapper.toJson(currentState.getAgehama()));
-      problemsTable.insert(p);
-    }
+    Problem newP = createNewProblem(gameId, problemId, groupId, name, message);
+    problemsTable.merge(newP);
     problemsTable.clearProblemsJson();
-    ProblemJson problemJson = ProblemJson.createFrom(p);
+    ProblemJson problemJson = ProblemJson.createFrom(newP);
     saveProblemJsonToFile(problemJson);
     return problemJson;
   }
 
+  private Problem createNewProblem(String gameId, long problemId, String groupId, String name,
+      String message) {
+    Problem prevP = problemsTable.selectByPrimaryKey(problemId);
+    GameStateJson currentState = gameStatesTables.readLatestGameStateJson(gameId);
+    if (prevP != null) {
+      autoBackupProblemJsonToFile(ProblemJson.createFrom(prevP));
+    }
+    return new Problem(
+        prevP != null ? prevP.id() : (problemId == -1 ? ProblemFactory.getNewId() : problemId),
+        LocalDateTime.now(), groupId, name, mapper.toJson(currentState.getCells()),
+        mapper.toJson(currentState.getSymbols()), mapper.toJson(currentState.getAgehama()),
+        mapper.toJson(currentState.getHandHistory()), message == null ? "" : message);
+  }
+
   private void autoBackupProblemJsonToFile(ProblemJson p) {
-    File bkupDir = getProblemAutoBackupDir(p.getGroupId());
-    File o = new File(bkupDir, new Date().getTime() + "-copy-" + p.getName() + ".json");
+    File bkupDir = getProblemAutoBackupDir(p.groupId());
+    File o = new File(bkupDir, new Date().getTime() + "-copy-" + p.name() + ".json");
     mapper.toJsonAndWrite(p, o, true);
   }
 
   private void saveProblemJsonToFile(ProblemJson p) {
-    File problemGroupDir = getProblemDir(p.getGroupId());
-    File o = new File(problemGroupDir, p.getName() + ".json");
+    File problemGroupDir = getProblemDir(p.groupId());
+    File o = new File(problemGroupDir, p.name() + ".json");
     mapper.toJsonAndWrite(p, o, true);
-    log.info("Problep {} - {} is saved to {}", p.getGroupId(), p.getName(), o);
+    log.info("Problep {} - {} is saved to {}", p.groupId(), p.name(), o);
 
   }
 
@@ -168,7 +161,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public void deleteProblem(long problemId) {
-    Problem p = problemsTable.readByPrimaryKey(problemId);
+    Problem p = problemsTable.selectByPrimaryKey(problemId);
     if (p == null) {
       return;
     }
@@ -180,13 +173,11 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public ProblemJson readProblem(long problemId) {
-    Problem p = problemsTable.readByPrimaryKey(problemId);
+    Problem p = problemsTable.selectByPrimaryKey(problemId);
     if (p != null) {
       return ProblemJson.createFrom(p);
     }
-    ProblemJson pj = new ProblemJson();
-    pj.setProblemId(-1);
-    return pj;
+    return new ProblemJson(-1);
   }
 
 
