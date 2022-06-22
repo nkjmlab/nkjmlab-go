@@ -18,10 +18,10 @@ import org.nkjmlab.go.javalin.model.relation.HandsUpTable;
 import org.nkjmlab.go.javalin.model.relation.HandsUpTable.HandUp;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
+import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
-import org.nkjmlab.go.javalin.model.row.MatchingRequest;
 import org.nkjmlab.go.javalin.model.row.Problem;
 import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.go.javalin.model.row.Vote;
@@ -259,11 +259,11 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       }
       usersTable.update(u);
 
-      MatchingRequest matchingReq = new MatchingRequest(u, LocalDateTime.now());
+      MatchingRequest matchingReq = MatchingRequest.createUnpaired(u);
       if (!matchingRequestsTable.exists(matchingReq)) {
         matchingRequestsTable.insert(matchingReq);
       } else {
-        MatchingRequest m = matchingRequestsTable.readByPrimaryKey(userId);
+        MatchingRequest m = matchingRequestsTable.selectByPrimaryKey(userId);
         matchingRequestsTable.update(m);
       }
       wsManager.sendUpdateWaitingRequestStatus(List.of(userId));
@@ -277,7 +277,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   @Override
   public void exitWaitingRoom(String userId) {
     // logger.debug("{} exited from waiting room.", userId);
-    matchingRequestsTable.deleteIfExists(new MatchingRequest(userId));
+    matchingRequestsTable.deleteByPrimaryKey(userId);
     wsManager.sendUpdateWaitingRequestStatus(List.of(userId));
   }
 

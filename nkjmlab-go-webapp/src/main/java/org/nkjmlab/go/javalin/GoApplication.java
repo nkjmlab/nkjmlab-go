@@ -17,7 +17,6 @@ import org.nkjmlab.go.javalin.fbauth.FirebaseUserSession;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService;
 import org.nkjmlab.go.javalin.model.json.GameStateViewJson;
 import org.nkjmlab.go.javalin.model.json.LoginJson;
-import org.nkjmlab.go.javalin.model.json.MatchingRequestJson;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable;
@@ -26,6 +25,7 @@ import org.nkjmlab.go.javalin.model.relation.HandsUpTable;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
+import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
 import org.nkjmlab.go.javalin.model.relation.PasswordsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
@@ -408,9 +408,9 @@ public class GoApplication {
         case "fragment/waiting-request-table.html": {
           String userId = ctx.queryParam("userId");
           if (userId != null) {
-            List<MatchingRequestJson> tmp = matchingRequestsTable.readRequests();
-            model.put("requests", tmp.stream().filter(r -> r.getUserId().equals(userId))
-                .collect(Collectors.toList()));
+            List<MatchingRequest> tmp = matchingRequestsTable.readRequests();
+            model.put("requests",
+                tmp.stream().filter(r -> r.userId().equals(userId)).collect(Collectors.toList()));
           } else {
             model.put("requests", matchingRequestsTable.readRequests());
           }
@@ -418,9 +418,9 @@ public class GoApplication {
         }
         case "fragment/waiting-request-table-small.html": {
           String userId = ctx.queryParam("userId");
-          List<MatchingRequestJson> tmp = matchingRequestsTable.readRequests();
-          model.put("req", tmp.stream().filter(r -> r.getUserId().equals(userId)).findAny()
-              .orElseGet(MatchingRequestJson::new));
+          List<MatchingRequest> tmp = matchingRequestsTable.readRequests();
+          model.put("req",
+              tmp.stream().filter(r -> r.userId().equals(userId)).findAny().orElseGet(null));
           model.put("reqNum", tmp.size());
         }
       }

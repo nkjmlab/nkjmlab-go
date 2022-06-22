@@ -1,66 +1,61 @@
 package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import org.nkjmlab.go.javalin.model.json.MatchingRequestJson;
-import org.nkjmlab.go.javalin.model.row.MatchingRequest;
+import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
+import org.nkjmlab.go.javalin.model.row.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
+import org.nkjmlab.sorm4j.annotation.OrmRecord;
+import org.nkjmlab.sorm4j.result.RowMap;
+import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
+import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
+import com.fasterxml.jackson.databind.annotation.JsonNaming;
 
-public class MatchingRequestsTable {
+public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
+
 
   public static final String TABLE_NAME = "MATCHING_REQUESTS";
 
   private static final String USER_ID = "user_id";
-  private static final String SEAT_ID = "seat_id";
-  private static final String USER_NAME = "user_name";
-  private static final String RANK = "rank";
   private static final String GAME_ID = "game_id";
   private static final String CREATED_AT = "created_at";
 
-  private Sorm sorm;
-
-  private TableDefinition schema;
 
   public MatchingRequestsTable(DataSource dataSource) {
-    this.sorm = Sorm.create(dataSource);
-    this.schema =
-        TableDefinition.builder(TABLE_NAME).addColumnDefinition(USER_ID, VARCHAR, PRIMARY_KEY)
-            .addColumnDefinition(SEAT_ID, VARCHAR).addColumnDefinition(USER_NAME, VARCHAR)
-            .addColumnDefinition(RANK, INT).addColumnDefinition(GAME_ID, VARCHAR)
-            .addColumnDefinition(CREATED_AT, TIMESTAMP).addIndexDefinition(GAME_ID).build();
-    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
+    super(Sorm.create(dataSource), MatchingRequest.class);
+    createTableIfNotExists().createIndexesIfNotExists();
   }
 
 
-  public List<MatchingRequestJson> readRequests() {
-    List<MatchingRequestJson> result = sorm.selectAll(MatchingRequest.class).stream()
-        .map(wr -> new MatchingRequestJson(wr)).collect(Collectors.toList());
+  public List<MatchingRequest> readRequests() {
+    List<MatchingRequest> result = selectAll().stream().collect(Collectors.toList());
     return result;
   }
 
   public boolean empty() {
-    return sorm.selectAll(MatchingRequest.class).size() == 0;
+    return count() == 0;
   }
 
   public List<String> readAllUserIds() {
-    return sorm.readList(String.class, select(USER_ID) + from(TABLE_NAME));
+    return getOrm().readList(String.class, select(USER_ID) + from(TABLE_NAME));
   }
 
   public List<String> readUserIdsOfUnpairedRequestOrdereByCreatedAt() {
-    return sorm.readList(String.class, select(USER_ID) + from(TABLE_NAME)
+    return getOrm().readList(String.class, select(USER_ID) + from(TABLE_NAME)
         + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
   }
 
   public List<MatchingRequest> readUnpairedRequestsOrderByCreatedAt() {
-    return sorm.readList(MatchingRequest.class, selectStarFrom(TABLE_NAME)
+    return readList(selectStarFrom(TABLE_NAME)
         + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
   }
 
@@ -75,48 +70,48 @@ public class MatchingRequestsTable {
     List<String> reqs = readUserIdsOfUnpairedRequestOrdereByCreatedAt();
 
     log.trace("[{}] unpaired matching requests in [{}] matching requests", reqs.size(),
-        sorm.readFirst(Integer.class, SELECT + COUNT + "(*)" + FROM + TABLE_NAME));
+        getOrm().readFirst(Integer.class, SELECT + COUNT + "(*)" + FROM + TABLE_NAME));
 
     List<String> ret = new ArrayList<>();
     for (String uid : reqs) {
-      MatchingRequest target = sorm.selectByPrimaryKey(MatchingRequest.class, uid);
+      MatchingRequest target = selectByPrimaryKey(uid);
 
       if (!target.isUnpaired()) {
         continue;
       }
 
-      Set<String> pastOpponents = gameStatesTables.readPastOpponents(target.getUserId());
-      log.debug("[{}] has been matched with {} on today", target.getUserId(), pastOpponents);
+      Set<String> pastOpponents = gameStatesTables.readPastOpponents(target.userId());
+      log.debug("[{}] has been matched with {} on today", target.userId(), pastOpponents);
 
       MatchingRequest nextOpponent = selectNextOponent(target, pastOpponents);
       if (nextOpponent == null) {
         continue;
       }
 
-      String black = target.getRank() >= nextOpponent.getRank() ? target.getUserId()
-          : nextOpponent.getUserId();
-      String white = target.getRank() >= nextOpponent.getRank() ? nextOpponent.getUserId()
-          : target.getUserId();
+      String black = target.rank() >= nextOpponent.rank() ? target.userId() : nextOpponent.userId();
+      String white = target.rank() >= nextOpponent.rank() ? nextOpponent.userId() : target.userId();
       String gameId = black + GameStatesTables.VS_SEPARATOR + white;
-      target.setGameId(gameId);
-      nextOpponent.setGameId(gameId);
+
+      updateByPrimaryKey(RowMap.of("game_id", gameId), target.userId);
+      updateByPrimaryKey(RowMap.of("game_id", gameId), nextOpponent.userId);
       log.debug("[{}] is created", gameId);
 
-      sorm.merge(target);
-      sorm.merge(nextOpponent);
+      merge(target);
+      merge(nextOpponent);
 
-      ret.add(target.getUserId());
-      ret.add(nextOpponent.getUserId());
+      ret.add(target.userId());
+      ret.add(nextOpponent.userId());
     }
     return ret;
   }
+
+
 
   private MatchingRequest selectNextOponent(MatchingRequest target, Set<String> pastOpponents) {
 
     List<MatchingRequest> unpairedRequestWithoutPastOpponennts =
         readUnpairedRequestsOrderByCreatedAt().stream()
-            .filter(r -> !target.getUserId().equals(r.getUserId())
-                && !pastOpponents.contains(r.getUserId()))
+            .filter(r -> !target.userId().equals(r.userId()) && !pastOpponents.contains(r.userId()))
             .collect(Collectors.toList());
 
     if (unpairedRequestWithoutPastOpponennts.size() == 0) {
@@ -126,8 +121,8 @@ public class MatchingRequestsTable {
     MatchingRequest nextOpponent = unpairedRequestWithoutPastOpponennts.get(0);
 
     for (MatchingRequest r : unpairedRequestWithoutPastOpponennts) {
-      if (Integer.compare(Math.abs(r.getRank() - target.getRank()),
-          Math.abs(nextOpponent.getRank() - target.getRank())) < 0) {
+      if (Integer.compare(Math.abs(r.rank() - target.rank()),
+          Math.abs(nextOpponent.rank() - target.rank())) < 0) {
         nextOpponent = r;
       }
     }
@@ -135,28 +130,23 @@ public class MatchingRequestsTable {
   }
 
 
-  public MatchingRequest readByPrimaryKey(String userId) {
-    return sorm.selectByPrimaryKey(MatchingRequest.class, userId);
-  }
 
+  @OrmRecord
+  @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
+  public static record MatchingRequest(@PrimaryKey String userId, String seatId, String userName,
+      int rank, @Index String gameId, LocalDateTime createdAt) {
 
-  public boolean exists(MatchingRequest matchingReq) {
-    return sorm.exists(matchingReq);
-  }
+    public static final String UNPAIRED = "UNPAIRED";
 
+    public static MatchingRequest createUnpaired(User u) {
+      return new MatchingRequest(u.getUserId(), u.getSeatId(), u.getUserName(), u.getRank(),
+          UNPAIRED, LocalDateTime.now());
+    }
 
-  public void insert(MatchingRequest matchingReq) {
-    sorm.insert(matchingReq);
-  }
+    public boolean isUnpaired() {
+      return UNPAIRED.equals(gameId);
+    }
 
-
-  public void update(MatchingRequest m) {
-    sorm.update(m);
-  }
-
-
-  public void deleteIfExists(MatchingRequest matchingRequest) {
-    sorm.delete(matchingRequest);
   }
 
 }

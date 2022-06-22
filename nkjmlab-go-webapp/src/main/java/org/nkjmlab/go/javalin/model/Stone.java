@@ -70,7 +70,7 @@ public class Stone {
   public void setId(int id) {
     this.id = id;
     this.color = Color.of(id);
-    this.symbol = Symbol.of(id);
+    symbol = Symbol.of(id);
   }
 
   public Color getColor() {
