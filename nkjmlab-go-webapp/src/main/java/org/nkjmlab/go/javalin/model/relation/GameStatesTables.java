@@ -18,7 +18,8 @@ import org.nkjmlab.go.javalin.model.row.GameState;
 import org.nkjmlab.sorm4j.internal.util.Try;
 
 public class GameStatesTables {
-  private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
+  private static final org.apache.logging.log4j.Logger log =
+      org.apache.logging.log4j.LogManager.getLogger();
 
   public static final String VS_SEPARATOR = "-vs-";
 
@@ -79,7 +80,7 @@ public class GameStatesTables {
       Arrays.fill(cells[i], 0);
     }
     return new GameStateJson(gameId, players[0], players[1], cells, new HashMap<>(),
-        new AgehamaJson(), new HandJson(), new ArrayList<>(), -1, new HashMap<>());
+        new AgehamaJson(0, 0), new HandJson(), new ArrayList<>(), -1, new HashMap<>());
   }
 
 

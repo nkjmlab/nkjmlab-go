@@ -18,7 +18,6 @@ import org.nkjmlab.go.javalin.model.Stone.Color;
 import org.nkjmlab.go.javalin.model.Stone.Symbol;
 import org.nkjmlab.go.javalin.model.json.HandType;
 import org.nkjmlab.go.javalin.model.json.ProblemJson;
-import org.nkjmlab.go.javalin.model.json.TsukadaHand;
 import org.nkjmlab.util.jackson.JacksonMapper;
 
 public class ProblemFactory {
@@ -63,7 +62,8 @@ public class ProblemFactory {
     log.info("detect [{}] problem files in [{}]", files.size(), pathToProblemJsonDir);
     return files.stream().map(file -> {
       try {
-        ProblemJson problem = JacksonMapper.getIgnoreUnknownPropertiesMapper().toObject(file, ProblemJson.class);
+        ProblemJson problem =
+            JacksonMapper.getIgnoreUnknownPropertiesMapper().toObject(file, ProblemJson.class);
         return problem;
       } catch (Exception e) {
         log.error("file {}", file);
@@ -105,8 +105,8 @@ public class ProblemFactory {
               } else if (line.startsWith("{")) {
                 TsukadaHand orig =
                     JacksonMapper.getDefaultMapper().toObject(line, TsukadaHand.class);
-                procRemove(json, orig.getIj0(), orig.getBW());
-                procPut(json, orig.getIj1(), orig.getBW(), orig.getID());
+                procRemove(json, orig.ij0(), orig.BW());
+                procPut(json, orig.ij1(), orig.BW(), orig.ID());
               } else {
                 json.appendMessage("<p>" + " " + line + "</p>");
               }
@@ -219,4 +219,9 @@ public class ProblemFactory {
     }
     return new ArrayList<>();
   }
+
+  public record TsukadaHand(int[] ij0, int[] ij1, int BW, int ID) {
+
+  }
+
 }

@@ -50,7 +50,7 @@ public record ProblemJson(long problemId, String groupId, String name, int[][] c
     private String message = "";
     private int ro;
     private List<HandJson> handHistory = new ArrayList<>();
-    private AgehamaJson agehama = new AgehamaJson();
+    private AgehamaJson agehama = new AgehamaJson(0, 0);
 
 
     public Builder() {}
@@ -71,7 +71,7 @@ public record ProblemJson(long problemId, String groupId, String name, int[][] c
 
     public void addHand(HandType type, int number, int x, int y, Stone stone) {
       if (type == HandType.AGEHAMA) {
-        agehama.increment(stone);
+        agehama = agehama.increment(stone);
       }
       handHistory.add(new HandJson(type, number, x, y, stone.getId()));
       cells[x][y] = stone.getId();

@@ -27,9 +27,9 @@ import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
 import org.nkjmlab.go.javalin.model.relation.PasswordsTable;
+import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
-import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
 import org.nkjmlab.go.javalin.model.row.GameState;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
@@ -198,6 +198,7 @@ public class GoApplication {
       File f = ResourceUtils.getResourceAsFile("/conf/users.csv");
       usersTable.readFromFileAndMerge(f);
     } catch (Exception e) {
+      log.error(e, e);
       log.warn("load users.csv.default ...");
       File f = ResourceUtils.getResourceAsFile("/conf/users.csv.default");
       usersTable.readFromFileAndMerge(f);
