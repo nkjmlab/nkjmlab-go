@@ -3,12 +3,12 @@ package org.nkjmlab.go.javalin.model.relation;
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
 import java.io.File;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.GoApplication;
-import org.nkjmlab.go.javalin.model.json.ProblemJson;
+import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.problem.ProblemFactory;
-import org.nkjmlab.go.javalin.model.problem.ProblemGroupsNode;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
@@ -39,17 +39,18 @@ public class ProblemsTable extends BasicH2Table<Problem> {
 
   public ProblemsTable(DataSource dataSource) {
     super(Sorm.create(dataSource), Problem.class);
+    this.problemGroupNodeFactory = new ProblemGroupNodeFactory(this);
     createTableIfNotExists().createIndexesIfNotExists();
   }
 
 
 
-  public List<String> getGroupsOrderByAsc() {
+  private List<String> getGroupsOrderByAsc() {
     return getOrm().readList(String.class,
         selectDistinct(GROUP_ID) + from(TABLE_NAME) + orderByAsc(GROUP_ID));
   }
 
-  public List<Problem> readProblemsByGroupId(String groupId) {
+  private List<Problem> readProblemsByGroupId(String groupId) {
     return readList(selectStarFrom(TABLE_NAME) + where(GROUP_ID + "=?") + orderByAsc(NAME),
         groupId);
 
@@ -71,50 +72,139 @@ public class ProblemsTable extends BasicH2Table<Problem> {
     });
   }
 
-  private String problemGroupsNodeJson = "";
-
-  public void clearProblemsJson() {
-    synchronized (problemGroupsNodeJson) {
-      problemGroupsNodeJson = "";
-    }
-  }
-
-  public String getproblemGroupsNode() {
-    synchronized (problemGroupsNodeJson) {
-      if (problemGroupsNodeJson.length() != 0) {
-        return problemGroupsNodeJson;
-      }
-      ProblemGroupsNode groupsNode = new ProblemGroupsNode();
-
-      List<String> tmp = getGroupsOrderByAsc();
-
-      for (int i = 0; i < tmp.size(); i++) {
-        if (!groupNames.contains(tmp.get(i))) {
-          log.error("{} は，登録されていない問題グループです．", tmp.get(i));
-          log.error("グループの順序を付けるため，" + getClass().getSimpleName() + "にグループ名を登録して下さい．");
-        }
-      }
-
-
-      groupNames.forEach(groupId -> {
-        groupsNode.addProblemGroup(groupId);
-        readProblemsByGroupId(groupId).forEach(problem -> {
-          groupsNode.addProblem(groupId, problem.name(), problem.id());
-        });
-      });
-      this.problemGroupsNodeJson =
-          GoApplication.getDefaultJacksonMapper().toJson(groupsNode.getNodes());
-      return problemGroupsNodeJson;
-    }
-  }
-
-
-
   @OrmRecord
   public static record Problem(@PrimaryKey long id, LocalDateTime createdAt,
       @Index @NotNull String groupId, @NotNull String name, @NotNull String cells,
       @NotNull String symbols, @NotNull String agehama, @NotNull String handHistory,
       @NotNull String message) {
   }
+
+
+  public String getProblemGroupsNode() {
+    return problemGroupNodeFactory.getProblemGroupsNode();
+  }
+
+  public void clearProblemsJson() {
+    problemGroupNodeFactory.clearProblemsJson();
+  }
+
+  public final ProblemGroupNodeFactory problemGroupNodeFactory;
+
+  public static class ProblemGroupNodeFactory {
+
+    private final ProblemsTable problemsTable;
+    private String problemGroupsNodeJson = "";
+
+    public ProblemGroupNodeFactory(ProblemsTable problemsTable) {
+      this.problemsTable = problemsTable;
+    }
+
+    private void clearProblemsJson() {
+      synchronized (problemGroupsNodeJson) {
+        problemGroupsNodeJson = "";
+      }
+    }
+
+    private String getProblemGroupsNode() {
+      synchronized (problemGroupsNodeJson) {
+        if (problemGroupsNodeJson.length() != 0) {
+          return problemGroupsNodeJson;
+        }
+        ProblemGroupsNode groupsNode = new ProblemGroupsNode();
+
+        List<String> tmp = problemsTable.getGroupsOrderByAsc();
+
+        for (int i = 0; i < tmp.size(); i++) {
+          if (!groupNames.contains(tmp.get(i))) {
+            log.error("{} は，登録されていない問題グループです．", tmp.get(i));
+            log.error("グループの順序を付けるため，" + getClass().getSimpleName() + "にグループ名を登録して下さい．");
+          }
+        }
+
+
+        groupNames.forEach(groupId -> {
+          groupsNode.addProblemGroup(groupId);
+          problemsTable.readProblemsByGroupId(groupId).forEach(problem -> {
+            groupsNode.addProblem(groupId, problem.name(), problem.id());
+          });
+        });
+        this.problemGroupsNodeJson =
+            GoApplication.getDefaultJacksonMapper().toJson(groupsNode.getNodes());
+        return problemGroupsNodeJson;
+      }
+    }
+
+
+
+    public static class ProblemGroupsNode {
+      private List<ProblemGroupNode> nodes = new ArrayList<>();
+
+      public List<ProblemGroupNode> getNodes() {
+        return nodes;
+      }
+
+      public void addProblemGroup(String groupName) {
+        nodes.add(new ProblemGroupNode(groupName));
+      }
+
+      public void addProblem(String groupName, String problemName, long problemId) {
+        getProblemGroup(groupName).add(problemName, problemId);
+        getProblemGroup(groupName).refreshTags();
+      }
+
+      private ProblemGroupNode getProblemGroup(String groupName) {
+        for (ProblemGroupNode node : nodes) {
+          if (node.getText().equals(groupName)) {
+            return node;
+          }
+        }
+        return null;
+      }
+
+      public static class ProblemGroupNode {
+        private String text;
+        private boolean selectable = false;
+
+        private List<String> tags = new ArrayList<>();
+
+        private List<ProblemNode> nodes = new ArrayList<>();
+
+        public ProblemGroupNode(String groupName) {
+          this.text = groupName;
+        }
+
+        public String getText() {
+          return text;
+        }
+
+        public List<ProblemNode> getNodes() {
+          return nodes;
+        }
+
+        public void add(String problemName, long problemId) {
+          nodes.add(new ProblemNode(problemName, problemId));
+        }
+
+        public boolean isSelectable() {
+          return selectable;
+        }
+
+        public List<String> getTags() {
+          return tags;
+        }
+
+        public void refreshTags() {
+          this.tags.clear();
+          this.tags.add(String.valueOf(nodes.size()));
+        }
+
+      }
+      public static record ProblemNode(String text, long problemId) {
+
+      }
+
+    }
+  }
+
 
 }

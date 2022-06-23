@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import org.h2.jdbcx.JdbcConnectionPool;
-import org.nkjmlab.go.javalin.GoApplication.LoginJson;
 import org.nkjmlab.go.javalin.fbauth.AuthService;
 import org.nkjmlab.go.javalin.fbauth.AuthServiceInterface;
 import org.nkjmlab.go.javalin.fbauth.FirebaseUserSession;
@@ -326,7 +325,7 @@ public class GoApplication {
           session.getUserId().ifPresent(uid -> {
             boolean attend = loginsTable.isAttendance(uid);
             model.put("isAttendance", attend);
-            model.put("problemGroupsJson", problemsTable.getproblemGroupsNode());
+            model.put("problemGroupsJson", problemsTable.getProblemGroupsNode());
           });
           break;
         }

@@ -17,10 +17,10 @@ import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WriteCallback;
 import org.nkjmlab.go.javalin.GoApplication;
-import org.nkjmlab.go.javalin.model.json.Agehama;
-import org.nkjmlab.go.javalin.model.json.Hand;
-import org.nkjmlab.go.javalin.model.json.Hand.HandType;
-import org.nkjmlab.go.javalin.model.json.ProblemJson;
+import org.nkjmlab.go.javalin.model.common.Agehama;
+import org.nkjmlab.go.javalin.model.common.Hand;
+import org.nkjmlab.go.javalin.model.common.Hand.HandType;
+import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
@@ -121,7 +121,8 @@ public class WebsocketSessionsManager {
   public ProblemJson loadProblem(String gameId, long problemId) {
     Problem p = problemsTable.selectByPrimaryKey(problemId);
     Hand[] handHistory = mapper.toObject(p.handHistory(), Hand[].class);
-    Hand lastHand = handHistory.length != 0 ? handHistory[handHistory.length - 1] : null;
+    Hand lastHand =
+        handHistory.length != 0 ? handHistory[handHistory.length - 1] : Hand.createDummyHand();
     GameStateJson json =
         new GameStateJson(-1, gameId, "", "", mapper.toObject(p.cells(), int[][].class),
             mapper.toObject(p.symbols(), new TypeReference<Map<String, Integer>>() {}),

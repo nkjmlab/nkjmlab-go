@@ -1,4 +1,4 @@
-package org.nkjmlab.go.javalin.model.json;
+package org.nkjmlab.go.javalin.model.common;
 
 import java.time.LocalDateTime;
 import java.util.Map;

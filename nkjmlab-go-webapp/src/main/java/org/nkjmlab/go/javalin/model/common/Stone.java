@@ -1,6 +1,22 @@
-package org.nkjmlab.go.javalin.model;
+package org.nkjmlab.go.javalin.model.common;
 
-public class Stone {
+import org.nkjmlab.go.javalin.model.common.Stone.Color;
+import org.nkjmlab.go.javalin.model.common.Stone.Symbol;
+
+@SuppressWarnings("unused")
+
+/**
+ * id<br>
+ * 1桁目 0:ブランク， 1:黒， 2:白, 3:A, 4:B, 5:C<br>
+ * 2桁目 0：ブランク， 1:□， 2：△, 3:x
+ *
+ */
+public record Stone(int id, Color color, Symbol symbol) {
+
+  public Stone(int id) {
+    this(id, Color.of(id), Symbol.of(id));
+  }
+
 
   public static enum Color {
     BLANK(0), BLACK(1), WHITE(2);
@@ -53,32 +69,5 @@ public class Stone {
 
   }
 
-  private int id;
-  private Color color;
-  private Symbol symbol;
-
-  public Stone() {}
-
-  public Stone(int id) {
-    setId(id);
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public void setId(int id) {
-    this.id = id;
-    this.color = Color.of(id);
-    symbol = Symbol.of(id);
-  }
-
-  public Color getColor() {
-    return color;
-  }
-
-  public Symbol getSymbol() {
-    return symbol;
-  }
 
 }

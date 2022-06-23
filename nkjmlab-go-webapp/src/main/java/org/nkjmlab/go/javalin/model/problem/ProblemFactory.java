@@ -17,13 +17,13 @@ import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.nkjmlab.go.javalin.GoApplication;
-import org.nkjmlab.go.javalin.model.Stone;
-import org.nkjmlab.go.javalin.model.Stone.Color;
-import org.nkjmlab.go.javalin.model.Stone.Symbol;
-import org.nkjmlab.go.javalin.model.json.Agehama;
-import org.nkjmlab.go.javalin.model.json.Hand;
-import org.nkjmlab.go.javalin.model.json.Hand.HandType;
-import org.nkjmlab.go.javalin.model.json.ProblemJson;
+import org.nkjmlab.go.javalin.model.common.Agehama;
+import org.nkjmlab.go.javalin.model.common.Hand;
+import org.nkjmlab.go.javalin.model.common.Hand.HandType;
+import org.nkjmlab.go.javalin.model.common.ProblemJson;
+import org.nkjmlab.go.javalin.model.common.Stone;
+import org.nkjmlab.go.javalin.model.common.Stone.Color;
+import org.nkjmlab.go.javalin.model.common.Stone.Symbol;
 
 public class ProblemFactory {
   private static final org.apache.logging.log4j.Logger log =
@@ -196,8 +196,8 @@ public class ProblemFactory {
     Stone s = new Stone(stone);
     json.addHand(HandType.ON_BOARD, number.intValue(), ij1[0] - 1, ij1[1] - 1, s);
 
-    if (s.getColor() == Color.BLANK && s.getSymbol() != Symbol.BLANK) {
-      json.putSymbol(ij1[0] - 1, ij1[1] - 1, new Stone(stone).getSymbol().getId());
+    if (s.color() == Color.BLANK && s.symbol() != Symbol.BLANK) {
+      json.putSymbol(ij1[0] - 1, ij1[1] - 1, new Stone(stone).symbol().getId());
     }
     number.incrementAndGet();
   }
@@ -261,8 +261,8 @@ public class ProblemFactory {
       if (type == HandType.AGEHAMA) {
         agehama = agehama.increment(stone);
       }
-      handHistory.add(new Hand(type.getTypeName(), number, x, y, stone.getId()));
-      cells[x][y] = stone.getId();
+      handHistory.add(new Hand(type.getTypeName(), number, x, y, stone.id()));
+      cells[x][y] = stone.id();
     }
 
     public String getName() {
@@ -302,9 +302,6 @@ public class ProblemFactory {
     public void setProblemId(long id) {
       this.problemId = id;
     }
-
-
   }
-
 
 }

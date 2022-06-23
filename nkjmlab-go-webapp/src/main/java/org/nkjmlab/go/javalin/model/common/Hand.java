@@ -1,4 +1,4 @@
-package org.nkjmlab.go.javalin.model.json;
+package org.nkjmlab.go.javalin.model.common;
 
 import java.util.stream.Stream;
 
@@ -10,6 +10,10 @@ import java.util.stream.Stream;
  */
 public record Hand(String type, int number, int x, int y, int stone) {
 
+  public static Hand createDummyHand() {
+    return new Hand(HandType.DUMMY.getTypeName(), -1, -1, -1, -1);
+  }
+
   /**
    * ProblemFactoryが使っているだけなので，fromAgehamaやvoteは不要かも
    *
@@ -18,8 +22,8 @@ public record Hand(String type, int number, int x, int y, int stone) {
    */
   public enum HandType {
     ON_BOARD("onBoard"), PUT_ON_BOARD("putOnBoard"), REMOVE_FROM_BOARD("removeFromBoard"), AGEHAMA(
-        "agehama"), FROM_AGEHAMA(
-            "fromAgehama"), FROM_POD("fromPod"), PASS("pass"), GIVE_UP("giveUp"), VOTE("vote");
+        "agehama"), FROM_AGEHAMA("fromAgehama"), FROM_POD(
+            "fromPod"), PASS("pass"), GIVE_UP("giveUp"), VOTE("vote"), DUMMY("dummy");
 
     private final String typeName;
 

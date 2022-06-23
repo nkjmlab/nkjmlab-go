@@ -12,8 +12,8 @@ import java.util.Optional;
 import java.util.Set;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.GoApplication;
-import org.nkjmlab.go.javalin.model.json.Agehama;
-import org.nkjmlab.go.javalin.model.json.Hand;
+import org.nkjmlab.go.javalin.model.common.Agehama;
+import org.nkjmlab.go.javalin.model.common.Hand;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
@@ -24,7 +24,6 @@ import org.nkjmlab.sorm4j.util.table_def.annotation.IndexColumns;
 import org.nkjmlab.sorm4j.util.table_def.annotation.NotNull;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 import org.nkjmlab.util.jackson.JacksonMapper;
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public class GameStatesTable extends BasicH2Table<GameState> {
@@ -124,9 +123,6 @@ public class GameStatesTable extends BasicH2Table<GameState> {
     public static final int DEFAULT_RO = 9;
 
     private static final JacksonMapper mapper = GoApplication.getDefaultJacksonMapper();
-    static {
-      mapper.getObjectMapper().setDefaultPropertyInclusion(JsonInclude.Include.ALWAYS);
-    }
 
     public GameStateJson updateHandHistory(List<Hand> modifiedHistory) {
       return new GameStateJson(id, gameId, blackPlayerId, whitePlayerId, cells, symbols, agehama,

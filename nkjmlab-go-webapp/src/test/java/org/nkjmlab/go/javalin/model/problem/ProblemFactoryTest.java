@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.*;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.Test;
-import org.nkjmlab.go.javalin.model.json.ProblemJson;
+import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.lang.ResourceUtils;
 
