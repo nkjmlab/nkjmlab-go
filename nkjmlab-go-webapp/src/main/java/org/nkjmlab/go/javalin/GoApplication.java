@@ -206,7 +206,7 @@ public class GoApplication {
 
     this.passwordsTable = new PasswordsTable(fileDbDataSource);
     passwordsTable.dropTableIfExists();
-    passwordsTable.createTableAndIndexesIfNotExists();
+    passwordsTable.createTableIfNotExists().createIndexesIfNotExists();
     try {
       File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv");
       passwordsTable.readFromFileAndMerge(f);
