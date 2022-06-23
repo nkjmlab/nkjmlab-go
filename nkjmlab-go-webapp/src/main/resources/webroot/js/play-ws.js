@@ -153,7 +153,7 @@ class PlayWebSocket {
             "btn-danger active");
         }
 
-        if (gameState.cells[0].length != getCellNum()) {
+        if (gameState.cells[0].length != getCellNum() || gameBoard.CELL_NUM != getCellNum()) {
           setCellNum(gameState.cells[0].length);
           initView();
           refreshProblemInfo();
@@ -198,13 +198,13 @@ class PlayWebSocket {
 
     connection.onerror = function (e) {
       console.error("connection has an error.");
-      swalAlert("ページを再読み込みします", "", "info", e=> location.reload());
+      swalAlert("ページを再読み込みします", "", "info", e => location.reload());
     };
 
 
     connection.onclose = function (e) {
       console.warn("connection is closed.");
-      setTimeout(() => location.reload() , 500);
+      setTimeout(() => location.reload(), 500);
     };
   }
 

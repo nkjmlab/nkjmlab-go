@@ -167,7 +167,7 @@ class GameBoard {
     }
     const img = this.STONE_IMAGES[stone];
     if (!img) {
-      console.error("invalid: " + stone);
+      console.error("try drawing stone but invalid : " + stone);
     }
     ctx.drawImage(img, this.LEFT_OFFSET / 2 + this.CELL_SIZE * x, this.TOP_OFFSET / 2 + this.CELL_SIZE * y, this.STONE_SIZE,
       this.STONE_SIZE);
@@ -179,7 +179,7 @@ class GameBoard {
     }
     const img = this.STONE_IMAGES[stone];
     if (!img) {
-      console.error("invalid: " + stone);
+      console.error("try drawing symbol but invalid: " + stone);
     }
     ctx.drawImage(img, this.LEFT_OFFSET / 2 + this.CELL_SIZE * x + this.STONE_SIZE * 0.1, this.TOP_OFFSET / 2 + this.CELL_SIZE * y + this.STONE_SIZE * 0.1,
       this.STONE_SIZE * 0.8, this.STONE_SIZE * 0.8);
