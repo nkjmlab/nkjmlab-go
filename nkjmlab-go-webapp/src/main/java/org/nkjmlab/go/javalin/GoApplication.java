@@ -11,17 +11,19 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import org.h2.jdbcx.JdbcConnectionPool;
+import org.nkjmlab.go.javalin.GoApplication.LoginJson;
 import org.nkjmlab.go.javalin.fbauth.AuthService;
 import org.nkjmlab.go.javalin.fbauth.AuthServiceInterface;
 import org.nkjmlab.go.javalin.fbauth.FirebaseUserSession;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService;
-import org.nkjmlab.go.javalin.model.json.GameStateViewJson;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
+import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
@@ -359,11 +361,10 @@ public class GoApplication {
         }
         case "games-all.html": {
           List<GameStateViewJson> tmp = gameStatesTables.readTodayGameJsons().stream().map(gsj -> {
-            GameStateViewJson json = new GameStateViewJson(gsj);
             String gameId = gsj.gameId();
-            json.setHandUp(handsUpTable.selectByPrimaryKey(gameId));
-            json.setWatchingStudentsNum(
-                websoketSessionsTable.getWatchingUniqueStudentsNum(usersTable, gameId));
+            GameStateViewJson json =
+                new GameStateViewJson(gsj, handsUpTable.selectByPrimaryKey(gameId),
+                    websoketSessionsTable.getWatchingUniqueStudentsNum(usersTable, gameId));
             return json;
           }).collect(Collectors.toList());
           model.put("games", tmp);
@@ -374,15 +375,14 @@ public class GoApplication {
           List<String> gids = websoketSessionsTable.readActiveGameIdsOrderByGameId(usersTable);
           List<GameStateViewJson> tmp =
               gids.stream().map(gid -> gameStatesTables.readLatestGameStateJson(gid)).map(gsj -> {
-                GameStateViewJson json = new GameStateViewJson(gsj);
                 String gameId = gsj.gameId();
-                json.setHandUp(handsUpTable.selectByPrimaryKey(gameId));
-                json.setWatchingStudentsNum(
-                    websoketSessionsTable.getWatchingUniqueStudentsNum(usersTable, gameId));
+                GameStateViewJson json =
+                    new GameStateViewJson(gsj, handsUpTable.selectByPrimaryKey(gameId),
+                        websoketSessionsTable.getWatchingUniqueStudentsNum(usersTable, gameId));
                 return json;
               }).collect(Collectors.toList());
-          model.put("games", tmp.stream().filter(j -> j.getWatchingStudentsNum() > 0)
-              .collect(Collectors.toList()));
+          model.put("games",
+              tmp.stream().filter(j -> j.watchingStudentsNum() > 0).collect(Collectors.toList()));
           break;
         }
         case "fragment/game-record-table.html": {
@@ -396,9 +396,9 @@ public class GoApplication {
           List<String> gids = handsUpTable.readAllGameIds();
           List<GameStateViewJson> tmp =
               gameStatesTables.readLatestBoardsJson(gids).stream().map(gsj -> {
-                GameStateViewJson json = new GameStateViewJson(gsj);
                 String gameId = gsj.gameId();
-                json.setHandUp(handsUpTable.selectByPrimaryKey(gameId));
+                GameStateViewJson json =
+                    new GameStateViewJson(gsj, handsUpTable.selectByPrimaryKey(gameId), 0);
                 return json;
               }).collect(Collectors.toList());
           model.put("games", tmp);
@@ -495,6 +495,11 @@ public class GoApplication {
 
   public static JacksonMapper getDefaultJacksonMapper() {
     return JacksonMapper.getIgnoreUnknownPropertiesMapper();
+  }
+
+  public static record GameStateViewJson(GameStateJson gameState, HandUp handUp,
+      int watchingStudentsNum) {
+
   }
 
 
