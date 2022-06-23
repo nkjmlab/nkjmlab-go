@@ -17,12 +17,10 @@ import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WriteCallback;
 import org.nkjmlab.go.javalin.GoApplication;
-import org.nkjmlab.go.javalin.model.json.AgehamaJson;
-import org.nkjmlab.go.javalin.model.json.GameStateUtils;
-import org.nkjmlab.go.javalin.model.json.HandJson;
-import org.nkjmlab.go.javalin.model.json.HandType;
+import org.nkjmlab.go.javalin.model.json.Agehama;
+import org.nkjmlab.go.javalin.model.json.Hand;
+import org.nkjmlab.go.javalin.model.json.Hand.HandType;
 import org.nkjmlab.go.javalin.model.json.ProblemJson;
-import org.nkjmlab.go.javalin.model.json.UserJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
@@ -31,9 +29,11 @@ import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
 import org.nkjmlab.util.java.json.JsonMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.javalin.websocket.WsMessageContext;
 
 public class WebsocketSessionsManager {
@@ -120,12 +120,12 @@ public class WebsocketSessionsManager {
 
   public ProblemJson loadProblem(String gameId, long problemId) {
     Problem p = problemsTable.selectByPrimaryKey(problemId);
-    HandJson[] handHistory = mapper.toObject(p.handHistory(), HandJson[].class);
-    HandJson lastHand = handHistory.length != 0 ? handHistory[handHistory.length - 1] : null;
+    Hand[] handHistory = mapper.toObject(p.handHistory(), Hand[].class);
+    Hand lastHand = handHistory.length != 0 ? handHistory[handHistory.length - 1] : null;
     GameStateJson json =
         new GameStateJson(-1, gameId, "", "", mapper.toObject(p.cells(), int[][].class),
-            GameStateUtils.symbolsStringToSymbols(p.symbols()),
-            mapper.toObject(p.agehama(), AgehamaJson.class), lastHand, handHistory, p.id(),
+            mapper.toObject(p.symbols(), new TypeReference<Map<String, Integer>>() {}),
+            mapper.toObject(p.agehama(), Agehama.class), lastHand, handHistory, p.id(),
             new HashMap<>(), LocalDateTime.now());
     sendGameState(gameId, json);
     return ProblemJson.createFrom(problemsTable.selectByPrimaryKey(problemId));
@@ -141,7 +141,7 @@ public class WebsocketSessionsManager {
 
   private void sendEntriesToSessions(String gameId) {
     List<UserJson> users = websoketSessionsTable.readUsers(usersTable, gameId).stream()
-        .map(u -> new UserJson(u)).collect(Collectors.toList());
+        .map(u -> new UserJson(u, true)).collect(Collectors.toList());
 
     jsonSenderService.submitEntries(websoketSessionsTable.getSessionsByGameId(gameId), users);
 
@@ -155,18 +155,18 @@ public class WebsocketSessionsManager {
   }
 
   private GameStateJson removeHagashi(GameStateJson json) {
-    List<HandJson> history = Arrays.asList(json.handHistory());
+    List<Hand> history = Arrays.asList(json.handHistory());
     if (history.size() <= 2) {
       return json;
     }
-    HandJson last = history.get(history.size() - 1);
-    HandJson second = history.get(history.size() - 2);
-    HandJson third = history.get(history.size() - 3);
+    Hand last = history.get(history.size() - 1);
+    Hand second = history.get(history.size() - 2);
+    Hand third = history.get(history.size() - 3);
     if (last.stone() == second.stone() && second.stone() == third.stone()
         && third.type().equals(HandType.PUT_ON_BOARD.getTypeName())
         && second.type().equals(HandType.REMOVE_FROM_BOARD.getTypeName()) && third.x() == second.x()
         && third.y() == second.y()) {
-      List<HandJson> modify = history.subList(0, history.size() - 3);
+      List<Hand> modify = history.subList(0, history.size() - 3);
       modify.add(last);
       return json.updateHandHistory(modify);
     }

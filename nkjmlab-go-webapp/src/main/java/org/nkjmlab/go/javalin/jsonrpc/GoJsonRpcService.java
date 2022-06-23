@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.json.ProblemJson;
-import org.nkjmlab.go.javalin.model.json.UserJson;
 import org.nkjmlab.go.javalin.model.problem.ProblemFactory;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
@@ -23,6 +22,7 @@ import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
@@ -206,12 +206,10 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   public UserJson getUser(String userId) {
     User u = usersTable.selectByPrimaryKey(userId);
     if (u == null) {
-      UserJson uj = new UserJson();
-      uj.setUserId(userId);
+      UserJson uj = new UserJson(userId);
       return uj;
     }
-    UserJson uj = new UserJson(u);
-    uj.attendance = loginsTable.isAttendance(userId);
+    UserJson uj = new UserJson(u, loginsTable.isAttendance(userId));
     return uj;
 
   }

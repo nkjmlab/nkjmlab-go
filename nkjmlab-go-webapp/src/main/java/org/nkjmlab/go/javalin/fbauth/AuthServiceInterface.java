@@ -3,7 +3,7 @@ package org.nkjmlab.go.javalin.fbauth;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
-import org.nkjmlab.go.javalin.model.json.UserJson;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 
 public interface AuthServiceInterface {
 

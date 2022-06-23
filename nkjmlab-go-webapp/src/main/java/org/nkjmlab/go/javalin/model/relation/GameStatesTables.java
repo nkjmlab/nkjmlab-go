@@ -11,8 +11,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import org.nkjmlab.go.javalin.model.json.AgehamaJson;
-import org.nkjmlab.go.javalin.model.json.HandJson;
+import org.nkjmlab.go.javalin.model.json.Agehama;
+import org.nkjmlab.go.javalin.model.json.Hand;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
 import org.nkjmlab.sorm4j.internal.util.Try;
@@ -80,7 +80,7 @@ public class GameStatesTables {
       Arrays.fill(cells[i], 0);
     }
     return new GameStateJson(-1, gameId, players[0], players[1], cells, new HashMap<>(),
-        new AgehamaJson(0, 0), null, new HandJson[0], -1, new HashMap<>(), LocalDateTime.now());
+        new Agehama(0, 0), null, new Hand[0], -1, new HashMap<>(), LocalDateTime.now());
   }
 
 

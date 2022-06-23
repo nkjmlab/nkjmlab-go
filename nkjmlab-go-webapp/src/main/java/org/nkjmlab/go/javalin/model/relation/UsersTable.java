@@ -199,5 +199,19 @@ public class UsersTable extends BasicH2Table<User> {
       return role != null && role.equalsIgnoreCase(GUEST);
     }
   }
+  public record UserJson(String userId, String userName, String seatId, int rank,
+      LocalDateTime createdAt, boolean attendance) {
+
+
+    public UserJson(User user, boolean attendance) {
+      this(user.userId(), user.userName(), user.seatId(), user.rank(), user.createdAt(), attendance);
+    }
+
+    public UserJson(String userId) {
+      this(userId, "", "", 30, LocalDateTime.now(), false);
+    }
+
+  }
+
 
 }

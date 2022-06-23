@@ -8,8 +8,8 @@ import org.nkjmlab.util.jackson.JacksonMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public record ProblemJson(long problemId, String groupId, String name, int[][] cells,
-    Map<String, Integer> symbols, String message, int ro, HandJson[] handHistory,
-    AgehamaJson agehama) {
+    Map<String, Integer> symbols, String message, int ro, Hand[] handHistory,
+    Agehama agehama) {
 
   private static final JacksonMapper mapper = GoApplication.getDefaultJacksonMapper();
 
@@ -26,8 +26,8 @@ public record ProblemJson(long problemId, String groupId, String name, int[][] c
     int[][] cells = mapper.toObject(problem.cells(), int[][].class);
     return new ProblemJson(problem.id(), problem.groupId(), problem.name(), cells,
         mapper.toObject(problem.symbols(), new TypeReference<Map<String, Integer>>() {}),
-        problem.message(), cells.length, mapper.toObject(problem.handHistory(), HandJson[].class),
-        mapper.toObject(problem.agehama(), AgehamaJson.class));
+        problem.message(), cells.length, mapper.toObject(problem.handHistory(), Hand[].class),
+        mapper.toObject(problem.agehama(), Agehama.class));
   }
 
 

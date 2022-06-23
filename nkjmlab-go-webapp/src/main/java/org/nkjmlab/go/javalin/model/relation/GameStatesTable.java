@@ -12,9 +12,8 @@ import java.util.Optional;
 import java.util.Set;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.GoApplication;
-import org.nkjmlab.go.javalin.model.json.AgehamaJson;
-import org.nkjmlab.go.javalin.model.json.GameStateUtils;
-import org.nkjmlab.go.javalin.model.json.HandJson;
+import org.nkjmlab.go.javalin.model.json.Agehama;
+import org.nkjmlab.go.javalin.model.json.Hand;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
@@ -26,6 +25,7 @@ import org.nkjmlab.sorm4j.util.table_def.annotation.NotNull;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.core.type.TypeReference;
 
 public class GameStatesTable extends BasicH2Table<GameState> {
   private static final org.apache.logging.log4j.Logger log =
@@ -117,9 +117,8 @@ public class GameStatesTable extends BasicH2Table<GameState> {
   }
 
   public record GameStateJson(long id, String gameId, String blackPlayerId, String whitePlayerId,
-      int[][] cells, Map<String, Integer> symbols, AgehamaJson agehama, HandJson lastHand,
-      HandJson[] handHistory, long problemId, Map<String, Object> options,
-      LocalDateTime createdAt) {
+      int[][] cells, Map<String, Integer> symbols, Agehama agehama, Hand lastHand,
+      Hand[] handHistory, long problemId, Map<String, Object> options, LocalDateTime createdAt) {
 
     public static final String DEFAULT_PLAYER_ID = "-1";
     public static final int DEFAULT_RO = 9;
@@ -129,20 +128,21 @@ public class GameStatesTable extends BasicH2Table<GameState> {
       mapper.getObjectMapper().setDefaultPropertyInclusion(JsonInclude.Include.ALWAYS);
     }
 
-    public GameStateJson updateHandHistory(List<HandJson> modifiedHistory) {
+    public GameStateJson updateHandHistory(List<Hand> modifiedHistory) {
       return new GameStateJson(id, gameId, blackPlayerId, whitePlayerId, cells, symbols, agehama,
-          lastHand, modifiedHistory.toArray(HandJson[]::new), problemId, options, createdAt);
+          lastHand, modifiedHistory.toArray(Hand[]::new), problemId, options, createdAt);
     }
 
 
     public GameStateJson(GameState gameState) {
       this(gameState.id(), gameState.gameId(), gameState.blackPlayerId(), gameState.whitePlayerId(),
           mapper.toObject(gameState.cells(), int[][].class),
-          GameStateUtils.symbolsStringToSymbols(gameState.symbols()),
-          mapper.toObject(gameState.agehama(), AgehamaJson.class),
-          mapper.toObject(gameState.lastHand(), HandJson.class),
-          mapper.toObject(gameState.handHistory(), HandJson[].class), gameState.problemId(),
-          GameStateUtils.optionsStringToMap(gameState.options()), gameState.createdAt());
+          mapper.toObject(gameState.symbols(), new TypeReference<Map<String, Integer>>() {}),
+          mapper.toObject(gameState.agehama(), Agehama.class),
+          mapper.toObject(gameState.lastHand(), Hand.class),
+          mapper.toObject(gameState.handHistory(), Hand[].class), gameState.problemId(),
+          mapper.toObject(gameState.options(), new TypeReference<Map<String, Object>>() {}),
+          gameState.createdAt());
     }
 
 

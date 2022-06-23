@@ -20,9 +20,9 @@ import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.Stone;
 import org.nkjmlab.go.javalin.model.Stone.Color;
 import org.nkjmlab.go.javalin.model.Stone.Symbol;
-import org.nkjmlab.go.javalin.model.json.AgehamaJson;
-import org.nkjmlab.go.javalin.model.json.HandJson;
-import org.nkjmlab.go.javalin.model.json.HandType;
+import org.nkjmlab.go.javalin.model.json.Agehama;
+import org.nkjmlab.go.javalin.model.json.Hand;
+import org.nkjmlab.go.javalin.model.json.Hand.HandType;
 import org.nkjmlab.go.javalin.model.json.ProblemJson;
 
 public class ProblemFactory {
@@ -237,15 +237,15 @@ public class ProblemFactory {
     private Map<String, Integer> symbols = new HashMap<>();
     private String message = "";
     private int ro;
-    private List<HandJson> handHistory = new ArrayList<>();
-    private AgehamaJson agehama = new AgehamaJson(0, 0);
+    private List<Hand> handHistory = new ArrayList<>();
+    private Agehama agehama = new Agehama(0, 0);
 
 
     public Builder() {}
 
     public ProblemJson build() {
       return new ProblemJson(problemId, groupId, name, cells, symbols, message, ro,
-          handHistory.toArray(HandJson[]::new), agehama);
+          handHistory.toArray(Hand[]::new), agehama);
     }
 
     public void initCells() {
@@ -261,7 +261,7 @@ public class ProblemFactory {
       if (type == HandType.AGEHAMA) {
         agehama = agehama.increment(stone);
       }
-      handHistory.add(new HandJson(type.getTypeName(), number, x, y, stone.getId()));
+      handHistory.add(new Hand(type.getTypeName(), number, x, y, stone.getId()));
       cells[x][y] = stone.getId();
     }
 

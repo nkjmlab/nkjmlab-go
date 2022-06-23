@@ -2,18 +2,16 @@ package org.nkjmlab.go.javalin.model.json;
 
 import org.nkjmlab.go.javalin.model.Stone;
 
-public record AgehamaJson(int black, int white) {
+public record Agehama(int black, int white) {
 
-  public AgehamaJson increment(Stone stone) {
+  public Agehama increment(Stone stone) {
     if (stone.getColor() == Stone.Color.BLACK) {
-      return new AgehamaJson(black + 1, white);
+      return new Agehama(black + 1, white);
     } else if (stone.getColor() == Stone.Color.WHITE) {
-      return new AgehamaJson(black, white + 1);
+      return new Agehama(black, white + 1);
     } else {
       throw new IllegalArgumentException(stone + " is invalid");
     }
   }
-
-
 
 }
