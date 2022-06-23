@@ -6,6 +6,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,10 +14,14 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
 import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.Stone;
 import org.nkjmlab.go.javalin.model.Stone.Color;
 import org.nkjmlab.go.javalin.model.Stone.Symbol;
+import org.nkjmlab.go.javalin.model.json.AgehamaJson;
+import org.nkjmlab.go.javalin.model.json.HandJson;
 import org.nkjmlab.go.javalin.model.json.HandType;
 import org.nkjmlab.go.javalin.model.json.ProblemJson;
 
@@ -88,7 +93,7 @@ public class ProblemFactory {
         }
         try {
           List<String> lines = Files.readAllLines(file.toPath());
-          ProblemJson.Builder json = new ProblemJson.Builder();
+          Builder json = new Builder();
           json.setProblemId(getNewId());
           json.setGroupId(groupDir.getName());
           String name = file.getName().replace(".txt", "");
@@ -125,7 +130,7 @@ public class ProblemFactory {
     return result;
   }
 
-  private static void procPut(ProblemJson.Builder json, int[] ij1, int bw, int id) {
+  private static void procPut(Builder json, int[] ij1, int bw, int id) {
     if (ij1[0] == -1 || ij1[1] == -1) {
       return;
     }
@@ -197,7 +202,7 @@ public class ProblemFactory {
     number.incrementAndGet();
   }
 
-  private static void procRemove(ProblemJson.Builder json, int[] ij0, int bw) {
+  private static void procRemove(Builder json, int[] ij0, int bw) {
     if (ij0.length == 0) {
       return;
     }
@@ -223,5 +228,83 @@ public class ProblemFactory {
   public record TsukadaHand(int[] ij0, int[] ij1, int BW, int ID) {
 
   }
+
+  private static class Builder {
+    private long problemId;
+    private String groupId;
+    private String name;
+    private int[][] cells;
+    private Map<String, Integer> symbols = new HashMap<>();
+    private String message = "";
+    private int ro;
+    private List<HandJson> handHistory = new ArrayList<>();
+    private AgehamaJson agehama = new AgehamaJson(0, 0);
+
+
+    public Builder() {}
+
+    public ProblemJson build() {
+      return new ProblemJson(problemId, groupId, name, cells, symbols, message, ro,
+          handHistory.toArray(HandJson[]::new), agehama);
+    }
+
+    public void initCells() {
+      if (cells == null) {
+        cells = new int[ro][ro];
+        for (int i = 0; i < cells.length; i++) {
+          Arrays.fill(cells[i], 0);
+        }
+      }
+    }
+
+    public void addHand(HandType type, int number, int x, int y, Stone stone) {
+      if (type == HandType.AGEHAMA) {
+        agehama = agehama.increment(stone);
+      }
+      handHistory.add(new HandJson(type.getTypeName(), number, x, y, stone.getId()));
+      cells[x][y] = stone.getId();
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+
+
+    public void setRo(int ro) {
+      this.ro = ro;
+    }
+
+    @Override
+    public String toString() {
+      return ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+    }
+
+    public void setGroupId(String groupId) {
+      this.groupId = groupId;
+    }
+
+    public void appendMessage(String msg) {
+      this.message += msg;
+    }
+
+    public int getCellColor(int x, int y) {
+      return cells[x][y];
+    }
+
+    public void putSymbol(int x, int y, int symbol) {
+      symbols.put(String.valueOf(x) + "-" + String.valueOf(y), symbol);
+    }
+
+    public void setProblemId(long id) {
+      this.problemId = id;
+    }
+
+
+  }
+
 
 }
