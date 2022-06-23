@@ -15,7 +15,6 @@ import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 
 public class GameRecordsTable extends BasicH2Table<GameRecord> {
 
-  public static final String TABLE_NAME = "GAME_RECORDS";
   private static final String CREATED_AT = "created_at";
   private static final String USER_ID = "user_id";
   private static final String RANK = "rank";
@@ -41,15 +40,13 @@ public class GameRecordsTable extends BasicH2Table<GameRecord> {
 
   public int registerRecordAndGetRank(UsersTable usersTable, String userId, String opponentUserId,
       String jadge, String memo) {
-    GameRecord lastRecords = readFirst("select * from " + TABLE_NAME + " where " + USER_ID + "=?"
-        + " order by " + CREATED_AT + " desc limit 1", userId);
+    GameRecord lastRecords = readFirst("select * from " + getTableName() + " where " + USER_ID
+        + "=?" + " order by " + CREATED_AT + " desc limit 1", userId);
 
 
-    int rank =
-        lastRecords == null
-            ? Optional.ofNullable(usersTable.selectByPrimaryKey(userId)).map(u -> u.rank())
-                .orElse(30)
-            : lastRecords.rank();
+    int rank = lastRecords == null
+        ? Optional.ofNullable(usersTable.selectByPrimaryKey(userId)).map(u -> u.rank()).orElse(30)
+        : lastRecords.rank();
     int point = lastRecords == null ? 0 : lastRecords.point();
     String message = "";
 
@@ -95,9 +92,8 @@ public class GameRecordsTable extends BasicH2Table<GameRecord> {
   }
 
   public List<GameRecord> readByUserId(String userId) {
-    return readList(
-        "select * from " + TABLE_NAME + " where " + USER_ID + "=? order by " + CREATED_AT + " DESC",
-        userId);
+    return readList("select * from " + getTableName() + " where " + USER_ID + "=? order by "
+        + CREATED_AT + " DESC", userId);
   }
 
 

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
-import org.nkjmlab.go.javalin.model.problem.ProblemFactory;
+import org.nkjmlab.go.javalin.model.problem.ProblemTextToJsonConverter;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
@@ -127,7 +127,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       autoBackupProblemJsonToFile(ProblemJson.createFrom(prevP));
     }
     return new Problem(
-        prevP != null ? prevP.id() : (problemId == -1 ? ProblemFactory.getNewId() : problemId),
+        prevP != null ? prevP.id() : (problemId == -1 ? ProblemTextToJsonConverter.getNewId() : problemId),
         LocalDateTime.now(), groupId, name, mapper.toJson(currentState.cells()),
         mapper.toJson(currentState.symbols()), mapper.toJson(currentState.agehama()),
         mapper.toJson(currentState.handHistory()), message == null ? "" : message);

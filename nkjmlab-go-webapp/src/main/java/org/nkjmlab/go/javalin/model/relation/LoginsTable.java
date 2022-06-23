@@ -19,7 +19,6 @@ import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 
 public class LoginsTable extends BasicH2Table<Login> {
 
-  public static final String TABLE_NAME = "LOGINS";
 
   private static final String USER_ID = "user_id";
 
@@ -28,10 +27,8 @@ public class LoginsTable extends BasicH2Table<Login> {
     super(Sorm.create(dataSource), Login.class);
   }
 
-
-
   private List<Login> readAllLastLoginsOrderByUserId() {
-    return readList(selectStarFrom(TABLE_NAME)
+    return readList(selectStarFrom(getTableName())
         + where("ID IN (SELECT MAX(ID) FROM LOGINS GROUP BY USER_ID)") + orderBy(USER_ID));
   }
 
@@ -45,9 +42,7 @@ public class LoginsTable extends BasicH2Table<Login> {
 
   public String getNextLoginUserId(UsersTable usersTable, String userId) {
     // List<String> users = readOrderedActiveStudentLogins(usersTable).stream().map(l ->
-    // l.getUserId())
-    // .collect(Collectors.toList());
-
+    // l.getUserId()) .collect(Collectors.toList());
 
     List<String> users = usersTable.getStudentUserIds();
     return getNext(users, userId);
@@ -55,8 +50,7 @@ public class LoginsTable extends BasicH2Table<Login> {
 
   public String getPrevLoginUserId(UsersTable usersTable, String userId) {
     // List<String> users = readOrderedActiveStudentLogins(usersTable).stream().map(l ->
-    // l.getUserId())
-    // .collect(Collectors.toList());
+    // l.getUserId()) .collect(Collectors.toList());
     List<String> users = usersTable.getStudentUserIds();
     Collections.reverse(users);
     return getNext(users, userId);

@@ -30,9 +30,6 @@ public class GameStatesTable extends BasicH2Table<GameState> {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
-
-  public static final String TABLE_NAME = "GAME_STATES";
-
   public static final String ID = "id";
   public static final String CREATED_AT = "created_at";
   public static final String GAME_ID = "game_id";
@@ -56,7 +53,8 @@ public class GameStatesTable extends BasicH2Table<GameState> {
 
   Optional<GameState> getLatestGameStateFromDb(String gameId) {
     GameState gameState = readFirst(
-        selectStarFrom(TABLE_NAME) + where(GAME_ID + "=?") + orderByDesc(ID) + limit(1), gameId);
+        selectStarFrom(getTableName()) + where(GAME_ID + "=?") + orderByDesc(ID) + limit(1),
+        gameId);
     return gameState == null ? Optional.empty() : Optional.of(gameState);
   }
 
@@ -72,7 +70,8 @@ public class GameStatesTable extends BasicH2Table<GameState> {
   private static final String ROWNUM = " ROWNUM ";
 
   public void trimAndBackupToFile(File backUpDir, int limit) {
-    Long maxRowNum = getOrm().readFirst(Long.class, select(func(MAX, ROWNUM)) + from(TABLE_NAME));
+    Long maxRowNum =
+        getOrm().readFirst(Long.class, select(func(MAX, ROWNUM)) + from(getTableName()));
     maxRowNum = maxRowNum == null ? 0 : maxRowNum;
 
     int deleteRowNum = (int) (maxRowNum - limit);
@@ -81,9 +80,9 @@ public class GameStatesTable extends BasicH2Table<GameState> {
       return;
     }
 
-    File outputFile = new File(backUpDir, TABLE_NAME + System.currentTimeMillis() + ".csv");
+    File outputFile = new File(backUpDir, getTableName() + System.currentTimeMillis() + ".csv");
     String selectSql =
-        selectStarFrom(TABLE_NAME) + where(cond(ROWNUM, "<=", deleteRowNum)) + orderBy(ID);
+        selectStarFrom(getTableName()) + where(cond(ROWNUM, "<=", deleteRowNum)) + orderBy(ID);
 
     String st = getCallCsvWriteSql(outputFile, selectSql, StandardCharsets.UTF_8, ',');
     log.info("{}", st);

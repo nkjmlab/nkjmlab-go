@@ -21,8 +21,6 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
       org.apache.logging.log4j.LogManager.getLogger();
 
 
-  public static final String TABLE_NAME = "MATCHING_REQUESTS";
-
   private static final String USER_ID = "user_id";
   private static final String GAME_ID = "game_id";
   private static final String CREATED_AT = "created_at";
@@ -44,16 +42,16 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
   }
 
   public List<String> readAllUserIds() {
-    return getOrm().readList(String.class, select(USER_ID) + from(TABLE_NAME));
+    return getOrm().readList(String.class, select(USER_ID) + from(getTableName()));
   }
 
   public List<String> readUserIdsOfUnpairedRequestOrdereByCreatedAt() {
-    return getOrm().readList(String.class, select(USER_ID) + from(TABLE_NAME)
+    return getOrm().readList(String.class, select(USER_ID) + from(getTableName())
         + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
   }
 
   public List<MatchingRequest> readUnpairedRequestsOrderByCreatedAt() {
-    return readList(selectStarFrom(TABLE_NAME)
+    return readList(selectStarFrom(getTableName())
         + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
   }
 
@@ -68,7 +66,7 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
     List<String> reqs = readUserIdsOfUnpairedRequestOrdereByCreatedAt();
 
     log.trace("[{}] unpaired matching requests in [{}] matching requests", reqs.size(),
-        getOrm().readFirst(Integer.class, SELECT + COUNT + "(*)" + FROM + TABLE_NAME));
+        getOrm().readFirst(Integer.class, SELECT + COUNT + "(*)" + FROM + getTableName()));
 
     List<String> ret = new ArrayList<>();
     for (String uid : reqs) {

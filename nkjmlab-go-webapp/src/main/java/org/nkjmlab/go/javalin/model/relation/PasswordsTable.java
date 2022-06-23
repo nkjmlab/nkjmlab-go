@@ -21,20 +21,14 @@ import com.orangesignal.csv.CsvConfig;
  */
 public class PasswordsTable extends BasicH2Table<Password> {
 
-
-
   public PasswordsTable(DataSource dataSource) {
     super(Sorm.create(dataSource), Password.class);
   }
-
-
 
   public boolean isValid(String userId, String password) {
     return Optional.ofNullable(selectByPrimaryKey(userId)).map(p -> password.equals(p.password))
         .orElse(false);
   }
-
-
 
   public void readFromFileAndMerge(File usersCsvFile) {
     CsvConfig conf = OrangeSignalCsvUtils.createDefaultCsvConfig();
@@ -43,13 +37,10 @@ public class PasswordsTable extends BasicH2Table<Password> {
     transformToPassword(users).forEach(user -> merge(user));
   }
 
-
-
   private static List<Password> transformToPassword(List<Row> rows) {
     return rows.stream().map(row -> new Password(row.get(0), row.get(1)))
         .collect(Collectors.toList());
   }
-
 
   @OrmRecord
   public static record Password(@PrimaryKey String userId, String password) {

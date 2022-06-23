@@ -23,9 +23,9 @@ public class GameStatesTables {
 
   public static final String VS_SEPARATOR = "-vs-";
 
-  private GameStatesTable gameStatesTableInMem;
-  private GameStatesTable gameStatesTableInFile;
-  private ExecutorService fileDbService = Executors.newSingleThreadExecutor();
+  private final GameStatesTable gameStatesTableInMem;
+  private final GameStatesTable gameStatesTableInFile;
+  private final ExecutorService fileDbService = Executors.newSingleThreadExecutor();
 
   public GameStatesTables(DataSource fileDb, DataSource memDb) {
     this.gameStatesTableInMem = new GameStatesTable(memDb);

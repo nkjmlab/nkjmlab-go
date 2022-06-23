@@ -40,9 +40,6 @@ public class UsersTable extends BasicH2Table<User> {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
-
-  public static final String TABLE_NAME = "PLAYERS";
-
   private static final String EMAIL = "email";
   private static final String USER_ID = "user_id";
   private static final String ROLE = "role";
@@ -74,12 +71,12 @@ public class UsersTable extends BasicH2Table<User> {
   }
 
   private List<User> readAllOrderedUsers() {
-    return readList(selectStarFrom(TABLE_NAME) + " ORDER BY " + USER_ID);
+    return readList(selectStarFrom(getTableName()) + " ORDER BY " + USER_ID);
 
   }
 
   public User readByEmail(String email) {
-    return readOne(selectStarFrom(TABLE_NAME) + WHERE + EMAIL + "=?", email);
+    return readOne(selectStarFrom(getTableName()) + WHERE + EMAIL + "=?", email);
   }
 
 
@@ -109,20 +106,20 @@ public class UsersTable extends BasicH2Table<User> {
       return Collections.emptyList();
     }
     ParameterizedSql st = OrderedParameterSqlParser
-        .of("SELECT * from " + TABLE_NAME + " where " + USER_ID + " IN (<?>)").addParameter(uids)
-        .parse();
+        .of("SELECT * from " + getTableName() + " where " + USER_ID + " IN (<?>)")
+        .addParameter(uids).parse();
     return readList(st.getSql(), st.getParameters());
   }
 
   public List<String> getAdminUserIds() {
     return getOrm().readList(String.class,
-        "select " + USER_ID + " from " + TABLE_NAME + " where " + ROLE + "=?", User.ADMIN);
+        "select " + USER_ID + " from " + getTableName() + " where " + ROLE + "=?", User.ADMIN);
 
   }
 
   public List<String> getStudentUserIds() {
     return getOrm().readList(String.class,
-        "select " + USER_ID + " from " + TABLE_NAME + " where " + ROLE + "=?", User.STUDENT);
+        "select " + USER_ID + " from " + getTableName() + " where " + ROLE + "=?", User.STUDENT);
   }
 
   public boolean isAdmin(String userId) {
@@ -174,7 +171,7 @@ public class UsersTable extends BasicH2Table<User> {
 
 
   @OrmRecord
-  @OrmTable(TABLE_NAME)
+  @OrmTable("PLAYERS")
   public static record User(@PrimaryKey String userId, @Unique @Index String email, String userName,
       @Index String role, String seatId, int rank, LocalDateTime createdAt) {
 
@@ -206,7 +203,8 @@ public class UsersTable extends BasicH2Table<User> {
 
 
     public UserJson(User user, boolean attendance) {
-      this(user.userId(), user.userName(), user.seatId(), user.rank(), user.createdAt(), attendance);
+      this(user.userId(), user.userName(), user.seatId(), user.rank(), user.createdAt(),
+          attendance);
     }
 
     public UserJson(String userId) {

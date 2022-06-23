@@ -8,7 +8,7 @@ import java.util.List;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
-import org.nkjmlab.go.javalin.model.problem.ProblemFactory;
+import org.nkjmlab.go.javalin.model.problem.ProblemJsonReader;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
@@ -20,9 +20,6 @@ import com.google.firebase.database.annotations.NotNull;
 public class ProblemsTable extends BasicH2Table<Problem> {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
-
-
-  public static final String TABLE_NAME = "PROBLEMS";
 
   public static final String ID = "id";
   public static final String CREATED_AT = "created_at";
@@ -47,11 +44,11 @@ public class ProblemsTable extends BasicH2Table<Problem> {
 
   private List<String> getGroupsOrderByAsc() {
     return getOrm().readList(String.class,
-        selectDistinct(GROUP_ID) + from(TABLE_NAME) + orderByAsc(GROUP_ID));
+        selectDistinct(GROUP_ID) + from(getTableName()) + orderByAsc(GROUP_ID));
   }
 
   private List<Problem> readProblemsByGroupId(String groupId) {
-    return readList(selectStarFrom(TABLE_NAME) + where(GROUP_ID + "=?") + orderByAsc(NAME),
+    return readList(selectStarFrom(getTableName()) + where(GROUP_ID + "=?") + orderByAsc(NAME),
         groupId);
 
   }
@@ -59,7 +56,7 @@ public class ProblemsTable extends BasicH2Table<Problem> {
   public void dropAndInsertInitialProblemsToTable(File problemDir) {
     log.info("{} is problem dir", problemDir);
     deleteAll();
-    List<ProblemJson> probs = ProblemFactory.readProblemJsons(problemDir.toPath());
+    List<ProblemJson> probs = ProblemJsonReader.readProblemJsons(problemDir.toPath());
     log.info("[{}] problems are loaded", probs.size());
     probs.forEach(j -> {
       try {

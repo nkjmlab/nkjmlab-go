@@ -25,12 +25,30 @@ import org.nkjmlab.go.javalin.model.common.Stone;
 import org.nkjmlab.go.javalin.model.common.Stone.Color;
 import org.nkjmlab.go.javalin.model.common.Stone.Symbol;
 
-public class ProblemFactory {
+public class ProblemTextToJsonConverter {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
 
+
+  public static List<ProblemJson> readProblemTexts(Path pathToProblemTxtDir) {
+    return new ArrayList<>(convertTxtToJson(pathToProblemTxtDir).values());
+  }
+
+  private static AtomicInteger number = new AtomicInteger(0);
+
+  private static List<File> getGroupDirectories(Path path) {
+    File[] files = path.toFile().listFiles();
+    if (files != null) {
+      return Arrays.asList(files).stream().filter(f -> f.isDirectory())
+          .collect(Collectors.toList());
+    }
+    return new ArrayList<>();
+  }
+
   private static final Queue<Long> ids = new ConcurrentLinkedQueue<>();
+
+
 
   public static synchronized long getNewId() {
     while (true) {
@@ -48,40 +66,6 @@ public class ProblemFactory {
       }
     }
   }
-
-  public static List<File> readProblemJsonFiles(Path pathToProblemJsonDir) {
-    List<File> result = new ArrayList<>();
-    getGroupDirectories(pathToProblemJsonDir).forEach(groupDir -> {
-      Arrays.asList(groupDir.listFiles()).forEach(file -> {
-        if (!file.getName().endsWith(".json")) {
-          return;
-        }
-        result.add(file);
-      });
-    });
-    return result;
-  }
-
-  public static List<ProblemJson> readProblemJsons(Path pathToProblemJsonDir) {
-    List<File> files = readProblemJsonFiles(pathToProblemJsonDir);
-    log.info("detect [{}] problem files in [{}]", files.size(), pathToProblemJsonDir);
-    return files.stream().map(file -> {
-      try {
-        ProblemJson problem =
-            GoApplication.getDefaultJacksonMapper().toObject(file, ProblemJson.class);
-        return problem;
-      } catch (Exception e) {
-        log.error("file {}", file);
-        throw new RuntimeException(e);
-      }
-    }).collect(Collectors.toList());
-  }
-
-  public static List<ProblemJson> readProblemTexts(Path pathToProblemTxtDir) {
-    return new ArrayList<>(convertTxtToJson(pathToProblemTxtDir).values());
-  }
-
-  private static AtomicInteger number = new AtomicInteger(0);
 
   private static Map<File, ProblemJson> convertTxtToJson(Path pathToProblemTxtDir) {
     Map<File, ProblemJson> result = new LinkedHashMap<>();
@@ -216,14 +200,6 @@ public class ProblemFactory {
     number.incrementAndGet();
   }
 
-  private static List<File> getGroupDirectories(Path path) {
-    File[] files = path.toFile().listFiles();
-    if (files != null) {
-      return Arrays.asList(files).stream().filter(f -> f.isDirectory())
-          .collect(Collectors.toList());
-    }
-    return new ArrayList<>();
-  }
 
   public record TsukadaHand(int[] ij0, int[] ij1, int BW, int ID) {
 

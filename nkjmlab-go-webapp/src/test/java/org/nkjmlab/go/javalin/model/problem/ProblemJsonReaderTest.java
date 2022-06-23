@@ -9,17 +9,16 @@ import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.lang.ResourceUtils;
 
-class ProblemFactoryTest {
+class ProblemJsonReaderTest {
 
   @Test
   void test() {
-    List<ProblemJson> ret =
-        ProblemFactory.readProblemJsonFiles(ResourceUtils.getResourceAsFile("/problem/").toPath())
-            .stream().map(file -> {
-              ProblemJson problem =
-                  JacksonMapper.getDefaultMapper().toObject(file, ProblemJson.class);
-              return problem;
-            }).collect(Collectors.toList());
+    List<ProblemJson> ret = ProblemJsonReader
+        .readProblemJsonFiles(ResourceUtils.getResourceAsFile("/problem/").toPath()).stream()
+        .map(file -> {
+          ProblemJson problem = JacksonMapper.getDefaultMapper().toObject(file, ProblemJson.class);
+          return problem;
+        }).collect(Collectors.toList());
     assertThat(ret.size()).isEqualTo(184);
   }
 
