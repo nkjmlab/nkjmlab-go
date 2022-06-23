@@ -16,10 +16,10 @@ import org.nkjmlab.go.javalin.fbauth.AuthServiceInterface;
 import org.nkjmlab.go.javalin.fbauth.FirebaseUserSession;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService;
 import org.nkjmlab.go.javalin.model.json.GameStateViewJson;
-import org.nkjmlab.go.javalin.model.json.LoginJson;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable;
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
@@ -31,7 +31,6 @@ import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
-import org.nkjmlab.go.javalin.model.row.GameState;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
 import org.nkjmlab.sorm4j.common.Tuple.Tuple2;
@@ -126,13 +125,12 @@ public class GoApplication {
   public GoApplication() {
     FileDatabaseConfigJson fileDbConf;
     try {
-      fileDbConf = JacksonMapper.getDefaultMapper()
-          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json"),
-              FileDatabaseConfigJson.Builder.class)
-          .build();
+      fileDbConf =
+          getDefaultJacksonMapper().toObject(ResourceUtils.getResourceAsFile("/conf/h2.json"),
+              FileDatabaseConfigJson.Builder.class).build();
     } catch (Exception e) {
       log.warn("Try to load h2.json.default");
-      fileDbConf = JacksonMapper.getDefaultMapper()
+      fileDbConf = getDefaultJacksonMapper()
           .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json.default"),
               FileDatabaseConfigJson.Builder.class)
           .build();
@@ -234,7 +232,7 @@ public class GoApplication {
         TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
 
     this.gameStatesTableInMem = new GameStatesTable(memDbDataSource);
-    gameStatesTableInMem.insert(gameStatesTable.readAll().toArray(GameState[]::new));
+    gameStatesTableInMem.insert(gameStatesTable.selectAll().toArray(GameState[]::new));
 
     this.gameStatesTables = new GameStatesTables(fileDbDataSource, memDbDataSource);
     this.votesTable = new VotesTable(memDbDataSource);
@@ -282,7 +280,7 @@ public class GoApplication {
         websoketSessionsTable, gameRecordsTable);
 
 
-    JacksonMapper mapper = JacksonMapper.getDefaultMapper();
+    JacksonMapper mapper = GoApplication.getDefaultJacksonMapper();
     JsonRpcService jsonRpcService = new JsonRpcService(mapper);
 
     app.post("/app/json/GoJsonRpcService", ctx -> {
@@ -362,7 +360,7 @@ public class GoApplication {
         case "games-all.html": {
           List<GameStateViewJson> tmp = gameStatesTables.readTodayGameJsons().stream().map(gsj -> {
             GameStateViewJson json = new GameStateViewJson(gsj);
-            String gameId = gsj.getGameId();
+            String gameId = gsj.gameId();
             json.setHandUp(handsUpTable.selectByPrimaryKey(gameId));
             json.setWatchingStudentsNum(
                 websoketSessionsTable.getWatchingUniqueStudentsNum(usersTable, gameId));
@@ -377,7 +375,7 @@ public class GoApplication {
           List<GameStateViewJson> tmp =
               gids.stream().map(gid -> gameStatesTables.readLatestGameStateJson(gid)).map(gsj -> {
                 GameStateViewJson json = new GameStateViewJson(gsj);
-                String gameId = gsj.getGameId();
+                String gameId = gsj.gameId();
                 json.setHandUp(handsUpTable.selectByPrimaryKey(gameId));
                 json.setWatchingStudentsNum(
                     websoketSessionsTable.getWatchingUniqueStudentsNum(usersTable, gameId));
@@ -399,7 +397,7 @@ public class GoApplication {
           List<GameStateViewJson> tmp =
               gameStatesTables.readLatestBoardsJson(gids).stream().map(gsj -> {
                 GameStateViewJson json = new GameStateViewJson(gsj);
-                String gameId = gsj.getGameId();
+                String gameId = gsj.gameId();
                 json.setHandUp(handsUpTable.selectByPrimaryKey(gameId));
                 return json;
               }).collect(Collectors.toList());
@@ -491,6 +489,13 @@ public class GoApplication {
 
   }
 
+  public static record LoginJson(Login login, User user) {
+
+  }
+
+  public static JacksonMapper getDefaultJacksonMapper() {
+    return JacksonMapper.getIgnoreUnknownPropertiesMapper();
+  }
 
 
 }

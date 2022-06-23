@@ -7,11 +7,12 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import org.nkjmlab.go.javalin.model.json.GameStateJson;
+import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.json.ProblemJson;
 import org.nkjmlab.go.javalin.model.json.UserJson;
 import org.nkjmlab.go.javalin.model.problem.ProblemFactory;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
@@ -28,7 +29,6 @@ import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
 import org.nkjmlab.sorm4j.result.RowMap;
-import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.Base64Utils;
 import org.nkjmlab.util.java.json.JsonMapper;
 import org.nkjmlab.util.java.lang.ParameterizedStringUtils;
@@ -49,7 +49,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   private final HandUpsTable handsUpTable;
   private final GameRecordsTable gameRecordsTable;
 
-  private static final JsonMapper mapper = JacksonMapper.getIgnoreUnknownPropertiesMapper();
+  private static final JsonMapper mapper = GoApplication.getDefaultJacksonMapper();
 
 
   public GoJsonRpcService(WebsocketSessionsManager wsManager, GameStatesTables gameStatesTables,
@@ -128,9 +128,9 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     }
     return new Problem(
         prevP != null ? prevP.id() : (problemId == -1 ? ProblemFactory.getNewId() : problemId),
-        LocalDateTime.now(), groupId, name, mapper.toJson(currentState.getCells()),
-        mapper.toJson(currentState.getSymbols()), mapper.toJson(currentState.getAgehama()),
-        mapper.toJson(currentState.getHandHistory()), message == null ? "" : message);
+        LocalDateTime.now(), groupId, name, mapper.toJson(currentState.cells()),
+        mapper.toJson(currentState.symbols()), mapper.toJson(currentState.agehama()),
+        mapper.toJson(currentState.handHistory()), message == null ? "" : message);
   }
 
   private void autoBackupProblemJsonToFile(ProblemJson p) {
@@ -361,10 +361,10 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     String msg = "";
     try {
       GameStateJson gs = gameStatesTables.readLatestGameStateJson(gameId);
-      User bp = usersTable.selectByPrimaryKey(gs.getBlackPlayerId());
-      User wp = usersTable.selectByPrimaryKey(gs.getWhitePlayerId());
+      User bp = usersTable.selectByPrimaryKey(gs.blackPlayerId());
+      User wp = usersTable.selectByPrimaryKey(gs.whitePlayerId());
       int diff = Math.abs(wp.rank() - bp.rank());
-      int ro = gs.getCells()[0].length;
+      int ro = gs.cells()[0].length;
       String roCol = ro == 19 ? "lg" : "sm";
 
       String s1 = start.get(roCol).get(Math.min(diff, 5));

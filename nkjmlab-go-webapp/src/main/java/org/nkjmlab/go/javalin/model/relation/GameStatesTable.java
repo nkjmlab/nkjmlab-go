@@ -2,19 +2,32 @@ package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.util.h2.sql.H2CsvFunctions.*;
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
-import static org.nkjmlab.sorm4j.util.sql.SqlKeyword.*;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import javax.sql.DataSource;
-import org.nkjmlab.go.javalin.model.row.GameState;
+import org.nkjmlab.go.javalin.GoApplication;
+import org.nkjmlab.go.javalin.model.json.AgehamaJson;
+import org.nkjmlab.go.javalin.model.json.GameStateUtils;
+import org.nkjmlab.go.javalin.model.json.HandJson;
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.util.table_def.TableDefinition;
+import org.nkjmlab.sorm4j.annotation.OrmRecord;
+import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.table_def.annotation.AutoIncrement;
+import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
+import org.nkjmlab.sorm4j.util.table_def.annotation.IndexColumns;
+import org.nkjmlab.sorm4j.util.table_def.annotation.NotNull;
+import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
+import org.nkjmlab.util.jackson.JacksonMapper;
+import com.fasterxml.jackson.annotation.JsonInclude;
 
-public class GameStatesTable {
+public class GameStatesTable extends BasicH2Table<GameState> {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
@@ -35,38 +48,22 @@ public class GameStatesTable {
   public static final String OPTIONS = "options";
 
 
-  private Sorm sorm;
-  private TableDefinition schema;
-
   public GameStatesTable(DataSource dataSource) {
-    this.sorm = Sorm.create(dataSource);
-    this.schema = TableDefinition.builder(TABLE_NAME)
-        .addColumnDefinition(ID, BIGINT, AUTO_INCREMENT, PRIMARY_KEY)
-        .addColumnDefinition(CREATED_AT, TIMESTAMP).addColumnDefinition(GAME_ID, VARCHAR, NOT_NULL)
-        .addColumnDefinition(BLACK_PLAYER_ID, VARCHAR, NOT_NULL)
-        .addColumnDefinition(WHITE_PLAYER_ID, VARCHAR, NOT_NULL)
-        .addColumnDefinition(LAST_HAND, VARCHAR, NOT_NULL)
-        .addColumnDefinition(AGEHAMA, VARCHAR, NOT_NULL)
-        .addColumnDefinition(CELLS, VARCHAR, NOT_NULL)
-        .addColumnDefinition(SYMBOLS, VARCHAR, NOT_NULL)
-        .addColumnDefinition(HAND_HISTORY, VARCHAR, NOT_NULL)
-        .addColumnDefinition(PROBLEM_ID, BIGINT, NOT_NULL)
-        .addColumnDefinition(OPTIONS, VARCHAR, NOT_NULL).addIndexDefinition(GAME_ID)
-        .addIndexDefinition(BLACK_PLAYER_ID, WHITE_PLAYER_ID).build();
-    schema.createTableIfNotExists(sorm).createIndexesIfNotExists(sorm);
+    super(Sorm.create(dataSource), GameState.class);
+    createTableIfNotExists().createIndexesIfNotExists();
 
   }
 
 
   Optional<GameState> getLatestGameStateFromDb(String gameId) {
-    GameState gameState = sorm.readFirst(GameState.class,
+    GameState gameState = readFirst(
         selectStarFrom(TABLE_NAME) + where(GAME_ID + "=?") + orderByDesc(ID) + limit(1), gameId);
     return gameState == null ? Optional.empty() : Optional.of(gameState);
   }
 
 
   public Set<String> readPastOpponentsUserIds(String userId) {
-    Set<String> set = new HashSet<>(sorm.readList(String.class,
+    Set<String> set = new HashSet<>(getOrm().readList(String.class,
         "SELECT DISTINCT * FROM (SELECT BLACK_PLAYER_ID FROM GAME_STATES WHERE WHITE_PLAYER_ID =? AND CAST(CREATED_AT AS DATE) = CURRENT_DATE UNION SELECT WHITE_PLAYER_ID FROM GAME_STATES WHERE BLACK_PLAYER_ID = ? AND CAST(CREATED_AT AS DATE) = CURRENT_DATE)",
         userId, userId));
     set.remove(userId);
@@ -76,7 +73,7 @@ public class GameStatesTable {
   private static final String ROWNUM = " ROWNUM ";
 
   public void trimAndBackupToFile(File backUpDir, int limit) {
-    Long maxRowNum = sorm.readFirst(Long.class, select(func(MAX, ROWNUM)) + from(TABLE_NAME));
+    Long maxRowNum = getOrm().readFirst(Long.class, select(func(MAX, ROWNUM)) + from(TABLE_NAME));
     maxRowNum = maxRowNum == null ? 0 : maxRowNum;
 
     int deleteRowNum = (int) (maxRowNum - limit);
@@ -91,43 +88,72 @@ public class GameStatesTable {
 
     String st = getCallCsvWriteSql(outputFile, selectSql, StandardCharsets.UTF_8, ',');
     log.info("{}", st);
-    sorm.executeUpdate(st);
+    getOrm().executeUpdate(st);
 
-    List<GameState> dels = sorm.readList(GameState.class, selectSql);
-    sorm.delete(dels.toArray(GameState[]::new));
+    List<GameState> dels = readList(selectSql);
+    delete(dels.toArray(GameState[]::new));
 
     log.info("trim and backup to {}.", outputFile);
 
   }
 
-
-  public List<GameState> readAll() {
-    return sorm.selectAll(GameState.class);
-  }
-
-  public void insert(GameState object) {
-    sorm.insert(object);
-  }
-
-  public void insert(GameState... objects) {
-    sorm.insert(objects);
-  }
-
-
   public void delete(String gameId) {
     getLatestGameStateFromDb(gameId).ifPresent(state -> delete(state));
   }
 
-
-  private void delete(GameState state) {
-    sorm.delete(state);
-  }
-
-
   public List<String> readTodayGameIds() {
-    return sorm.readList(String.class,
+    return getOrm().readList(String.class,
         "SELECT DISTINCT GAME_ID FROM GAME_STATES  WHERE GAME_ID LIKE '%-vs-%' AND CAST(CREATED_AT AS DATE) = CURRENT_DATE");
   }
 
+
+  @OrmRecord
+  @IndexColumns({BLACK_PLAYER_ID, WHITE_PLAYER_ID})
+  public record GameState(@PrimaryKey @AutoIncrement long id, LocalDateTime createdAt,
+      @Index @NotNull String gameId, @NotNull String blackPlayerId, @NotNull String whitePlayerId,
+      @NotNull String lastHand, @NotNull String agehama, @NotNull String cells,
+      @NotNull String symbols, @NotNull String handHistory, @NotNull long problemId,
+      @NotNull String options) {
+  }
+
+  public record GameStateJson(long id, String gameId, String blackPlayerId, String whitePlayerId,
+      int[][] cells, Map<String, Integer> symbols, AgehamaJson agehama, HandJson lastHand,
+      HandJson[] handHistory, long problemId, Map<String, Object> options,
+      LocalDateTime createdAt) {
+
+    public static final String DEFAULT_PLAYER_ID = "-1";
+    public static final int DEFAULT_RO = 9;
+
+    private static final JacksonMapper mapper = GoApplication.getDefaultJacksonMapper();
+    static {
+      mapper.getObjectMapper().setDefaultPropertyInclusion(JsonInclude.Include.ALWAYS);
+    }
+
+    public GameStateJson updateHandHistory(List<HandJson> modifiedHistory) {
+      return new GameStateJson(id, gameId, blackPlayerId, whitePlayerId, cells, symbols, agehama,
+          lastHand, modifiedHistory.toArray(HandJson[]::new), problemId, options, createdAt);
+    }
+
+
+    public GameStateJson(GameState gameState) {
+      this(gameState.id(), gameState.gameId(), gameState.blackPlayerId(), gameState.whitePlayerId(),
+          mapper.toObject(gameState.cells(), int[][].class),
+          GameStateUtils.symbolsStringToSymbols(gameState.symbols()),
+          mapper.toObject(gameState.agehama(), AgehamaJson.class),
+          mapper.toObject(gameState.lastHand(), HandJson.class),
+          mapper.toObject(gameState.handHistory(), HandJson[].class), gameState.problemId(),
+          GameStateUtils.optionsStringToMap(gameState.options()), gameState.createdAt());
+    }
+
+
+    public GameState toGameState() {
+      return new GameState(id(), LocalDateTime.now(), gameId, blackPlayerId, whitePlayerId,
+          mapper.toJson(lastHand), mapper.toJson(agehama), mapper.toJson(cells),
+          mapper.toJson(symbols), mapper.toJson(handHistory), problemId, mapper.toJson(options));
+    }
+
+
+
+  }
 
 }

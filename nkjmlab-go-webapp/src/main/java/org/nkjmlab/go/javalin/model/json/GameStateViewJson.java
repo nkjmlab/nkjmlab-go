@@ -1,5 +1,6 @@
 package org.nkjmlab.go.javalin.model.json;
 
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
 
 public class GameStateViewJson {

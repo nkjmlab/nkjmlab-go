@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.Stone;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.util.jackson.JacksonMapper;
@@ -17,7 +18,7 @@ public record ProblemJson(long problemId, String groupId, String name, int[][] c
     Map<String, Integer> symbols, String message, int ro, List<HandJson> handHistory,
     AgehamaJson agehama) {
 
-  private static final JacksonMapper mapper = JacksonMapper.getIgnoreUnknownPropertiesMapper();
+  private static final JacksonMapper mapper = GoApplication.getDefaultJacksonMapper();
 
   public ProblemJson(int id) {
     this(id, null, null, null, null, null, -1, null, null);
@@ -73,7 +74,7 @@ public record ProblemJson(long problemId, String groupId, String name, int[][] c
       if (type == HandType.AGEHAMA) {
         agehama = agehama.increment(stone);
       }
-      handHistory.add(new HandJson(type, number, x, y, stone.getId()));
+      handHistory.add(new HandJson(type.getTypeName(), number, x, y, stone.getId()));
       cells[x][y] = stone.getId();
     }
 

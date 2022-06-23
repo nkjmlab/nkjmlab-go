@@ -1,6 +1,7 @@
 package org.nkjmlab.go.javalin.websocket;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,13 +16,14 @@ import java.util.stream.Collectors;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WriteCallback;
+import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.json.AgehamaJson;
-import org.nkjmlab.go.javalin.model.json.GameStateJson;
 import org.nkjmlab.go.javalin.model.json.GameStateUtils;
 import org.nkjmlab.go.javalin.model.json.HandJson;
 import org.nkjmlab.go.javalin.model.json.HandType;
 import org.nkjmlab.go.javalin.model.json.ProblemJson;
 import org.nkjmlab.go.javalin.model.json.UserJson;
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
@@ -35,6 +37,9 @@ import org.nkjmlab.util.java.json.JsonMapper;
 import io.javalin.websocket.WsMessageContext;
 
 public class WebsocketSessionsManager {
+
+  private static final JacksonMapper mapper = GoApplication.getDefaultJacksonMapper();
+
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
@@ -112,18 +117,16 @@ public class WebsocketSessionsManager {
     sendLatestGameStateToSessions(gameId);
   }
 
-  private static final JacksonMapper mapper = JacksonMapper.getDefaultMapper();
 
   public ProblemJson loadProblem(String gameId, long problemId) {
     Problem p = problemsTable.selectByPrimaryKey(problemId);
     HandJson[] handHistory = mapper.toObject(p.handHistory(), HandJson[].class);
-    HandJson lastHand =
-        handHistory.length != 0 ? handHistory[handHistory.length - 1] : new HandJson();
+    HandJson lastHand = handHistory.length != 0 ? handHistory[handHistory.length - 1] : null;
     GameStateJson json =
-        new GameStateJson(gameId, "", "", GameStateUtils.cellsStringToCellsArray(p.cells()),
+        new GameStateJson(-1, gameId, "", "", mapper.toObject(p.cells(), int[][].class),
             GameStateUtils.symbolsStringToSymbols(p.symbols()),
-            mapper.toObject(p.agehama(), AgehamaJson.class), lastHand, Arrays.asList(handHistory),
-            p.id(), new HashMap<>());
+            mapper.toObject(p.agehama(), AgehamaJson.class), lastHand, handHistory, p.id(),
+            new HashMap<>(), LocalDateTime.now());
     sendGameState(gameId, json);
     return ProblemJson.createFrom(problemsTable.selectByPrimaryKey(problemId));
   }
@@ -131,8 +134,8 @@ public class WebsocketSessionsManager {
 
 
   public void newGame(String gameId, GameStateJson json) {
-    GameStateJson newGameJson = gameStatesTables.createNewGameState(gameId, json.getBlackPlayerId(),
-        json.getWhitePlayerId(), json.getCells().length);
+    GameStateJson newGameJson = gameStatesTables.createNewGameState(gameId, json.blackPlayerId(),
+        json.whitePlayerId(), json.cells().length);
     sendGameState(gameId, newGameJson);
   }
 
@@ -151,22 +154,23 @@ public class WebsocketSessionsManager {
     sendGameStateToSessions(gameId, json);
   }
 
-  private void removeHagashi(GameStateJson json) {
-    List<HandJson> history = json.getHandHistory();
+  private GameStateJson removeHagashi(GameStateJson json) {
+    List<HandJson> history = Arrays.asList(json.handHistory());
     if (history.size() <= 2) {
-      return;
+      return json;
     }
     HandJson last = history.get(history.size() - 1);
     HandJson second = history.get(history.size() - 2);
     HandJson third = history.get(history.size() - 3);
-    if (last.getStone() == second.getStone() && second.getStone() == third.getStone()
-        && third.getType().equals(HandType.PUT_ON_BOARD.getTypeName())
-        && second.getType().equals(HandType.REMOVE_FROM_BOARD.getTypeName())
-        && third.getX() == second.getX() && third.getY() == second.getY()) {
+    if (last.stone() == second.stone() && second.stone() == third.stone()
+        && third.type().equals(HandType.PUT_ON_BOARD.getTypeName())
+        && second.type().equals(HandType.REMOVE_FROM_BOARD.getTypeName()) && third.x() == second.x()
+        && third.y() == second.y()) {
       List<HandJson> modify = history.subList(0, history.size() - 3);
       modify.add(last);
-      json.setHandHistory(modify);
+      return json.updateHandHistory(modify);
     }
+    return json;
   }
 
 
@@ -223,7 +227,7 @@ public class WebsocketSessionsManager {
 
     private static final ExecutorService srv =
         Executors.newFixedThreadPool(ForkJoinPoolUtils.getAvailableProcessorsMinus(2));
-    private static final JsonMapper mapper = JacksonMapper.getDefaultMapper();
+    private static final JsonMapper mapper = GoApplication.getDefaultJacksonMapper();
 
     private enum MethodName {
       GAME_STATE, INIT_SESSION, GLOBAL_MESSAGE, HAND_UP, HAND_UP_ORDER, ENTRIES, UPDATE_HAND_UP_TABLE, UPDATE_WAITING_REQUEST_STATUS, REQUEST_TO_LOGIN

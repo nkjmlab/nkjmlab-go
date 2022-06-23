@@ -5,6 +5,7 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.sql.DataSource;
+import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.json.ProblemJson;
 import org.nkjmlab.go.javalin.model.problem.ProblemFactory;
 import org.nkjmlab.go.javalin.model.problem.ProblemGroupsNode;
@@ -14,7 +15,6 @@ import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
-import org.nkjmlab.util.jackson.JacksonMapper;
 import com.google.firebase.database.annotations.NotNull;
 
 public class ProblemsTable extends BasicH2Table<Problem> {
@@ -102,10 +102,12 @@ public class ProblemsTable extends BasicH2Table<Problem> {
           groupsNode.addProblem(groupId, problem.name(), problem.id());
         });
       });
-      this.problemGroupsNodeJson = JacksonMapper.getDefaultMapper().toJson(groupsNode.getNodes());
+      this.problemGroupsNodeJson =
+          GoApplication.getDefaultJacksonMapper().toJson(groupsNode.getNodes());
       return problemGroupsNodeJson;
     }
   }
+
 
 
   @OrmRecord

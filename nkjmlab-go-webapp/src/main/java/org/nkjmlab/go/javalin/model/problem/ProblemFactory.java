@@ -13,12 +13,12 @@ import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.Stone;
 import org.nkjmlab.go.javalin.model.Stone.Color;
 import org.nkjmlab.go.javalin.model.Stone.Symbol;
 import org.nkjmlab.go.javalin.model.json.HandType;
 import org.nkjmlab.go.javalin.model.json.ProblemJson;
-import org.nkjmlab.util.jackson.JacksonMapper;
 
 public class ProblemFactory {
   private static final org.apache.logging.log4j.Logger log =
@@ -63,7 +63,7 @@ public class ProblemFactory {
     return files.stream().map(file -> {
       try {
         ProblemJson problem =
-            JacksonMapper.getIgnoreUnknownPropertiesMapper().toObject(file, ProblemJson.class);
+            GoApplication.getDefaultJacksonMapper().toObject(file, ProblemJson.class);
         return problem;
       } catch (Exception e) {
         log.error("file {}", file);
@@ -104,7 +104,7 @@ public class ProblemFactory {
                 json.appendMessage("<p>" + " " + line.replaceAll("^> ", "") + "</p>");
               } else if (line.startsWith("{")) {
                 TsukadaHand orig =
-                    JacksonMapper.getDefaultMapper().toObject(line, TsukadaHand.class);
+                    GoApplication.getDefaultJacksonMapper().toObject(line, TsukadaHand.class);
                 procRemove(json, orig.ij0(), orig.BW());
                 procPut(json, orig.ij1(), orig.BW(), orig.ID());
               } else {
