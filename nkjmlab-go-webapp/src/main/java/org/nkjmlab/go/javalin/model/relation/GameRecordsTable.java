@@ -1,5 +1,6 @@
 package org.nkjmlab.go.javalin.model.relation;
 
+import static org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord.*;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -14,11 +15,6 @@ import org.nkjmlab.sorm4j.util.table_def.annotation.AutoIncrement;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 
 public class GameRecordsTable extends BasicH2Table<GameRecord> {
-
-  private static final String CREATED_AT = "created_at";
-  private static final String USER_ID = "user_id";
-  private static final String RANK = "rank";
-
 
   public GameRecordsTable(DataSource dataSource) {
     super(Sorm.create(dataSource), GameRecord.class);
@@ -64,17 +60,12 @@ public class GameRecordsTable extends BasicH2Table<GameRecord> {
   }
 
   private static int toScore(String jadge) {
-    switch (jadge) {
-      case "WIN":
-        return 10;
-      case "DRAW":
-        return 5;
-      case "LOSE":
-      case "OTHER":
-        return 0;
-      default:
-        throw new RuntimeException(jadge);
-    }
+    return switch (jadge) {
+      case "WIN" -> 10;
+      case "DRAW" -> 5;
+      case "LOSE", "OTHER" -> 0;
+      default -> throw new IllegalArgumentException(jadge + " is invalid");
+    };
   }
 
   private int getThreshold(int currentRank) {
@@ -101,6 +92,9 @@ public class GameRecordsTable extends BasicH2Table<GameRecord> {
   public static record GameRecord(@PrimaryKey @AutoIncrement int id, LocalDateTime createdAt,
       String userId, String opponentUserId, String jadge, String memo, int rank, int point,
       String message) {
+    private static final String CREATED_AT = "created_at";
+    private static final String USER_ID = "user_id";
+    private static final String RANK = "rank";
 
 
   }
