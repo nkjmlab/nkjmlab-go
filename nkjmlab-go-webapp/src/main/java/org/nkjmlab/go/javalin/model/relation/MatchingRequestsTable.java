@@ -28,7 +28,6 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
 
   public MatchingRequestsTable(DataSource dataSource) {
     super(Sorm.create(dataSource), MatchingRequest.class);
-    createTableIfNotExists().createIndexesIfNotExists();
   }
 
 

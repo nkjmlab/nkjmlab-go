@@ -36,7 +36,6 @@ public class WebsoketSessionsTable extends BasicH2Table<WebSocketSession> {
 
   public WebsoketSessionsTable(DataSource dataSource) {
     super(Sorm.create(dataSource), WebSocketSession.class);
-    createTableIfNotExists().createIndexesIfNotExists();
   }
 
 

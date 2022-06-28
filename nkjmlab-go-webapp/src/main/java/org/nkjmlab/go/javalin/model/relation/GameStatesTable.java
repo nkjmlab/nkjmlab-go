@@ -46,8 +46,6 @@ public class GameStatesTable extends BasicH2Table<GameState> {
 
   public GameStatesTable(DataSource dataSource) {
     super(Sorm.create(dataSource), GameState.class);
-    createTableIfNotExists().createIndexesIfNotExists();
-
   }
 
 

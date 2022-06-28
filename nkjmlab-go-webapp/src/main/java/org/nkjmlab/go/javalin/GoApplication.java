@@ -83,23 +83,23 @@ public class GoApplication {
 
   private static int TRIM_THRESHOLD_OF_GAME_STATE_TABLE = 30000;
 
-  private DataSource memDbDataSource;
-  private DataSource fileDbDataSource;
+  private final DataSource memDbDataSource;
+  private final DataSource fileDbDataSource;
 
-  private Javalin app;
-  private ProblemsTable problemsTable;
-  private HandUpsTable handsUpTable;
-  private UsersTable usersTable;
-  private PasswordsTable passwordsTable;
-  private MatchingRequestsTable matchingRequestsTable;
-  private GameStatesTable gameStatesTable;
-  private GameStatesTable gameStatesTableInMem;
-  private GameStatesTables gameStatesTables;
-  private VotesTable votesTable;
-  private WebsoketSessionsTable websoketSessionsTable;
-  private GameRecordsTable gameRecordsTable;
-  private LoginsTable loginsTable;
-  private WebsocketSessionsManager wsManager;
+  private final Javalin app;
+  private final ProblemsTable problemsTable;
+  private final HandUpsTable handsUpTable;
+  private final UsersTable usersTable;
+  private final PasswordsTable passwordsTable;
+  private final MatchingRequestsTable matchingRequestsTable;
+  private final GameStatesTable gameStatesTable;
+  private final GameStatesTable gameStatesTableInMem;
+  private final GameStatesTables gameStatesTables;
+  private final VotesTable votesTable;
+  private final WebsoketSessionsTable websoketSessionsTable;
+  private final GameRecordsTable gameRecordsTable;
+  private final LoginsTable loginsTable;
+  private final WebsocketSessionsManager wsManager;
 
 
 
@@ -124,18 +124,7 @@ public class GoApplication {
   }
 
   public GoApplication() {
-    FileDatabaseConfigJson fileDbConf;
-    try {
-      fileDbConf =
-          getDefaultJacksonMapper().toObject(ResourceUtils.getResourceAsFile("/conf/h2.json"),
-              FileDatabaseConfigJson.Builder.class).build();
-    } catch (Exception e) {
-      log.warn("Try to load h2.json.default");
-      fileDbConf = getDefaultJacksonMapper()
-          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json.default"),
-              FileDatabaseConfigJson.Builder.class)
-          .build();
-    }
+    FileDatabaseConfigJson fileDbConf = getFileDbConfig();
 
     H2LocalDataSourceFactory factory =
         H2LocalDataSourceFactory.builder(fileDbConf.databaseDirectory, fileDbConf.databaseName,
@@ -148,22 +137,6 @@ public class GoApplication {
         factory.getUsername(), factory.getPassword());
     // H2Server.openBrowser(memDbDataSource, true);
 
-
-    prepareJavalin();
-    prepareTable(factory);
-    prepareWebSocket();
-    prepareJsonRpc();
-    prepareGetHandler();
-  }
-
-
-  public static String getJdbcUrlOfInMemoryDb(String dbName) {
-    return "jdbc:h2:mem:" + dbName + ";DB_CLOSE_DELAY=-1";
-  }
-
-
-
-  private void prepareJavalin() {
     TemplateEngine engine = new TemplateEngineBuilder().setPrefix("/templates/")
         .setTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND).build();
     engine.addDialect(new Java8TimeDialect());
@@ -175,74 +148,107 @@ public class GoApplication {
       // config.precompressStaticFiles = true;
       config.enableCorsForAllOrigins();
     });
-  }
 
-  private void prepareTable(H2LocalDataSourceFactory dsFactory) {
-    this.problemsTable = new ProblemsTable(memDbDataSource);
-    problemsTable.dropAndInsertInitialProblemsToTable(PROBLEM_DIR);
-
-    this.loginsTable = new LoginsTable(fileDbDataSource);
-    loginsTable.createTableIfNotExists();
-    loginsTable.createIndexesIfNotExists();
-    loginsTable.writeCsv(new File(BACKUP_DIR, "logins-" + System.currentTimeMillis() + ".csv"));
-
-
+    {
+      this.problemsTable = new ProblemsTable(memDbDataSource);
+      problemsTable.dropAndInsertInitialProblemsToTable(PROBLEM_DIR);
+    }
+    {
+      this.loginsTable = new LoginsTable(fileDbDataSource);
+      loginsTable.createTableIfNotExists();
+      loginsTable.createIndexesIfNotExists();
+      loginsTable.writeCsv(new File(BACKUP_DIR, "logins-" + System.currentTimeMillis() + ".csv"));
+    }
 
     this.handsUpTable = new HandUpsTable(memDbDataSource);
-
-    this.usersTable = new UsersTable(fileDbDataSource);
-    usersTable.dropTableIfExists();
-    usersTable.createTableAndIndexesIfNotExists();
-    try {
-      File f = ResourceUtils.getResourceAsFile("/conf/users.csv");
-      usersTable.readFromFileAndMerge(f);
-    } catch (Exception e) {
-      log.error(e, e);
-      log.warn("load users.csv.default ...");
-      File f = ResourceUtils.getResourceAsFile("/conf/users.csv.default");
-      usersTable.readFromFileAndMerge(f);
+    {
+      this.usersTable = new UsersTable(fileDbDataSource);
+      usersTable.dropTableIfExists();
+      usersTable.createTableAndIndexesIfNotExists();
+      try {
+        File f = ResourceUtils.getResourceAsFile("/conf/users.csv");
+        usersTable.readFromFileAndMerge(f);
+      } catch (Exception e) {
+        log.error(e, e);
+        log.warn("load users.csv.default ...");
+        File f = ResourceUtils.getResourceAsFile("/conf/users.csv.default");
+        usersTable.readFromFileAndMerge(f);
+      }
     }
-
-
-    this.passwordsTable = new PasswordsTable(fileDbDataSource);
-    passwordsTable.dropTableIfExists();
-    passwordsTable.createTableIfNotExists().createIndexesIfNotExists();
-    try {
-      File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv");
-      passwordsTable.readFromFileAndMerge(f);
-    } catch (Exception e) {
-      log.warn("load password.csv.default ...");
-      File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv.default");
-      passwordsTable.readFromFileAndMerge(f);
+    {
+      this.passwordsTable = new PasswordsTable(fileDbDataSource);
+      passwordsTable.createTableIfNotExists().createIndexesIfNotExists();
+      try {
+        File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv");
+        passwordsTable.readFromFileAndMerge(f);
+      } catch (Exception e) {
+        log.warn("load password.csv.default ...");
+        File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv.default");
+        passwordsTable.readFromFileAndMerge(f);
+      }
     }
+    {
+      this.gameRecordsTable = new GameRecordsTable(fileDbDataSource);
+      gameRecordsTable.createTableIfNotExists().createIndexesIfNotExists();
+      gameRecordsTable
+          .writeCsv(new File(BACKUP_DIR, "game-record" + System.currentTimeMillis() + ".csv"));
 
+      gameRecordsTable.recalculateAndUpdateRank(usersTable);
+    }
+    {
+      this.matchingRequestsTable = new MatchingRequestsTable(memDbDataSource);
+      matchingRequestsTable.createTableIfNotExists().createIndexesIfNotExists();
+    }
+    {
+      this.gameStatesTable = new GameStatesTable(fileDbDataSource);
+      gameStatesTable.createTableIfNotExists().createIndexesIfNotExists();
 
-    this.gameRecordsTable = new GameRecordsTable(fileDbDataSource);
-    gameRecordsTable.createTableIfNotExists();
-    gameRecordsTable.createIndexesIfNotExists();
-    gameRecordsTable
-        .writeCsv(new File(BACKUP_DIR, "game-record" + System.currentTimeMillis() + ".csv"));
+      gameStatesTable.trimAndBackupToFile(factory.getDatabaseDirectory(),
+          TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
 
-    gameRecordsTable.recalculateAndUpdateRank(usersTable);
+      this.gameStatesTableInMem = new GameStatesTable(memDbDataSource);
+      gameStatesTableInMem.createTableIfNotExists().createIndexesIfNotExists();
+      gameStatesTableInMem.insert(gameStatesTable.selectAll().toArray(GameState[]::new));
 
-
-    this.matchingRequestsTable = new MatchingRequestsTable(memDbDataSource);
-
-    this.gameStatesTable = new GameStatesTable(fileDbDataSource);
-    gameStatesTable.trimAndBackupToFile(dsFactory.getDatabaseDirectory(),
-        TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
-
-    this.gameStatesTableInMem = new GameStatesTable(memDbDataSource);
-    gameStatesTableInMem.insert(gameStatesTable.selectAll().toArray(GameState[]::new));
-
-    this.gameStatesTables = new GameStatesTables(fileDbDataSource, memDbDataSource);
-    this.votesTable = new VotesTable(memDbDataSource);
-
-    this.websoketSessionsTable = new WebsoketSessionsTable(memDbDataSource);
+      this.gameStatesTables = new GameStatesTables(fileDbDataSource, memDbDataSource);
+    }
+    {
+      this.votesTable = new VotesTable(memDbDataSource);
+      votesTable.createTableIfNotExists().createIndexesIfNotExists();
+    }
+    {
+      this.websoketSessionsTable = new WebsoketSessionsTable(memDbDataSource);
+      this.websoketSessionsTable.createTableIfNotExists().createIndexesIfNotExists();
+    }
     this.wsManager = new WebsocketSessionsManager(gameStatesTables, problemsTable,
         websoketSessionsTable, usersTable, handsUpTable, matchingRequestsTable);
 
+
+
+    prepareWebSocket();
+    prepareJsonRpc();
+    prepareGetHandler();
   }
+
+
+  private FileDatabaseConfigJson getFileDbConfig() {
+    try {
+      return getDefaultJacksonMapper().toObject(ResourceUtils.getResourceAsFile("/conf/h2.json"),
+          FileDatabaseConfigJson.Builder.class).build();
+    } catch (Exception e) {
+      log.warn("Try to load h2.json.default");
+      return getDefaultJacksonMapper()
+          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json.default"),
+              FileDatabaseConfigJson.Builder.class)
+          .build();
+    }
+  }
+
+  public static String getJdbcUrlOfInMemoryDb(String dbName) {
+    return "jdbc:h2:mem:" + dbName + ";DB_CLOSE_DELAY=-1";
+  }
+
+
 
   private void prepareWebSocket() {
     app.ws("/websocket/play/checkcon", ws -> {
@@ -316,20 +322,19 @@ public class GoApplication {
           ctx.pathParam("pageName") == null ? "index.html" : ctx.pathParam("pageName");
       Builder model = createDefaultModel(usersTable, ctx.req);
       switch (pageName) {
-        case "play.html": {
+        case "play.html" -> {
           UserSession session = UserSession.wrap(ctx.req.getSession());
           if (!session.isLogined()) {
             model.put("requireToLogin", true);
-            break;
+            return;
           }
           session.getUserId().ifPresent(uid -> {
             boolean attend = loginsTable.isAttendance(uid);
             model.put("isAttendance", attend);
             model.put("problemGroupsJson", problemsTable.getProblemGroupsNode());
           });
-          break;
         }
-        case "players-all.html": {
+        case "players-all.html" -> {
           try {
             isAdminOrThrow(usersTable, ctx.req);
           } catch (Exception e) {
@@ -342,9 +347,8 @@ public class GoApplication {
               .collect(Collectors.toList());
           model.put("userAccounts", loginJsons);
           pageName = "players.html";
-          break;
         }
-        case "players.html": {
+        case "players.html" -> {
           try {
             isAdminOrThrow(usersTable, ctx.req);
           } catch (Exception e) {
@@ -356,9 +360,8 @@ public class GoApplication {
           List<LoginJson> loginJsons = users.stream().filter(t -> t.getT1().isStudent())
               .map(t -> new LoginJson(t.getT2(), t.getT1())).collect(Collectors.toList());
           model.put("userAccounts", loginJsons);
-          break;
         }
-        case "games-all.html": {
+        case "games-all.html" -> {
           List<GameStateViewJson> tmp = gameStatesTables.readTodayGameJsons().stream().map(gsj -> {
             String gameId = gsj.gameId();
             GameStateViewJson json =
@@ -368,9 +371,8 @@ public class GoApplication {
           }).collect(Collectors.toList());
           model.put("games", tmp);
           pageName = "games.html";
-          break;
         }
-        case "games.html": {
+        case "games.html" -> {
           List<String> gids = websoketSessionsTable.readActiveGameIdsOrderByGameId(usersTable);
           List<GameStateViewJson> tmp =
               gids.stream().map(gid -> gameStatesTables.readLatestGameStateJson(gid)).map(gsj -> {
@@ -382,16 +384,13 @@ public class GoApplication {
               }).collect(Collectors.toList());
           model.put("games",
               tmp.stream().filter(j -> j.watchingStudentsNum() > 0).collect(Collectors.toList()));
-          break;
         }
-        case "fragment/game-record-table.html": {
+        case "fragment/game-record-table.html" -> {
           String userId = ctx.queryParam("userId");
           List<GameRecord> records = gameRecordsTable.readByUserId(userId);
           model.put("records", records);
-          break;
         }
-        case "fragment/question-table.html":
-        case "fragment/question-table-small.html": {
+        case "fragment/question-table.html", "fragment/question-table-small.html" -> {
           List<String> gids = handsUpTable.readAllGameIds();
           List<GameStateViewJson> tmp =
               gameStatesTables.readLatestBoardsJson(gids).stream().map(gsj -> {
@@ -403,7 +402,7 @@ public class GoApplication {
           model.put("games", tmp);
           break;
         }
-        case "fragment/waiting-request-table.html": {
+        case "fragment/waiting-request-table.html" -> {
           String userId = ctx.queryParam("userId");
           if (userId != null) {
             List<MatchingRequest> tmp = matchingRequestsTable.readRequests();
@@ -412,9 +411,8 @@ public class GoApplication {
           } else {
             model.put("requests", matchingRequestsTable.readRequests());
           }
-          break;
         }
-        case "fragment/waiting-request-table-small.html": {
+        case "fragment/waiting-request-table-small.html" -> {
           String userId = ctx.queryParam("userId");
           List<MatchingRequest> tmp = matchingRequestsTable.readRequests();
           model.put("req",

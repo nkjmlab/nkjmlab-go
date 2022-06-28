@@ -21,7 +21,6 @@ public class VotesTable extends BasicH2Table<Vote> {
 
   public VotesTable(DataSource dataSource) {
     super(Sorm.create(dataSource), Vote.class);
-    createTableIfNotExists().createIndexesIfNotExists();
   }
 
 
