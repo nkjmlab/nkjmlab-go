@@ -119,63 +119,25 @@ public class ProblemTextToJsonConverter {
       return;
     }
 
-    int stone = 0;
+
+    int stone;
     if (id == -1) {
-      int tmp = 0;
-      switch (bw) {
-        case 0:
-          tmp = 40;
-          break;
-        case 1:
-          tmp = 50;
-          break;
-        case 2:
-          tmp = 60;
-          break;
-        case 3:
-        case 4:
-          tmp = 10;
-          break;
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 12:
-        case 13:
-          tmp = 20;
-          break;
-        default:
-          throw new IllegalArgumentException(bw + "は無効です．");
-      }
+      int tmp = switch (bw) {
+        case 0 -> 40;
+        case 1 -> 50;
+        case 2 -> 60;
+        case 3, 4 -> 10;
+        case 5, 6, 7, 8, 9, 10, 11, 12, 13 -> 20;
+        default -> throw new IllegalArgumentException(bw + "は無効です．");
+      };
       stone = json.getCellColor(ij1[0] - 1, ij1[1] - 1) + tmp;
     } else {
-      switch (bw) {
-        case 0:
-        case 1:
-          stone = bw + 1;
-          break;
-        case 2:
-        case 3:
-        case 4:
-          stone = 10;
-          break;
-        case 5:
-        case 6:
-        case 7:
-        case 8:
-        case 9:
-        case 10:
-        case 11:
-        case 12:
-        case 13:
-          stone = 20;
-          break;
-        default:
-          throw new IllegalArgumentException(bw + "は無効です．");
-      }
+      stone = switch (bw) {
+        case 0, 1 -> bw + 1;
+        case 2, 3, 4 -> 10;
+        case 5, 6, 7, 8, 9, 10, 11, 12, 13 -> 20;
+        default -> throw new IllegalArgumentException(bw + "は無効です．");
+      };
     }
     Stone s = new Stone(stone);
     json.addHand(HandType.ON_BOARD, number.intValue(), ij1[0] - 1, ij1[1] - 1, s);
