@@ -2,7 +2,7 @@ package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -36,20 +36,12 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
     return result;
   }
 
-  public boolean empty() {
-    return count() == 0;
-  }
-
-  public List<String> readAllUserIds() {
-    return getOrm().readList(String.class, select(USER_ID) + from(getTableName()));
-  }
-
-  public List<String> readUserIdsOfUnpairedRequestOrdereByCreatedAt() {
+  private List<String> readUserIdsOfUnpairedRequestOrdereByCreatedAt() {
     return getOrm().readList(String.class, select(USER_ID) + from(getTableName())
         + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
   }
 
-  public List<MatchingRequest> readUnpairedRequestsOrderByCreatedAt() {
+  private List<MatchingRequest> readUnpairedRequestsOrderByCreatedAt() {
     return readList(selectStarFrom(getTableName())
         + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
   }
@@ -59,7 +51,7 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
    * マッチングをする u1:30級，u2:27級,u3:26級の順でwaitingRoomに入って来たとする．u2とu3がペアになってu1が待って欲しいが，そうならない．
    * なぜならば，最初にu1がtargetとなって検索が始まる.u1と級位差が小さいu2がペアになってu3が待たされるということ．
    */
-  public List<String> createPairOfUsers(GameStatesTables gameStatesTables) {
+  public Set<String> createPairOfUsers(GameStatesTables gameStatesTables) {
 
 
     List<String> reqs = readUserIdsOfUnpairedRequestOrdereByCreatedAt();
@@ -67,7 +59,7 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
     log.trace("[{}] unpaired matching requests in [{}] matching requests", reqs.size(),
         getOrm().readFirst(Integer.class, SELECT + COUNT + "(*)" + FROM + getTableName()));
 
-    List<String> ret = new ArrayList<>();
+    Set<String> ret = new HashSet<>();
     for (String uid : reqs) {
       MatchingRequest target = selectByPrimaryKey(uid);
 
@@ -133,8 +125,8 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
     public static final String UNPAIRED = "UNPAIRED";
 
     public static MatchingRequest createUnpaired(User u) {
-      return new MatchingRequest(u.userId(), u.seatId(), u.userName(), u.rank(),
-          UNPAIRED, LocalDateTime.now());
+      return new MatchingRequest(u.userId(), u.seatId(), u.userName(), u.rank(), UNPAIRED,
+          LocalDateTime.now());
     }
 
     public boolean isUnpaired() {

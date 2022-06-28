@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.common.Agehama;
 import org.nkjmlab.go.javalin.model.common.Hand;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
@@ -27,9 +26,9 @@ public class GameStatesTables {
   private final GameStatesTable gameStatesTableInFile;
   private final ExecutorService fileDbService = Executors.newSingleThreadExecutor();
 
-  public GameStatesTables(DataSource fileDb, DataSource memDb) {
-    this.gameStatesTableInMem = new GameStatesTable(memDb);
-    this.gameStatesTableInFile = new GameStatesTable(fileDb);
+  public GameStatesTables(GameStatesTable fileDb, GameStatesTable memDb) {
+    this.gameStatesTableInMem = memDb;
+    this.gameStatesTableInFile = fileDb;
   }
 
   private static final Map<String, GameStateJson> statesCache = new ConcurrentHashMap<>();

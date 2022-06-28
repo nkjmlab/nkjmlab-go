@@ -2,6 +2,7 @@ package org.nkjmlab.go.javalin.websocket;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -167,7 +169,7 @@ public class WebsocketSessionsManager {
         && third.type().equals(HandType.PUT_ON_BOARD.getTypeName())
         && second.type().equals(HandType.REMOVE_FROM_BOARD.getTypeName()) && third.x() == second.x()
         && third.y() == second.y()) {
-      List<Hand> modify = history.subList(0, history.size() - 3);
+      List<Hand> modify = new ArrayList<>(history.subList(0, history.size() - 3));
       modify.add(last);
       return json.updateHandHistory(modify);
     }
@@ -209,12 +211,12 @@ public class WebsocketSessionsManager {
 
 
 
-  public void sendUpdateWaitingRequestStatus(List<String> userIds) {
+  public void sendUpdateWaitingRequestStatus(Set<String> userIds) {
     if (userIds.size() == 0) {
       return;
     }
-    jsonSenderService
-        .submitUpdateWaitingRequestStatus(websoketSessionsTable.getSessionsByUserIds(userIds));
+    jsonSenderService.submitUpdateWaitingRequestStatus(
+        websoketSessionsTable.getSessionsByUserIds(userIds.stream().toList()));
   }
 
   public void onError(Session session, Throwable cause) {

@@ -11,14 +11,14 @@ class VotesTableTest {
 
   @Test
   void testReadVoteResults() {
-    VotesTable vt = new VotesTable(GoApplicationTestUtils.getInMemoryDataSource());
-    vt.createTableIfNotExists();
+    VotesTable table = new VotesTable(GoApplicationTestUtils.getInMemoryDataSource());
+    table.createTableIfNotExists();
     long problemId = 1594221942280L;
-    vt.insert(new Vote("nkjm", problemId, "A", "40", "5588999", LocalDateTime.now()));
-    vt.insert(new Vote("nkjm2", problemId, "A", "40", "5588999", LocalDateTime.now()));
-    vt.insert(new Vote("nkjm3", problemId, "B", "50", "5588999", LocalDateTime.now()));
+    table.insert(new Vote("nkjm", problemId, "A", "40", "5588999", LocalDateTime.now()));
+    table.insert(new Vote("nkjm2", problemId, "A", "40", "5588999", LocalDateTime.now()));
+    table.insert(new Vote("nkjm3", problemId, "B", "50", "5588999", LocalDateTime.now()));
 
-    assertThat(vt.readVoteResults(problemId, null)).contains(new VoteResult("40", 2),
+    assertThat(table.readVoteResults(problemId, null)).contains(new VoteResult("40", 2),
         new VoteResult("50", 1));
 
   }

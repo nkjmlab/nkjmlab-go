@@ -4,6 +4,7 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -92,8 +93,6 @@ public class GoApplication {
   private final UsersTable usersTable;
   private final PasswordsTable passwordsTable;
   private final MatchingRequestsTable matchingRequestsTable;
-  private final GameStatesTable gameStatesTable;
-  private final GameStatesTable gameStatesTableInMem;
   private final GameStatesTables gameStatesTables;
   private final VotesTable votesTable;
   private final WebsoketSessionsTable websoketSessionsTable;
@@ -200,17 +199,18 @@ public class GoApplication {
       matchingRequestsTable.createTableIfNotExists().createIndexesIfNotExists();
     }
     {
-      this.gameStatesTable = new GameStatesTable(fileDbDataSource);
+
+      GameStatesTable gameStatesTable = new GameStatesTable(fileDbDataSource);
       gameStatesTable.createTableIfNotExists().createIndexesIfNotExists();
 
       gameStatesTable.trimAndBackupToFile(factory.getDatabaseDirectory(),
           TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
 
-      this.gameStatesTableInMem = new GameStatesTable(memDbDataSource);
+      GameStatesTable gameStatesTableInMem = new GameStatesTable(memDbDataSource);
       gameStatesTableInMem.createTableIfNotExists().createIndexesIfNotExists();
       gameStatesTableInMem.insert(gameStatesTable.selectAll().toArray(GameState[]::new));
 
-      this.gameStatesTables = new GameStatesTables(fileDbDataSource, memDbDataSource);
+      this.gameStatesTables = new GameStatesTables(gameStatesTable, gameStatesTableInMem);
     }
     {
       this.votesTable = new VotesTable(memDbDataSource);
@@ -273,7 +273,7 @@ public class GoApplication {
       return t;
     });
     srv.scheduleWithFixedDelay(Try.createRunnable(() -> {
-      List<String> uids = matchingRequestsTable.createPairOfUsers(gameStatesTables);
+      Set<String> uids = matchingRequestsTable.createPairOfUsers(gameStatesTables);
       wsManager.sendUpdateWaitingRequestStatus(uids);
     }, e -> log.error(e)), INTERVAL_IN_WAITING_ROOM, INTERVAL_IN_WAITING_ROOM, TimeUnit.SECONDS);
   }

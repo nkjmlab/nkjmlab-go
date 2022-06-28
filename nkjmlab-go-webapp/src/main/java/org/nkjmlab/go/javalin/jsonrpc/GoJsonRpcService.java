@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.problem.ProblemTextToJsonConverter;
@@ -127,7 +128,8 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       autoBackupProblemJsonToFile(ProblemJson.createFrom(prevP));
     }
     return new Problem(
-        prevP != null ? prevP.id() : (problemId == -1 ? ProblemTextToJsonConverter.getNewId() : problemId),
+        prevP != null ? prevP.id()
+            : (problemId == -1 ? ProblemTextToJsonConverter.getNewId() : problemId),
         LocalDateTime.now(), groupId, name, mapper.toJson(currentState.cells()),
         mapper.toJson(currentState.symbols()), mapper.toJson(currentState.agehama()),
         mapper.toJson(currentState.handHistory()), message == null ? "" : message);
@@ -256,7 +258,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
         MatchingRequest m = matchingRequestsTable.selectByPrimaryKey(userId);
         matchingRequestsTable.update(m);
       }
-      wsManager.sendUpdateWaitingRequestStatus(List.of(userId));
+      wsManager.sendUpdateWaitingRequestStatus(Set.of(userId));
     } catch (Exception e) {
       log.error("maching request for {} failed", userId);
       log.error(e, e);
@@ -268,7 +270,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   public void exitWaitingRoom(String userId) {
     // logger.debug("{} exited from waiting room.", userId);
     matchingRequestsTable.deleteByPrimaryKey(userId);
-    wsManager.sendUpdateWaitingRequestStatus(List.of(userId));
+    wsManager.sendUpdateWaitingRequestStatus(Set.of(userId));
   }
 
   @Override

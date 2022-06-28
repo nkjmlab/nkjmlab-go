@@ -14,7 +14,7 @@ public class ProblemJsonReader {
       org.apache.logging.log4j.LogManager.getLogger();
 
 
-  static List<File> readProblemJsonFiles(Path pathToProblemJsonDir) {
+  private static List<File> readProblemJsonFiles(Path pathToProblemJsonDir) {
     List<File> result = new ArrayList<>();
     getGroupDirectories(pathToProblemJsonDir).forEach(groupDir -> {
       Arrays.asList(groupDir.listFiles()).forEach(file -> {
