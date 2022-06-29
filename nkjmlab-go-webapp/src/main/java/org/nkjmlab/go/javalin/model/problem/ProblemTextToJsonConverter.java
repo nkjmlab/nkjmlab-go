@@ -199,7 +199,7 @@ public class ProblemTextToJsonConverter {
       if (type == HandType.AGEHAMA) {
         agehama = agehama.increment(stone);
       }
-      handHistory.add(new Hand(type.getTypeName(), number, x, y, stone.id()));
+      handHistory.add(new Hand(type.getTypeName(), number, x, y, stone.id(), ""));
       cells[x][y] = stone.id();
     }
 

@@ -8,10 +8,10 @@ import java.util.stream.Stream;
  * 2桁目 0：ブランク， 1:□， 2：△, 3:x
  *
  */
-public record Hand(String type, int number, int x, int y, int stone) {
+public record Hand(String type, int number, int x, int y, int stone, String options) {
 
   public static Hand createDummyHand() {
-    return new Hand(HandType.DUMMY.getTypeName(), -1, -1, -1, -1);
+    return new Hand(HandType.DUMMY.getTypeName(), -1, -1, -1, -1, "");
   }
 
   /**

@@ -10,7 +10,6 @@ import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class HandUpsTable extends BasicH2Table<HandUp> {
 
@@ -49,8 +48,7 @@ public class HandUpsTable extends BasicH2Table<HandUp> {
 
 
   @OrmRecord
-  public static record HandUp(@PrimaryKey String gameId,
-      @JsonProperty("created_at") LocalDateTime createdAt, String message) {
+  public static record HandUp(@PrimaryKey String gameId, LocalDateTime createdAt, String message) {
 
   }
 

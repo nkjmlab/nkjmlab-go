@@ -151,10 +151,10 @@ public class WebsocketSessionsManager {
   }
 
   public void sendGameState(String gameId, GameStateJson json) {
-    removeHagashi(json);
+    GameStateJson newJson = removeHagashi(json);
 
-    gameStatesTables.saveGameState(json);
-    sendGameStateToSessions(gameId, json);
+    gameStatesTables.saveGameState(newJson);
+    sendGameStateToSessions(gameId, newJson);
   }
 
   private GameStateJson removeHagashi(GameStateJson json) {

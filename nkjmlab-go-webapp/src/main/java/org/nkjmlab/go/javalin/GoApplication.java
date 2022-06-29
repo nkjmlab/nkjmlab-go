@@ -326,7 +326,7 @@ public class GoApplication {
           UserSession session = UserSession.wrap(ctx.req.getSession());
           if (!session.isLogined()) {
             model.put("requireToLogin", true);
-            return;
+            break;
           }
           session.getUserId().ifPresent(uid -> {
             boolean attend = loginsTable.isAttendance(uid);
@@ -400,7 +400,6 @@ public class GoApplication {
                 return json;
               }).collect(Collectors.toList());
           model.put("games", tmp);
-          break;
         }
         case "fragment/waiting-request-table.html" -> {
           String userId = ctx.queryParam("userId");
