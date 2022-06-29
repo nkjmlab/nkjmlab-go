@@ -79,12 +79,10 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
       String white = target.rank() >= nextOpponent.rank() ? nextOpponent.userId() : target.userId();
       String gameId = black + GameStatesTables.VS_SEPARATOR + white;
 
-      updateByPrimaryKey(RowMap.of("game_id", gameId), target.userId);
-      updateByPrimaryKey(RowMap.of("game_id", gameId), nextOpponent.userId);
       log.debug("[{}] is created", gameId);
 
-      merge(target);
-      merge(nextOpponent);
+      updateByPrimaryKey(RowMap.of("game_id", gameId), target.userId);
+      updateByPrimaryKey(RowMap.of("game_id", gameId), nextOpponent.userId);
 
       ret.add(target.userId());
       ret.add(nextOpponent.userId());
@@ -123,6 +121,10 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
       int rank, @Index String gameId, LocalDateTime createdAt) {
 
     public static final String UNPAIRED = "UNPAIRED";
+
+    public MatchingRequest() {
+      this("", "", "", 30, UNPAIRED, LocalDateTime.now());
+    }
 
     public static MatchingRequest createUnpaired(User u) {
       return new MatchingRequest(u.userId(), u.seatId(), u.userName(), u.rank(), UNPAIRED,

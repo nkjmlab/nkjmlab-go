@@ -414,8 +414,9 @@ public class GoApplication {
         case "fragment/waiting-request-table-small.html" -> {
           String userId = ctx.queryParam("userId");
           List<MatchingRequest> tmp = matchingRequestsTable.readRequests();
-          model.put("req",
-              tmp.stream().filter(r -> r.userId().equals(userId)).findAny().orElseGet(null));
+          MatchingRequest req = tmp.stream().filter(r -> r.userId().equals(userId)).findAny()
+              .orElse(new MatchingRequest());
+          model.put("req", req);
           model.put("reqNum", tmp.size());
         }
       }
