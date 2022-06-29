@@ -103,8 +103,6 @@ public class GoApplication {
 
 
   static {
-    H2ServerUtils.startDefaultTcpServerProcessAndWaitFor();
-    H2ServerUtils.startDefaultWebConsoleServerProcessAndWaitFor();
   }
 
   public static void main(String[] args) {
@@ -112,14 +110,17 @@ public class GoApplication {
       THYMELEAF_EXPIRE_TIME_MILLI_SECOND = Long.valueOf(args[0]);
     }
     int port = 4567;
+    log.info("start (port:{}) => {}", port, SystemPropertyUtils.getJavaProperties());
+
     ProcessUtils.stopProcessBindingPortIfExists(port);
+    H2ServerUtils.startDefaultTcpServerProcessAndWaitFor();
+    H2ServerUtils.startDefaultWebConsoleServerProcessAndWaitFor();
 
     new GoApplication().start(port);
   }
 
   private void start(int port) {
     app.start(port);
-    log.info("start: {}", SystemPropertyUtils.getJavaProperties());
   }
 
   public GoApplication() {
