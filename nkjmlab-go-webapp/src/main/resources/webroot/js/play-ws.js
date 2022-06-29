@@ -3,6 +3,7 @@ class PlayWebSocket {
   constructor() {
     this.connection = null;
     this.sessionId = null;
+    this.initialized = false;
   }
 
   getSessionId() {
@@ -16,7 +17,6 @@ class PlayWebSocket {
 
   startNewWsConnection(gameBoard) {
     const self = this;
-    let initialized = false;
 
     let connection = createConnection(getUserId(), getGameId(), getIdToken());
     this.connection = connection;
@@ -30,7 +30,7 @@ class PlayWebSocket {
     });
 
 
-    connection.onmessage = function (e) {
+    connection.onmessage = e =>{
       const json = JSON.parse(e.data);
       switch (json.method) {
         case "REQUEST_TO_LOGIN":
@@ -160,13 +160,13 @@ class PlayWebSocket {
           gameBoard.prepareAndRepaint(getCellNum());
         }
 
-        if (!initialized) {
+        if (!self.initialized) {
           initView();
           refreshProblemInfo();
           gameBoard.prepareAndRepaint(getCellNum());
           gameBoard.bindEventOnCanvas(connection);
           $("#spinner-loading-wrapper").hide();
-          initialized = true;
+          self.initialized = true;
         }
 
         if (gameState.problemId == -1) {
@@ -191,20 +191,20 @@ class PlayWebSocket {
 
     };
 
-    connection.onopen = function (e) {
+    connection.onopen = e =>{
       console.log("connection is open.");
       // console.log(stringifyEvent(e));
     };
 
-    connection.onerror = function (e) {
+    connection.onerror = e =>{
       console.error("connection has an error.");
       swalAlert("ページを再読み込みします", "", "info", e => location.reload());
     };
 
 
-    connection.onclose = function (e) {
+    connection.onclose = e =>{
       console.warn("connection is closed.");
-      setTimeout(() => location.reload(), 500);
+      setTimeout(() => self.startNewWsConnection(gameBoard), 500);
     };
   }
 
