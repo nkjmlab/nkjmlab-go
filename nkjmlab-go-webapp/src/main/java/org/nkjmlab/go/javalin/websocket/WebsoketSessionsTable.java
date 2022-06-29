@@ -84,7 +84,7 @@ public class WebsoketSessionsTable extends BasicH2Table<WebSocketSession> {
 
   void registerSession(String gameId, String userId, Session session) {
     int sessionId = session.hashCode();
-    WebSocketSession ws = new WebSocketSession(sessionId, gameId, userId, LocalDateTime.now());
+    WebSocketSession ws = new WebSocketSession(sessionId, userId, gameId, LocalDateTime.now());
     if (exists(ws)) {
       log.warn("{} already exists.", ws);
       return;
@@ -95,7 +95,7 @@ public class WebsoketSessionsTable extends BasicH2Table<WebSocketSession> {
   }
 
   void updateSession(int sessionId, String gameId, String userId) {
-    update(new WebSocketSession(sessionId, gameId, userId, LocalDateTime.now()));
+    update(new WebSocketSession(sessionId, userId, gameId, LocalDateTime.now()));
 
   }
 
