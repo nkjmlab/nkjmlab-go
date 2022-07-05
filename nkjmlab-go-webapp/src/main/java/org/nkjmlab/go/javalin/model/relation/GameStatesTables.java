@@ -1,6 +1,6 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import java.util.ArrayList;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -10,32 +10,32 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
-import javax.sql.DataSource;
-import org.nkjmlab.go.javalin.model.json.AgehamaJson;
-import org.nkjmlab.go.javalin.model.json.GameStateJson;
-import org.nkjmlab.go.javalin.model.json.HandJson;
-import org.nkjmlab.go.javalin.model.row.GameState;
+import org.nkjmlab.go.javalin.model.common.Agehama;
+import org.nkjmlab.go.javalin.model.common.Hand;
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
 import org.nkjmlab.sorm4j.internal.util.Try;
 
 public class GameStatesTables {
-  private static final org.apache.logging.log4j.Logger log = org.apache.logging.log4j.LogManager.getLogger();
+  private static final org.apache.logging.log4j.Logger log =
+      org.apache.logging.log4j.LogManager.getLogger();
 
   public static final String VS_SEPARATOR = "-vs-";
 
-  private GameStatesTable gameStatesTableInMem;
-  private GameStatesTable gameStatesTableInFile;
-  private ExecutorService fileDbService = Executors.newSingleThreadExecutor();
+  private final GameStatesTable gameStatesTableInMem;
+  private final GameStatesTable gameStatesTableInFile;
+  private final ExecutorService fileDbService = Executors.newSingleThreadExecutor();
 
-  public GameStatesTables(DataSource fileDb, DataSource memDb) {
-    this.gameStatesTableInMem = new GameStatesTable(memDb);
-    this.gameStatesTableInFile = new GameStatesTable(fileDb);
+  public GameStatesTables(GameStatesTable fileDb, GameStatesTable memDb) {
+    this.gameStatesTableInMem = memDb;
+    this.gameStatesTableInFile = fileDb;
   }
 
   private static final Map<String, GameStateJson> statesCache = new ConcurrentHashMap<>();
 
 
   public void saveGameState(GameStateJson json) {
-    statesCache.put(json.getGameId(), json);
+    statesCache.put(json.gameId(), json);
     GameState gs = json.toGameState();
     gameStatesTableInMem.insert(gs);
     fileDbService.execute(
@@ -78,8 +78,9 @@ public class GameStatesTables {
     for (int i = 0; i < cells.length; i++) {
       Arrays.fill(cells[i], 0);
     }
-    return new GameStateJson(gameId, players[0], players[1], cells, new HashMap<>(),
-        new AgehamaJson(), new HandJson(), new ArrayList<>(), -1, new HashMap<>());
+    return new GameStateJson(-1, gameId, players[0], players[1], cells, new HashMap<>(),
+        new Agehama(0, 0), Hand.createDummyHand(), new Hand[0], -1, new HashMap<>(),
+        LocalDateTime.now());
   }
 
 

@@ -1,17 +1,17 @@
 package org.nkjmlab.go.javalin.fbauth;
 
-import static org.nkjmlab.go.javalin.model.row.User.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.servlet.http.HttpServletRequest;
-import org.nkjmlab.go.javalin.model.json.UserJson;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
+import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.PasswordsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
-import org.nkjmlab.go.javalin.model.row.Login;
-import org.nkjmlab.go.javalin.model.row.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
+import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.util.javax.servlet.HttpRequestUtils;
 import org.nkjmlab.util.javax.servlet.UserSession;
 import com.google.auth.oauth2.GoogleCredentials;
@@ -49,10 +49,9 @@ public class AuthService implements AuthServiceInterface {
   public boolean registerAttendance(String userId, String seatId) {
     UserSession session = UserSession.wrap(request.getSession());
     session.setUserId(userId);
-    User u = usersTable.readByPrimaryKey(userId);
-    u.setSeatId(seatId);
-    usersTable.merge(u);
-    loginsTable.insert(new Login(userId, seatId, u.getUserName(), LocalDateTime.now(),
+    User u = usersTable.selectByPrimaryKey(userId);
+    usersTable.updateByPrimaryKey(RowMap.of("seat_id", seatId), u.userId());
+    loginsTable.insert(new Login(-1, userId, seatId, u.userName(), LocalDateTime.now(),
         HttpRequestUtils.getXForwardedFor(request).orElseGet(() -> request.getRemoteAddr())));
     return true;
   }
@@ -62,10 +61,10 @@ public class AuthService implements AuthServiceInterface {
   public UserJson signinWithFirebase(String idToken, String seatId) {
     return verifyIdToken(idToken).map(token -> usersTable.readByEmail(token.getEmail())).map(u -> {
       FirebaseUserSession session = FirebaseUserSession.wrap(request.getSession());
-      session.signinFirebase(idToken, u.getEmail());
-      session.setUserId(u.getUserId());
-      registerAttendance(u.getUserId(), seatId);
-      return new UserJson(u);
+      session.signinFirebase(idToken, u.email());
+      session.setUserId(u.userId());
+      registerAttendance(u.userId(), seatId);
+      return new UserJson(u, true);
     }).orElseThrow();
   }
 
@@ -85,13 +84,13 @@ public class AuthService implements AuthServiceInterface {
       return false;
     }
 
-    User u = usersTable.readByPrimaryKey(userId);
+    User u = usersTable.selectByPrimaryKey(userId);
     if (u != null && !u.isGuest()) {
       log.error("Try guest siginup but userId [{}] conflict with a regular user", userId);
       return false;
     }
-    usersTable.merge(new User(userId, userId + "-guest@example.com", username, GUEST, seatId, 30,
-        LocalDateTime.now()));
+    usersTable.merge(new User(userId, userId + "-guest@example.com", username, User.GUEST, seatId,
+        30, LocalDateTime.now()));
 
     registerAttendance(userId, seatId);
     UsersTable.createIcon(userId);
@@ -110,10 +109,10 @@ public class AuthService implements AuthServiceInterface {
       return null;
     }
 
-    User u = usersTable.readByPrimaryKey(userId);
+    User u = usersTable.selectByPrimaryKey(userId);
     registerAttendance(userId, seatId);
     UsersTable.createIcon(userId);
-    return new UserJson(u);
+    return new UserJson(u, true);
   }
 
 

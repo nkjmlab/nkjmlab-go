@@ -523,7 +523,7 @@ $(function () {
   $(".btn-hand-down").on(
     'click',
     function () {
-      swalConfirm('<i class="fas fa-file-check"></i>', "質問を対応済みにします", "",
+      swalConfirm('<i class="fas fa-check"></i>', "質問を対応済みにします", "",
         function (e) {
           handDown();
         });

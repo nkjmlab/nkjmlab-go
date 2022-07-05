@@ -1,6 +1,8 @@
 package org.nkjmlab.go.javalin.websocket;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Queue;
+import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -15,26 +18,30 @@ import java.util.stream.Collectors;
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WriteCallback;
-import org.nkjmlab.go.javalin.model.json.AgehamaJson;
-import org.nkjmlab.go.javalin.model.json.GameStateJson;
-import org.nkjmlab.go.javalin.model.json.GameStateUtils;
-import org.nkjmlab.go.javalin.model.json.HandJson;
-import org.nkjmlab.go.javalin.model.json.HandType;
-import org.nkjmlab.go.javalin.model.json.ProblemJson;
-import org.nkjmlab.go.javalin.model.json.UserJson;
+import org.nkjmlab.go.javalin.GoApplication;
+import org.nkjmlab.go.javalin.model.common.Agehama;
+import org.nkjmlab.go.javalin.model.common.Hand;
+import org.nkjmlab.go.javalin.model.common.Hand.HandType;
+import org.nkjmlab.go.javalin.model.common.ProblemJson;
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
-import org.nkjmlab.go.javalin.model.relation.HandsUpTable;
+import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
+import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
-import org.nkjmlab.go.javalin.model.row.Problem;
-import org.nkjmlab.go.javalin.model.row.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
+import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
 import org.nkjmlab.util.java.json.JsonMapper;
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.javalin.websocket.WsMessageContext;
 
 public class WebsocketSessionsManager {
+
+  private static final JacksonMapper mapper = GoApplication.getDefaultJacksonMapper();
+
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
@@ -42,7 +49,7 @@ public class WebsocketSessionsManager {
   private final GameStatesTables gameStatesTables;
   private final WebsoketSessionsTable websoketSessionsTable;
   private final UsersTable usersTable;
-  private final HandsUpTable handsUpTable;
+  private final HandUpsTable handsUpTable;
   private final MatchingRequestsTable matchingRequestsTable;
 
 
@@ -51,7 +58,7 @@ public class WebsocketSessionsManager {
 
 
   public WebsocketSessionsManager(GameStatesTables gameStatesTables, ProblemsTable problemsTable,
-      WebsoketSessionsTable websoketSessionsTable, UsersTable usersTable, HandsUpTable handsUpTable,
+      WebsoketSessionsTable websoketSessionsTable, UsersTable usersTable, HandUpsTable handsUpTable,
       MatchingRequestsTable matchingRequestsTable) {
     this.gameStatesTables = gameStatesTables;
     this.problemsTable = problemsTable;
@@ -85,7 +92,7 @@ public class WebsocketSessionsManager {
 
   public void onConnect(Session session, String userId, String gameId) {
 
-    if (!usersTable.exists(new User(userId))) {
+    if (!usersTable.exists(userId)) {
       log.info("userId=[{}] dose not exists", userId);
       jsonSenderService.submitRequestToLogin(session, userId);
       return;
@@ -93,12 +100,12 @@ public class WebsocketSessionsManager {
     websoketSessionsTable.registerSession(gameId, userId, session);
 
     jsonSenderService.submitInitSession(session, session.hashCode(),
-        usersTable.readByPrimaryKey(userId));
+        usersTable.selectByPrimaryKey(userId));
 
-    Optional.ofNullable(handsUpTable.readByPrimaryKey(gameId)).ifPresent(h -> jsonSenderService
+    Optional.ofNullable(handsUpTable.selectByPrimaryKey(gameId)).ifPresent(h -> jsonSenderService
         .submitHandUpOrDown(List.of(session), true, handsUpTable.readOrder(gameId)));
 
-    Optional.ofNullable(matchingRequestsTable.readByPrimaryKey(userId))
+    Optional.ofNullable(matchingRequestsTable.selectByPrimaryKey(userId))
         .ifPresent(h -> jsonSenderService.submitUpdateWaitingRequestStatus(List.of(session)));
 
     jsonSenderService.submitGlobalMessages(session, globalMessages);
@@ -112,61 +119,61 @@ public class WebsocketSessionsManager {
     sendLatestGameStateToSessions(gameId);
   }
 
-  private static final JacksonMapper mapper = JacksonMapper.getDefaultMapper();
 
   public ProblemJson loadProblem(String gameId, long problemId) {
-    Problem p = problemsTable.readByPrimaryKey(problemId);
-    HandJson[] handHistory = mapper.toObject(p.getHandHistory(), HandJson[].class);
-    HandJson lastHand =
-        handHistory.length != 0 ? handHistory[handHistory.length - 1] : new HandJson();
+    Problem p = problemsTable.selectByPrimaryKey(problemId);
+    Hand[] handHistory = mapper.toObject(p.handHistory(), Hand[].class);
+    Hand lastHand =
+        handHistory.length != 0 ? handHistory[handHistory.length - 1] : Hand.createDummyHand();
     GameStateJson json =
-        new GameStateJson(gameId, "", "", GameStateUtils.cellsStringToCellsArray(p.getCells()),
-            GameStateUtils.symbolsStringToSymbols(p.getSymbols()),
-            mapper.toObject(p.getAgehama(), AgehamaJson.class), lastHand,
-            Arrays.asList(handHistory), p.getId(), new HashMap<>());
+        new GameStateJson(-1, gameId, "", "", mapper.toObject(p.cells(), int[][].class),
+            mapper.toObject(p.symbols(), new TypeReference<Map<String, Integer>>() {}),
+            mapper.toObject(p.agehama(), Agehama.class), lastHand, handHistory, p.id(),
+            new HashMap<>(), LocalDateTime.now());
     sendGameState(gameId, json);
-    return ProblemJson.createFrom(problemsTable.readByPrimaryKey(problemId));
+    return ProblemJson.createFrom(problemsTable.selectByPrimaryKey(problemId));
   }
 
 
 
   public void newGame(String gameId, GameStateJson json) {
-    GameStateJson newGameJson = gameStatesTables.createNewGameState(gameId, json.getBlackPlayerId(),
-        json.getWhitePlayerId(), json.getCells().length);
+    GameStateJson newGameJson = gameStatesTables.createNewGameState(gameId, json.blackPlayerId(),
+        json.whitePlayerId(), json.cells().length);
     sendGameState(gameId, newGameJson);
   }
 
   private void sendEntriesToSessions(String gameId) {
     List<UserJson> users = websoketSessionsTable.readUsers(usersTable, gameId).stream()
-        .map(u -> new UserJson(u)).collect(Collectors.toList());
+        .map(u -> new UserJson(u, true)).collect(Collectors.toList());
 
     jsonSenderService.submitEntries(websoketSessionsTable.getSessionsByGameId(gameId), users);
 
   }
 
   public void sendGameState(String gameId, GameStateJson json) {
-    removeHagashi(json);
+    GameStateJson newJson = removeHagashi(json);
 
-    gameStatesTables.saveGameState(json);
-    sendGameStateToSessions(gameId, json);
+    gameStatesTables.saveGameState(newJson);
+    sendGameStateToSessions(gameId, newJson);
   }
 
-  private void removeHagashi(GameStateJson json) {
-    List<HandJson> history = json.getHandHistory();
+  private GameStateJson removeHagashi(GameStateJson json) {
+    List<Hand> history = Arrays.asList(json.handHistory());
     if (history.size() <= 2) {
-      return;
+      return json;
     }
-    HandJson last = history.get(history.size() - 1);
-    HandJson second = history.get(history.size() - 2);
-    HandJson third = history.get(history.size() - 3);
-    if (last.getStone() == second.getStone() && second.getStone() == third.getStone()
-        && third.getType().equals(HandType.PUT_ON_BOARD.getTypeName())
-        && second.getType().equals(HandType.REMOVE_FROM_BOARD.getTypeName())
-        && third.getX() == second.getX() && third.getY() == second.getY()) {
-      List<HandJson> modify = history.subList(0, history.size() - 3);
+    Hand last = history.get(history.size() - 1);
+    Hand second = history.get(history.size() - 2);
+    Hand third = history.get(history.size() - 3);
+    if (last.stone() == second.stone() && second.stone() == third.stone()
+        && third.type().equals(HandType.PUT_ON_BOARD.getTypeName())
+        && second.type().equals(HandType.REMOVE_FROM_BOARD.getTypeName()) && third.x() == second.x()
+        && third.y() == second.y()) {
+      List<Hand> modify = new ArrayList<>(history.subList(0, history.size() - 3));
       modify.add(last);
-      json.setHandHistory(modify);
+      return json.updateHandHistory(modify);
     }
+    return json;
   }
 
 
@@ -204,12 +211,12 @@ public class WebsocketSessionsManager {
 
 
 
-  public void sendUpdateWaitingRequestStatus(List<String> userIds) {
+  public void sendUpdateWaitingRequestStatus(Set<String> userIds) {
     if (userIds.size() == 0) {
       return;
     }
-    jsonSenderService
-        .submitUpdateWaitingRequestStatus(websoketSessionsTable.getSessionsByUserIds(userIds));
+    jsonSenderService.submitUpdateWaitingRequestStatus(
+        websoketSessionsTable.getSessionsByUserIds(userIds.stream().toList()));
   }
 
   public void onError(Session session, Throwable cause) {
@@ -223,7 +230,7 @@ public class WebsocketSessionsManager {
 
     private static final ExecutorService srv =
         Executors.newFixedThreadPool(ForkJoinPoolUtils.getAvailableProcessorsMinus(2));
-    private static final JsonMapper mapper = JacksonMapper.getDefaultMapper();
+    private static final JsonMapper mapper = GoApplication.getDefaultJacksonMapper();
 
     private enum MethodName {
       GAME_STATE, INIT_SESSION, GLOBAL_MESSAGE, HAND_UP, HAND_UP_ORDER, ENTRIES, UPDATE_HAND_UP_TABLE, UPDATE_WAITING_REQUEST_STATUS, REQUEST_TO_LOGIN
