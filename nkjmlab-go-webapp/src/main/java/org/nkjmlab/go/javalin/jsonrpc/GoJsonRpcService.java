@@ -28,7 +28,6 @@ import org.nkjmlab.go.javalin.model.relation.VotesTable;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
-import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
 import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.util.java.Base64Utils;
 import org.nkjmlab.util.java.json.JsonMapper;
@@ -45,8 +44,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   private final LoginsTable loginsTable;
   private final MatchingRequestsTable matchingRequestsTable;
   private final VotesTable votesTable;
-  private final WebsocketSessionsManager wsManager;
-  private final WebsoketSessionsTable websoketSessionsTable;
+  private final WebsocketSessionsManager websocketManager;
   private final HandUpsTable handsUpTable;
   private final GameRecordsTable gameRecordsTable;
 
@@ -56,46 +54,45 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   public GoJsonRpcService(WebsocketSessionsManager wsManager, GameStatesTables gameStatesTables,
       ProblemsTable problemsTable, UsersTable usersTable, LoginsTable loginsTable,
       MatchingRequestsTable matchingRequestsTable, VotesTable votesTable, HandUpsTable handsUpTable,
-      WebsoketSessionsTable websoketSessionsTable, GameRecordsTable gameRecordsTable) {
+      GameRecordsTable gameRecordsTable) {
     this.gameStatesTables = gameStatesTables;
     this.problemsTable = problemsTable;
     this.usersTable = usersTable;
     this.loginsTable = loginsTable;
     this.matchingRequestsTable = matchingRequestsTable;
-    this.wsManager = wsManager;
+    this.websocketManager = wsManager;
     this.votesTable = votesTable;
     this.handsUpTable = handsUpTable;
-    this.websoketSessionsTable = websoketSessionsTable;
     this.gameRecordsTable = gameRecordsTable;
 
   }
 
   @Override
   public void sendGameState(String gameId, GameStateJson json) {
-    wsManager.sendGameState(gameId, json);
+    websocketManager.sendGameState(gameId, json);
   }
 
 
   @Override
   public void sendGlobalMessage(String userId, String message) {
-    wsManager.sendGlobalMessage(message);
+    websocketManager.sendGlobalMessage(message);
   }
 
 
   @Override
   public void syncGameState(int sessionId, String gameId, String userId) {
-    wsManager.updateSession(sessionId, gameId, userId);
-    wsManager.sendLatestGameStateToSessions(gameId);
+    websocketManager.updateSession(sessionId, gameId, userId);
+    websocketManager.sendLatestGameStateToSessions(gameId);
   }
 
   @Override
   public void newGame(String gameId, GameStateJson json) {
-    wsManager.newGame(gameId, json);
+    websocketManager.newGame(gameId, json);
   }
 
   @Override
   public ProblemJson loadProblem(String gameId, long problemId) {
-    return wsManager.loadProblem(gameId, problemId);
+    return websocketManager.loadProblem(gameId, problemId);
   }
 
   @Override
@@ -106,7 +103,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public void goBack(String gameId, GameStateJson json) {
-    wsManager.goBack(gameId);
+    websocketManager.goBack(gameId);
   }
 
   @Override
@@ -218,7 +215,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public String getNextGame(String currentGameId) {
-    List<String> ids = websoketSessionsTable.readActiveGameIdsOrderByGameId(usersTable);
+    List<String> ids = websocketManager.readActiveGameIdsOrderByGameId();
     return getNextId(ids, currentGameId);
   }
 
@@ -235,7 +232,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public String getPrevGame(String currentGameId) {
-    List<String> ids = websoketSessionsTable.readActiveGameIdsOrderByGameId(usersTable);
+    List<String> ids = websocketManager.readActiveGameIdsOrderByGameId();
     Collections.reverse(ids);
     return getNextId(ids, currentGameId);
   }
@@ -258,7 +255,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
         MatchingRequest m = matchingRequestsTable.selectByPrimaryKey(userId);
         matchingRequestsTable.update(m);
       }
-      wsManager.sendUpdateWaitingRequestStatus(Set.of(userId));
+      websocketManager.sendUpdateWaitingRequestStatus(Set.of(userId));
     } catch (Exception e) {
       log.error("maching request for {} failed", userId);
       log.error(e, e);
@@ -269,7 +266,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   @Override
   public void exitWaitingRoom(String userId) {
     matchingRequestsTable.deleteByPrimaryKey(userId);
-    wsManager.sendUpdateWaitingRequestStatus(Set.of(userId));
+    websocketManager.sendUpdateWaitingRequestStatus(Set.of(userId));
   }
 
   @Override
@@ -320,12 +317,12 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
               .update(new HandUp(h.gameId(), h.createdAt(), h.message() + "<br>" + message));
         }
       }
-      wsManager.sendHandUp(gameId, handUp, handsUpTable.readOrder(gameId));
+      websocketManager.sendHandUp(gameId, handUp, handsUpTable.readOrder(gameId));
     } else {
       handsUpTable.deleteByPrimaryKey(gameId);
-      wsManager.sendHandDown(gameId);
+      websocketManager.sendHandDown(gameId);
 
-      handsUpTable.readAllGameIds().stream().forEach(handupGameId -> wsManager
+      handsUpTable.readAllGameIds().stream().forEach(handupGameId -> websocketManager
           .sendHandUpOrder(handupGameId, handsUpTable.readOrder(handupGameId)));
     }
 

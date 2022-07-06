@@ -34,7 +34,6 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
-import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
 import org.nkjmlab.sorm4j.common.Tuple.Tuple2;
 import org.nkjmlab.sorm4j.internal.util.ParameterizedStringUtils;
 import org.nkjmlab.sorm4j.internal.util.Try;
@@ -95,10 +94,9 @@ public class GoApplication {
   private final MatchingRequestsTable matchingRequestsTable;
   private final GameStatesTables gameStatesTables;
   private final VotesTable votesTable;
-  private final WebsoketSessionsTable websoketSessionsTable;
   private final GameRecordsTable gameRecordsTable;
   private final LoginsTable loginsTable;
-  private final WebsocketSessionsManager wsManager;
+  private final WebsocketSessionsManager webSocketManager;
 
   public static void main(String[] args) {
     if (args.length != 0) {
@@ -215,12 +213,8 @@ public class GoApplication {
       this.votesTable = new VotesTable(memDbDataSource);
       votesTable.createTableIfNotExists().createIndexesIfNotExists();
     }
-    {
-      this.websoketSessionsTable = new WebsoketSessionsTable(memDbDataSource);
-      this.websoketSessionsTable.createTableIfNotExists().createIndexesIfNotExists();
-    }
-    this.wsManager = new WebsocketSessionsManager(gameStatesTables, problemsTable,
-        websoketSessionsTable, usersTable, handsUpTable, matchingRequestsTable);
+    this.webSocketManager = new WebsocketSessionsManager(gameStatesTables, problemsTable,
+        usersTable, handsUpTable, matchingRequestsTable, memDbDataSource);
 
 
 
@@ -254,11 +248,11 @@ public class GoApplication {
       ws.onConnect(ctx -> log.trace("{}", ctx.session.getUpgradeRequest().getRequestURI()));
     });
     app.ws("/websocket/play", ws -> {
-      ws.onConnect(ctx -> wsManager.onConnect(ctx.session, ctx.queryParam("userId"),
+      ws.onConnect(ctx -> webSocketManager.onConnect(ctx.session, ctx.queryParam("userId"),
           ctx.queryParam("gameId")));
-      ws.onClose(ctx -> wsManager.onClose(ctx.session, ctx.status(), ctx.reason()));
-      ws.onError(ctx -> wsManager.onError(ctx.session, ctx.error()));
-      ws.onMessage(ctx -> wsManager.onMessage(ctx.queryParam("gameId"), ctx));
+      ws.onClose(ctx -> webSocketManager.onClose(ctx.session, ctx.status(), ctx.reason()));
+      ws.onError(ctx -> webSocketManager.onError(ctx.session, ctx.error()));
+      ws.onMessage(ctx -> webSocketManager.onMessage(ctx.queryParam("gameId"), ctx));
     });
 
 
@@ -271,7 +265,7 @@ public class GoApplication {
     });
     srv.scheduleWithFixedDelay(Try.createRunnable(() -> {
       Set<String> uids = matchingRequestsTable.createPairOfUsers(gameStatesTables);
-      wsManager.sendUpdateWaitingRequestStatus(uids);
+      webSocketManager.sendUpdateWaitingRequestStatus(uids);
     }, e -> log.error(e)), INTERVAL_IN_WAITING_ROOM, INTERVAL_IN_WAITING_ROOM, TimeUnit.SECONDS);
   }
 
@@ -279,9 +273,9 @@ public class GoApplication {
 
     prepareFirebase();
 
-    final GoJsonRpcService goJsonRpcService = new GoJsonRpcService(wsManager, gameStatesTables,
-        problemsTable, usersTable, loginsTable, matchingRequestsTable, votesTable, handsUpTable,
-        websoketSessionsTable, gameRecordsTable);
+    final GoJsonRpcService goJsonRpcService =
+        new GoJsonRpcService(webSocketManager, gameStatesTables, problemsTable, usersTable,
+            loginsTable, matchingRequestsTable, votesTable, handsUpTable, gameRecordsTable);
 
 
     JacksonMapper mapper = GoApplication.getDefaultJacksonMapper();
@@ -363,20 +357,20 @@ public class GoApplication {
             String gameId = gsj.gameId();
             GameStateViewJson json =
                 new GameStateViewJson(gsj, handsUpTable.selectByPrimaryKey(gameId),
-                    websoketSessionsTable.getWatchingUniqueStudentsNum(usersTable, gameId));
+                    webSocketManager.getWatchingUniqueStudentsNum(gameId));
             return json;
           }).collect(Collectors.toList());
           model.put("games", tmp);
           pageName = "games.html";
         }
         case "games.html" -> {
-          List<String> gids = websoketSessionsTable.readActiveGameIdsOrderByGameId(usersTable);
+          List<String> gids = webSocketManager.readActiveGameIdsOrderByGameId();
           List<GameStateViewJson> tmp =
               gids.stream().map(gid -> gameStatesTables.readLatestGameStateJson(gid)).map(gsj -> {
                 String gameId = gsj.gameId();
                 GameStateViewJson json =
                     new GameStateViewJson(gsj, handsUpTable.selectByPrimaryKey(gameId),
-                        websoketSessionsTable.getWatchingUniqueStudentsNum(usersTable, gameId));
+                        webSocketManager.getWatchingUniqueStudentsNum(gameId));
                 return json;
               }).collect(Collectors.toList());
           model.put("games",
