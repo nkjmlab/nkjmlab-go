@@ -29,7 +29,7 @@ public class ProblemJsonReader {
 
   public static List<ProblemJson> readProblemJsons(Path pathToProblemJsonDir) {
     List<File> files = readProblemJsonFiles(pathToProblemJsonDir);
-    log.info("detect [{}] problem files in [{}]", files.size(), pathToProblemJsonDir);
+    log.debug("detect [{}] problem files in [{}]", files.size(), pathToProblemJsonDir);
     return files.stream().map(file -> {
       try {
         ProblemJson problem =

@@ -145,7 +145,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     File problemGroupDir = getProblemDir(p.groupId());
     File o = new File(problemGroupDir, p.name() + ".json");
     mapper.toJsonAndWrite(p, o, true);
-    log.info("Problep {} - {} is saved to {}", p.groupId(), p.name(), o);
+    log.info("Problem {} - {} is saved to {}", p.groupId(), p.name(), o);
 
   }
 
@@ -268,7 +268,6 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public void exitWaitingRoom(String userId) {
-    // logger.debug("{} exited from waiting room.", userId);
     matchingRequestsTable.deleteByPrimaryKey(userId);
     wsManager.sendUpdateWaitingRequestStatus(Set.of(userId));
   }
@@ -284,7 +283,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       File outputFile = new File(CURRENT_ICON_DIR, userId + ".png");
       outputFile.mkdirs();
       ImageIoUtils.write(Base64Utils.decodeToImage(base64EncodedImage, "png"), "png", outputFile);
-      log.info("Icon is uploaded={}", outputFile);
+      log.debug("Icon is uploaded={}", outputFile);
       return outputFile;
     } catch (Exception e) {
       log.error(e, e);
@@ -334,7 +333,6 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public int registerRecord(String userId, String opponentUserId, String jadge, String memo) {
-    // logger.debug("{},{},{},{}", userId, opponentUserId, jadge, memo);
     int rank =
         gameRecordsTable.registerRecordAndGetRank(usersTable, userId, opponentUserId, jadge, memo);
 
@@ -358,7 +356,6 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public String getKomi(String gameId) {
-    String msg = "";
     try {
       GameStateJson gs = gameStatesTables.readLatestGameStateJson(gameId);
       User bp = usersTable.selectByPrimaryKey(gs.blackPlayerId());
@@ -370,15 +367,15 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       String s1 = start.get(roCol).get(Math.min(diff, 5));
       String s2 = midFlow.get(roCol).get(Math.min(diff, 5));
 
-      msg = ParameterizedStringUtils.newString(
+      String msg = ParameterizedStringUtils.newString(
           "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge badge-info'>はじめから</span> {}, <span class='badge badge-info'>棋譜並べから</span> {} <br>",
           bp.userId(), bp.userName(), bp.rank(), wp.userId(), wp.userName(), wp.rank(), diff, ro,
           s1, s2);
+      return msg;
     } catch (Exception e) {
-      msg = "";
       log.error(e);
+      return "";
     }
-    return msg;
   }
 
 }

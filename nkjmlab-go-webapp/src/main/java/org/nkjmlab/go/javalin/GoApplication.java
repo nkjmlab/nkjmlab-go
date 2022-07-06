@@ -100,11 +100,6 @@ public class GoApplication {
   private final LoginsTable loginsTable;
   private final WebsocketSessionsManager wsManager;
 
-
-
-  static {
-  }
-
   public static void main(String[] args) {
     if (args.length != 0) {
       THYMELEAF_EXPIRE_TIME_MILLI_SECOND = Long.valueOf(args[0]);
@@ -124,6 +119,9 @@ public class GoApplication {
   }
 
   public GoApplication() {
+
+    log.info("log4j2.configurationFile={}, Logger level={}",
+        System.getProperty("log4j2.configurationFile"), log.getLevel());
     FileDatabaseConfigJson fileDbConf = getFileDbConfig();
 
     H2LocalDataSourceFactory factory =
@@ -253,9 +251,7 @@ public class GoApplication {
 
   private void prepareWebSocket() {
     app.ws("/websocket/play/checkcon", ws -> {
-      ws.onConnect(ctx -> {
-        log.debug("{}", ctx.session.getUpgradeRequest().getRequestURI());
-      });
+      ws.onConnect(ctx -> log.trace("{}", ctx.session.getUpgradeRequest().getRequestURI()));
     });
     app.ws("/websocket/play", ws -> {
       ws.onConnect(ctx -> wsManager.onConnect(ctx.session, ctx.queryParam("userId"),

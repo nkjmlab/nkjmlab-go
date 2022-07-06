@@ -68,7 +68,7 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
       }
 
       Set<String> pastOpponents = gameStatesTables.readPastOpponents(target.userId());
-      log.debug("[{}] has been matched with {} on today", target.userId(), pastOpponents);
+      log.trace("[{}] has been matched with {} on today", target.userId(), pastOpponents);
 
       MatchingRequest nextOpponent = selectNextOponent(target, pastOpponents);
       if (nextOpponent == null) {
@@ -79,7 +79,7 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
       String white = target.rank() >= nextOpponent.rank() ? nextOpponent.userId() : target.userId();
       String gameId = black + GameStatesTables.VS_SEPARATOR + white;
 
-      log.debug("[{}] is created", gameId);
+      log.trace("[{}] is created", gameId);
 
       updateByPrimaryKey(RowMap.of("game_id", gameId), target.userId);
       updateByPrimaryKey(RowMap.of("game_id", gameId), nextOpponent.userId);
