@@ -20,7 +20,6 @@ import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
-import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
@@ -198,6 +197,7 @@ public class GoApplication {
     {
 
       GameStatesTable gameStatesTable = new GameStatesTable(fileDbDataSource);
+      gameStatesTable.dropTableIfExists();
       gameStatesTable.createTableIfNotExists().createIndexesIfNotExists();
 
       gameStatesTable.trimAndBackupToFile(factory.getDatabaseDirectory(),
@@ -366,7 +366,7 @@ public class GoApplication {
         case "games.html" -> {
           List<String> gids = webSocketManager.readActiveGameIdsOrderByGameId();
           List<GameStateViewJson> tmp =
-              gids.stream().map(gid -> gameStatesTables.readLatestGameStateJson(gid)).map(gsj -> {
+              gids.stream().map(gid -> gameStatesTables.readLatestGameState(gid)).map(gsj -> {
                 String gameId = gsj.gameId();
                 GameStateViewJson json =
                     new GameStateViewJson(gsj, handsUpTable.selectByPrimaryKey(gameId),
@@ -485,7 +485,7 @@ public class GoApplication {
     return JacksonMapper.getIgnoreUnknownPropertiesMapper();
   }
 
-  public static record GameStateViewJson(GameStateJson gameState, HandUp handUp,
+  public static record GameStateViewJson(GameState gameState, HandUp handUp,
       int watchingStudentsNum) {
 
   }

@@ -26,9 +26,9 @@
   </scm>
 
   <properties>
-    <nkjmlab-utils-version>0.8.2</nkjmlab-utils-version>
+    <nkjmlab-utils-version>0.8.3</nkjmlab-utils-version>
     <thymeleaf-version>3.0.15.RELEASE</thymeleaf-version>
-    <sorm4j-version>1.4.8</sorm4j-version>
+    <sorm4j-version>1.4.9</sorm4j-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <downloadSources>true</downloadSources>
     <downloadJavadocs>true</downloadJavadocs>

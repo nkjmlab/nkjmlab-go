@@ -5,8 +5,8 @@ import org.nkjmlab.util.javax.servlet.UserSession;
 
 public class FirebaseUserSession extends UserSession {
 
-  private static final String EMAIL = "email";
-  private static final String ID_TOKEN = "idToken";
+  private static final String EMAIL = "EMAIL";
+  private static final String ID_TOKEN = "ID_TOKEN";
 
   public static FirebaseUserSession wrap(HttpSession session) {
     return new FirebaseUserSession(session);

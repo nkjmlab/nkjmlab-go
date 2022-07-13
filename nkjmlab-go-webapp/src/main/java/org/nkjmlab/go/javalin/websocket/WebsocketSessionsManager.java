@@ -27,7 +27,7 @@ import org.nkjmlab.go.javalin.model.common.Agehama;
 import org.nkjmlab.go.javalin.model.common.Hand;
 import org.nkjmlab.go.javalin.model.common.Hand.HandType;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
-import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
@@ -85,7 +85,7 @@ public class WebsocketSessionsManager {
 
 
   public void onMessage(String gameId, WsMessageContext ctx) {
-    GameStateJson gs = ctx.messageAsClass(GameStateJson.class);
+    GameState gs = ctx.messageAsClass(GameState.class);
     sendGameState(gameId, gs);
   }
 
@@ -140,19 +140,19 @@ public class WebsocketSessionsManager {
     Hand[] handHistory = mapper.toObject(p.handHistory(), Hand[].class);
     Hand lastHand =
         handHistory.length != 0 ? handHistory[handHistory.length - 1] : Hand.createDummyHand();
-    GameStateJson json =
-        new GameStateJson(-1, gameId, "", "", mapper.toObject(p.cells(), int[][].class),
-            mapper.toObject(p.symbols(), new TypeReference<Map<String, Integer>>() {}),
-            mapper.toObject(p.agehama(), Agehama.class), lastHand, handHistory, p.id(),
-            new HashMap<>(), LocalDateTime.now());
+
+    GameState json = new GameState(-1, LocalDateTime.now(), gameId, "", "", lastHand,
+        mapper.toObject(p.agehama(), Agehama.class), mapper.toObject(p.cells(), Integer[][].class),
+        mapper.toObject(p.symbols(), new TypeReference<Map<String, Integer>>() {}), handHistory,
+        p.id(), new HashMap<>());
     sendGameState(gameId, json);
     return ProblemJson.createFrom(problemsTable.selectByPrimaryKey(problemId));
   }
 
 
 
-  public void newGame(String gameId, GameStateJson json) {
-    GameStateJson newGameJson = gameStatesTables.createNewGameState(gameId, json.blackPlayerId(),
+  public void newGame(String gameId, GameState json) {
+    GameState newGameJson = gameStatesTables.createNewGameState(gameId, json.blackPlayerId(),
         json.whitePlayerId(), json.cells().length);
     sendGameState(gameId, newGameJson);
   }
@@ -165,14 +165,14 @@ public class WebsocketSessionsManager {
 
   }
 
-  public void sendGameState(String gameId, GameStateJson json) {
-    GameStateJson newJson = removeHagashi(json);
+  public void sendGameState(String gameId, GameState json) {
+    GameState newJson = removeHagashi(json);
 
     gameStatesTables.saveGameState(newJson);
     sendGameStateToSessions(gameId, newJson);
   }
 
-  private GameStateJson removeHagashi(GameStateJson json) {
+  private GameState removeHagashi(GameState json) {
     List<Hand> history = Arrays.asList(json.handHistory());
     if (history.size() <= 2) {
       return json;
@@ -192,7 +192,7 @@ public class WebsocketSessionsManager {
   }
 
 
-  private void sendGameStateToSessions(String gameId, GameStateJson json) {
+  private void sendGameStateToSessions(String gameId, GameState json) {
     jsonSenderService.submitGameState(websoketSessionsTable.getSessionsByGameId(gameId), json);
   }
 
@@ -221,7 +221,7 @@ public class WebsocketSessionsManager {
   }
 
   public void sendLatestGameStateToSessions(String gameId) {
-    sendGameStateToSessions(gameId, gameStatesTables.readLatestGameStateJson(gameId));
+    sendGameStateToSessions(gameId, gameStatesTables.readLatestGameState(gameId));
   }
 
 
@@ -253,7 +253,7 @@ public class WebsocketSessionsManager {
 
     public WebSocketJsonSenderService() {}
 
-    public void submitGameState(List<Session> sessions, GameStateJson json) {
+    public void submitGameState(List<Session> sessions, GameState json) {
       submit(sessions, MethodName.GAME_STATE, json);
     }
 

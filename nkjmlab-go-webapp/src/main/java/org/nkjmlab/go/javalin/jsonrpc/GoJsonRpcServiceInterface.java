@@ -3,7 +3,7 @@ package org.nkjmlab.go.javalin.jsonrpc;
 import java.io.File;
 import java.util.List;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
-import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
 
@@ -30,15 +30,15 @@ public interface GoJsonRpcServiceInterface {
 
   boolean sendLog(String logLevel, String location, String msg, String options);
 
-  void newGame(String gameId, GameStateJson json);
+  void newGame(String gameId, GameState json);
 
   ProblemJson loadProblem(String gameId, long problemId);
 
   ProblemJson getProblem(long problemId);
 
-  void goBack(String gameId, GameStateJson json);
+  void goBack(String gameId, GameState json);
 
-  void sendGameState(String gameId, GameStateJson json);
+  void sendGameState(String gameId, GameState json);
 
   ProblemJson saveProblem(String gameId, long problemId, String groupId, String name,
       String message);

@@ -1,5 +1,8 @@
 package org.nkjmlab.go.javalin.model.common;
 
+import org.nkjmlab.sorm4j.util.datatype.OrmJsonColumnContainer;
+
+@OrmJsonColumnContainer
 public record Agehama(int black, int white) {
 
   public Agehama increment(Stone stone) {

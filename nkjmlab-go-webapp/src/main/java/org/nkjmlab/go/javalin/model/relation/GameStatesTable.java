@@ -18,13 +18,12 @@ import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.jackson.JacksonSormContext;
 import org.nkjmlab.sorm4j.util.table_def.annotation.AutoIncrement;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
 import org.nkjmlab.sorm4j.util.table_def.annotation.IndexColumns;
 import org.nkjmlab.sorm4j.util.table_def.annotation.NotNull;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
-import org.nkjmlab.util.jackson.JacksonMapper;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 public class GameStatesTable extends BasicH2Table<GameState> {
   private static final org.apache.logging.log4j.Logger log =
@@ -45,7 +44,10 @@ public class GameStatesTable extends BasicH2Table<GameState> {
 
 
   public GameStatesTable(DataSource dataSource) {
-    super(Sorm.create(dataSource), GameState.class);
+    super(
+        Sorm.create(dataSource, JacksonSormContext
+            .builder(GoApplication.getDefaultJacksonMapper().getObjectMapper()).build()),
+        GameState.class);
   }
 
 
@@ -107,46 +109,19 @@ public class GameStatesTable extends BasicH2Table<GameState> {
   @IndexColumns({BLACK_PLAYER_ID, WHITE_PLAYER_ID})
   public record GameState(@PrimaryKey @AutoIncrement long id, LocalDateTime createdAt,
       @Index @NotNull String gameId, @NotNull String blackPlayerId, @NotNull String whitePlayerId,
-      @NotNull String lastHand, @NotNull String agehama, @NotNull String cells,
-      @NotNull String symbols, @NotNull String handHistory, @NotNull long problemId,
-      @NotNull String options) {
-  }
-
-  public record GameStateJson(long id, String gameId, String blackPlayerId, String whitePlayerId,
-      int[][] cells, Map<String, Integer> symbols, Agehama agehama, Hand lastHand,
-      Hand[] handHistory, long problemId, Map<String, Object> options, LocalDateTime createdAt) {
+      @NotNull Hand lastHand, @NotNull Agehama agehama, @NotNull Integer[][] cells,
+      @NotNull Map<String, Integer> symbols, @NotNull Hand[] handHistory, @NotNull long problemId,
+      @NotNull Map<String, Object> options) {
 
     public static final String DEFAULT_PLAYER_ID = "-1";
     public static final int DEFAULT_RO = 9;
 
-    private static final JacksonMapper mapper = GoApplication.getDefaultJacksonMapper();
-
-    public GameStateJson updateHandHistory(List<Hand> modifiedHistory) {
-      return new GameStateJson(id, gameId, blackPlayerId, whitePlayerId, cells, symbols, agehama,
-          lastHand, modifiedHistory.toArray(Hand[]::new), problemId, options, createdAt);
+    public GameState updateHandHistory(List<Hand> modifiedHistory) {
+      return new GameState(id, createdAt, gameId, blackPlayerId, whitePlayerId, lastHand, agehama,
+          cells, symbols, modifiedHistory.toArray(Hand[]::new), problemId, options);
     }
-
-
-    public GameStateJson(GameState gameState) {
-      this(gameState.id(), gameState.gameId(), gameState.blackPlayerId(), gameState.whitePlayerId(),
-          mapper.toObject(gameState.cells(), int[][].class),
-          mapper.toObject(gameState.symbols(), new TypeReference<Map<String, Integer>>() {}),
-          mapper.toObject(gameState.agehama(), Agehama.class),
-          mapper.toObject(gameState.lastHand(), Hand.class),
-          mapper.toObject(gameState.handHistory(), Hand[].class), gameState.problemId(),
-          mapper.toObject(gameState.options(), new TypeReference<Map<String, Object>>() {}),
-          gameState.createdAt());
-    }
-
-
-    public GameState toGameState() {
-      return new GameState(id(), LocalDateTime.now(), gameId, blackPlayerId, whitePlayerId,
-          mapper.toJson(lastHand), mapper.toJson(agehama), mapper.toJson(cells),
-          mapper.toJson(symbols), mapper.toJson(handHistory), problemId, mapper.toJson(options));
-    }
-
-
 
   }
+
 
 }

@@ -4,7 +4,6 @@ import static org.nkjmlab.go.javalin.GoApplication.*;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -12,7 +11,7 @@ import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.problem.ProblemTextToJsonConverter;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
-import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
@@ -33,6 +32,7 @@ import org.nkjmlab.util.java.Base64Utils;
 import org.nkjmlab.util.java.json.JsonMapper;
 import org.nkjmlab.util.java.lang.ParameterizedStringUtils;
 import org.nkjmlab.util.javax.imageio.ImageIoUtils;
+import org.threeten.bp.Instant;
 
 public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   private static final org.apache.logging.log4j.Logger log =
@@ -68,7 +68,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   }
 
   @Override
-  public void sendGameState(String gameId, GameStateJson json) {
+  public void sendGameState(String gameId, GameState json) {
     websocketManager.sendGameState(gameId, json);
   }
 
@@ -86,7 +86,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   }
 
   @Override
-  public void newGame(String gameId, GameStateJson json) {
+  public void newGame(String gameId, GameState json) {
     websocketManager.newGame(gameId, json);
   }
 
@@ -102,7 +102,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   }
 
   @Override
-  public void goBack(String gameId, GameStateJson json) {
+  public void goBack(String gameId, GameState json) {
     websocketManager.goBack(gameId);
   }
 
@@ -120,7 +120,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   private Problem createNewProblem(String gameId, long problemId, String groupId, String name,
       String message) {
     Problem prevP = problemsTable.selectByPrimaryKey(problemId);
-    GameStateJson currentState = gameStatesTables.readLatestGameStateJson(gameId);
+    GameState currentState = gameStatesTables.readLatestGameState(gameId);
     if (prevP != null) {
       autoBackupProblemJsonToFile(ProblemJson.createFrom(prevP));
     }
@@ -134,7 +134,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   private void autoBackupProblemJsonToFile(ProblemJson p) {
     File bkupDir = getProblemAutoBackupDir(p.groupId());
-    File o = new File(bkupDir, new Date().getTime() + "-copy-" + p.name() + ".json");
+    File o = new File(bkupDir, Instant.now().toEpochMilli() + "-copy-" + p.name() + ".json");
     mapper.toJsonAndWrite(p, o, true);
   }
 
@@ -354,7 +354,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   @Override
   public String getKomi(String gameId) {
     try {
-      GameStateJson gs = gameStatesTables.readLatestGameStateJson(gameId);
+      GameState gs = gameStatesTables.readLatestGameState(gameId);
       User bp = usersTable.selectByPrimaryKey(gs.blackPlayerId());
       User wp = usersTable.selectByPrimaryKey(gs.whitePlayerId());
       int diff = Math.abs(wp.rank() - bp.rank());
