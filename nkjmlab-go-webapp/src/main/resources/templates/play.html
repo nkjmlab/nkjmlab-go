@@ -4,8 +4,10 @@
 <head>
 <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
 <link rel="stylesheet" href="../css/emojionearea.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/blueimp-load-image/2.12.2/load-image.all.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/emojionearea/3.4.2/emojionearea.min.js"></script>
+
+<script src="/webjars/blueimp-load-image/5.16.0/js/load-image.all.min.js"></script>
+<script src="/webjars/emojionearea/3.1.4/dist/emojionearea.min.js"></script>
+
 <script th:src="|../js/upload-icon.js?${js_upload_icon_js}|"></script>
 <script th:src="|../js/register-record.js?${js_register_record_js}|"></script>
 <script th:src="|../js/play-common.js?${js_play_common_js}|"></script>
@@ -300,12 +302,12 @@
                 <button id="btn-find-opponent" class="btn btn-sm btn-primary student-only">
                   募集 <i class="fas fa-search"></i>
                 </button>
-                <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-backdrop="static"
-                  data-bs-target="#modal-records">
+                <button class="btn btn-sm btn-secondary" data-bs-toggle="modal"
+                  data-bs-backdrop="static" data-bs-target="#modal-records">
                   カード <i class="fas fa-book"></i>
                 </button>
-                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-backdrop="static"
-                  data-bs-target="#modal-record">
+                <button class="btn btn-sm btn-success" data-bs-toggle="modal"
+                  data-bs-backdrop="static" data-bs-target="#modal-record">
                   記入 <i class="fas fa-pencil-alt"></i>
                 </button>
               </div>

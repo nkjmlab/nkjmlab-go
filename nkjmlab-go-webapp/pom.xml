@@ -183,17 +183,6 @@
     </dependency>
     <dependency>
       <groupId>org.webjars.npm</groupId>
-      <artifactId>chart.js</artifactId>
-      <version>3.8.0</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars.npm</groupId>
       <artifactId>fortawesome__fontawesome-free</artifactId>
       <version>6.1.1</version>
       <exclusions>
@@ -301,6 +290,35 @@
         </exclusion>
       </exclusions>
     </dependency>
+
+
+    <dependency>
+      <groupId>org.webjars.bower</groupId>
+      <artifactId>emojionearea</artifactId>
+      <version>3.1.4</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.webjars.npm</groupId>
+      <artifactId>blueimp-load-image</artifactId>
+      <version>5.16.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>*</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+
+
+
     <!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-engine -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
