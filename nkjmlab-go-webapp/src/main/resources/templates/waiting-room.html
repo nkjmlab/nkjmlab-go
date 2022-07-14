@@ -147,10 +147,10 @@
   <div class="container">
     <div class="row mt-2">
       <div class="col-12">
-        <h1 class="float-left">
+        <h1 class="float-start">
           対局待ち部屋 <i class="fas fa-couch"></i>
         </h1>
-        <div class="float-right">
+        <div class="float-end">
           <img src="https://i.gyazo.com/4fe16b078e3b0ba5ac0d2f0147279628.png" style="max-width: 6em">
         </div>
       </div>
@@ -160,7 +160,7 @@
         <button id="btn-find-opponent" class="btn  btn-primary">
           相手を募集 <i class="fas fa-search"></i>
         </button>
-        <div class="float-right">
+        <div class="float-end">
           <i class="fas fa-child student"></i> <i class="fas fa-user-tie teacher"></i> <i
             class="fas fa-sparkles text-danger" th:if='${currentUser.isAdmin()}'></i><span id="span-user-id"></span>
         </div>
@@ -184,7 +184,7 @@
         <button id="btn-go-back" class="btn btn-secondary btn-sm teacher">
           <i class="fas fa-arrow-left"></i> 碁盤に戻る
         </button>
-        <div class="float-right">
+        <div class="float-end">
           <button id="btn-exit-room" class="btn btn-warning btn-sm student">
             募集を取消 <i class="fas fa-exclamation-triangle"></i>
           </button>

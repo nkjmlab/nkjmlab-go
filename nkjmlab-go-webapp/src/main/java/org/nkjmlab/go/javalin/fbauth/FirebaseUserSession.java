@@ -1,5 +1,6 @@
 package org.nkjmlab.go.javalin.fbauth;
 
+import java.util.Optional;
 import javax.servlet.http.HttpSession;
 import org.nkjmlab.util.javax.servlet.UserSession;
 
@@ -17,21 +18,21 @@ public class FirebaseUserSession extends UserSession {
   }
 
 
-  public String getEmail() {
-    return getAttribute(EMAIL) == null ? null : getAttribute(EMAIL).toString();
+  public Optional<String> getEmail() {
+    return getAttribute(EMAIL).map(o -> o.toString());
   }
 
-  public String getIdToken() {
-    return getAttribute(ID_TOKEN) == null ? null : getAttribute(ID_TOKEN).toString();
+  public Optional<String> getIdToken() {
+    return getAttribute(ID_TOKEN).map(o -> o.toString());
   }
 
 
   public boolean isSetUserId() {
-    return getUserId() != null;
+    return getUserId().isPresent();
   }
 
   public boolean isSigninFirebase() {
-    return getIdToken() != null;
+    return getIdToken().isPresent();
   }
 
   private void setEmail(String email) {

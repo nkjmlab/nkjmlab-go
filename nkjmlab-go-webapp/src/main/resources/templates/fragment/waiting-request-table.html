@@ -15,9 +15,9 @@
   <tbody>
     <tr th:each="req: ${requests}">
       <td class="h5"><button th:unless='${req.isUnpaired}'
-          class="badge badge-primary game-link" th:data-url="|play.html?game_id=${req.gameId}|">
+          class="badge bg-primary game-link" th:data-url="|play.html?game_id=${req.gameId}|">
           <span th:text="${req.gameId}"></span> <i class="fas fa-user-friends"></i>
-        </button> <span th:if='${req.isUnpaired}' class="small"><span class="badge badge-primary">募集中</span><span
+        </button> <span th:if='${req.isUnpaired}' class="small"><span class="badge bg-primary">募集中</span><span
           class="spinner-grow spinner-grow-sm text-primary" role="status"></span> </span></td>
       <td class="text-center h6"><img class="player-icon rounded"
         th:src="|../img/icon/${req.userId}.png|"

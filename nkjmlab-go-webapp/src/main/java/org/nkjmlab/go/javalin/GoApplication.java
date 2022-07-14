@@ -142,6 +142,7 @@ public class GoApplication {
       config.autogenerateEtags = true;
       // config.precompressStaticFiles = true;
       config.enableCorsForAllOrigins();
+      config.enableWebjars();
     });
 
     {
@@ -287,6 +288,9 @@ public class GoApplication {
           ? new AuthService(usersTable, loginsTable, passwordsTable, ctx.req)
           : goJsonRpcService;
       JsonRpcResponse jres = jsonRpcService.callHttpJsonRpc(srv, jreq, ctx.res);
+      if (jres.getError() != null) {
+        log.warn(jres);
+      }
       String ret = mapper.toJson(jres);
       ctx.result(ret).contentType("application/json");
     });
@@ -462,13 +466,14 @@ public class GoApplication {
     FirebaseUserSession session = FirebaseUserSession.wrap(req.getSession());
     User u = null;
     if (session.isSigninFirebase()) {
-      String email = session.getEmail();
+      String email = session.getEmail().orElseThrow(() -> new RuntimeException(
+          ParameterizedStringUtils.newString("Email is not set in the session")));
       u = usersTable.readByEmail(email);
     } else if (session.isLogined()) {
       u = session.getUserId().map(userId -> usersTable.selectByPrimaryKey(userId)).orElse(null);
     }
     if (u == null) {
-      throw new RuntimeException(ParameterizedStringUtils.newString("User not found"));
+      throw new RuntimeException(ParameterizedStringUtils.newString("User is not found"));
     }
     if (!u.isAdmin()) {
       throw new RuntimeException(ParameterizedStringUtils.newString("User is not admin"));

@@ -54,7 +54,7 @@ $(function () {
     e.preventDefault();
   }
 
-  $('[data-toggle="popover"]').popover();
+  $('[data-bs-toggle="popover"]').popover();
 
   if (isStudent()) {
     $(".teacher, .creator").hide();
@@ -302,7 +302,7 @@ $(function () {
     const problem = getProblem();
     if (problem != null) {
       refreshProblemInfo();
-      new Clipboard('#btn-problem-url');
+      new ClipboardJS('#btn-problem-url');
       $("#input-problem-url").val(
         "[Web碁盤へ " + location.href + "&problem_id=" + problem.problemId
         + "]");
@@ -403,7 +403,7 @@ $(function () {
 
 $(function () {
   function sendTalk(stone, prefix, suffix) {
-    swalTextArea('トーク送信 <i class="fas fa-code ml-2"></i>', "HTMLタグが利用できます", "",
+    swalTextArea('トーク送信 <i class="fas fa-code ms-2"></i>', "HTMLタグが利用できます", "",
       "", function (input) {
         if (!input || input === 'false') { return; }
         setTimeout(function () {
@@ -595,7 +595,7 @@ $(function () {
   }
 
   function startQuestion() {
-    swalInput('質問 <i class="far fa-comment ml-2"></i>', "質問内容を記入して下さい", "",
+    swalInput('質問 <i class="far fa-comment ms-2"></i>', "質問内容を記入して下さい", "",
       "例: 終局しているか教えて下さい．", function (input) {
         if (!input || input === 'false') { return; }
         let qt = getUserName() + '： 質問  <i class="far fa-hand-paper"></i>  「'
@@ -800,7 +800,7 @@ function initView() {
             + " ("
             + (data.result.seatId ? '<i class="fas fa-chair"></i> ' + data.result.seatId + ". " : "")
             + (data.result.userName ? data.result.userName + " " : "") + (data.result.rank ? data.result.rank + "級 " : "")
-            + (data.result.attendance ? '<span class="badge badge-info">出</span>' : '<span class="badge badge-danger">欠</span>') + ")");
+            + (data.result.attendance ? '<span class="badge bg-info">出</span>' : '<span class="badge bg-danger">欠</span>') + ")");
         }
       })).rpc();
 

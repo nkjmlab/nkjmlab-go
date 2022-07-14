@@ -3,9 +3,9 @@
 
 <head>
 <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
-<link type="text/css" rel="stylesheet"
-  href="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth.css" />
-<script src="https://www.gstatic.com/firebasejs/ui/4.8.0/firebase-ui-auth__ja.js"></script>
+<link type="text/css" rel="stylesheet" href="/webjars/firebaseui/6.0.1/dist/firebaseui.css" />
+<script src="/webjars/firebaseui/6.0.1/dist/firebaseui.js"></script>
+
 <script th:src="|../js/play-common.js?${js_play_common_js}|"></script>
 <script th:src="|../js/check-environment.js?${js_check_environment_js}|"></script>
 <script th:src="|../js/firebase-login.js?${js_firebase_login_js}|"></script>
@@ -17,7 +17,7 @@
   <div class="container-fluid">
     <div class="row pt-3 pb-3 px-4 text-white bg-dark">
       <div class="col-12 mincho">
-        <img src="../img/logo/toho-sm.png" class="rounded float-left mr-2" style="height: 2em">
+        <img src="../img/logo/toho-sm.png" class="rounded float-start me-2" style="height: 2em">
         <h3>教育用囲碁Webアプリケーション</h3>
       </div>
     </div>
@@ -38,7 +38,7 @@
           </div>
           <div class="mt-2 small">
             <div class="text-muted">碁盤へ進めない場合は，ログアウトしてからもう一度ログインして下さい．</div>
-            <button class="float-right btn btn-sm btn-warning" type="button" id="btn-logout">
+            <button class="float-end btn btn-sm btn-warning" type="button" id="btn-logout">
               ログアウト <i class="fas fa-sign-out-alt"></i>
             </button>
           </div>
@@ -63,15 +63,15 @@
           <div class="card-header">IDでログイン</div>
           <div class="card-body">
             <div class="btn-group">
-              <button id="btn-user-login" class="btn btn-sm btn-secondary" data-toggle="modal"
-                data-backdrop="static" data-target="#signup-modal">
+              <button id="btn-user-login" class="btn btn-sm btn-secondary" data-bs-toggle="modal"
+                data-bs-backdrop="static" data-bs-target="#signup-modal">
                 登録者 <i class="fas fa-sign-in-alt"></i>
               </button>
             </div>
             <p>講師および受講者のログイン</p>
             <div class="btn-group">
-              <button id="btn-guest-login" class="btn btn-sm btn-secondary" data-toggle="modal"
-                data-backdrop="static" data-target="#signup-modal">
+              <button id="btn-guest-login" class="btn btn-sm btn-secondary" data-bs-toggle="modal"
+                data-bs-backdrop="static" data-bs-target="#signup-modal">
                 ゲスト <i class="fas fa-sign-in-alt"></i>
               </button>
             </div>
@@ -90,14 +90,14 @@
       <div class="col-sm-4" id="localStorage">Webブラウザ設定 チェック中．．．</div>
       <div class="col-sm-4" id="websocket">ネットワーク環境 チェック中．．．</div>
       <div class="col-12">
-        <span class="badge badge-danger">ERROR</span> が表示される場合，このアプリケーションを利用できません．<span
-          class="badge badge-warning">WARN</span> が表示される場合，一部の機能が利用できない場合があります．
+        <span class="badge bg-danger">ERROR</span> が表示される場合，このアプリケーションを利用できません．<span
+          class="badge bg-warning">WARN</span> が表示される場合，一部の機能が利用できない場合があります．
       </div>
     </div>
 
 
     <div class="row mt-3 mb-2">
-      <div class="col-12 text-right">
+      <div class="col-12 text-end">
         <!--
         <a class="btn btn-warning btn-sm" href="reset-localdata.html"><i class="fas fa-exclamation-triangle"></i></a>
         -->

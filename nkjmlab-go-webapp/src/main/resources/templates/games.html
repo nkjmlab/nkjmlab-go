@@ -46,10 +46,10 @@
   <div class="container">
     <div class="row mt-2">
       <div class="col-12">
-        <h1 class="float-left">
+        <h1 class="float-start">
           対局一覧 <i class="fas fa-user-friends"></i>
         </h1>
-        <div class="float-right">
+        <div class="float-end">
           <img src="https://i.gyazo.com/15febca9d007c16b559d571491c3be58.png" style="max-width: 8em">
         </div>
       </div>
@@ -75,13 +75,13 @@
                 <img class="player-icon rounded" th:src="|../img/icon/${item.gameState.whitePlayerId}.png|"
                   onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'">
               </td>
-              <td class="h6"><span th:if="${item.handUp neq null}" class="badge badge-danger">挙手
+              <td class="h6"><span th:if="${item.handUp neq null}" class="badge bg-danger">挙手
                   <i class="fas fa-hand-paper"></i>
                 </span></td>
               <td class="h6"><span class="badge" th:text="${item.watchingStudentsNum}"
-                  th:classappend="|${item.watchingStudentsNum eq 0 ? 'badge-secondary' : item.watchingStudentsNum eq 1 ? 'badge-danger':'badge-info'}"></span>
+                  th:classappend="|${item.watchingStudentsNum eq 0 ? 'bg-secondary' : item.watchingStudentsNum eq 1 ? 'bg-danger':'bg-info'}"></span>
               </td>
-              <td class="h5"><a class="badge badge-primary" th:href="|play.html?game_id=${item.gameState.gameId}|"><span
+              <td class="h5"><a class="badge bg-primary" th:href="|play.html?game_id=${item.gameState.gameId}|"><span
                     th:text="${item.gameState.gameId}"></span> <i class="fas fa-user-friends"></i></a></td>
               <td class="small" th:text="${#temporals.format(item.gameState.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
             </tr>
