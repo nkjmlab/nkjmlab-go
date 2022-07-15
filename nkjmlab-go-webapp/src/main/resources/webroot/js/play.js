@@ -836,7 +836,7 @@ function refreshProblemInfo() {
 }
 
 function updateCurrentUrl() {
-  let url = parseUri(location).source;
+  let url = new URL(location).href;
   url = url.indexOf("?") == -1 ? url : url.slice(0, url.indexOf("?"));
   $("#input-current-gameboard-url").val(url + "?game_id=" + getGameId());
 }

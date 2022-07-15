@@ -203,9 +203,8 @@ function selectorToStone(selector) {
 }
 
 function getBaseUrl() {
-  const u = parseUri(document.URL);
-  const urlPrefix = u.protocol + "://" + u.authority + "/"
-    + u.directory.split("/")[1] + "/";
+  const u = new URL(document.URL);
+  const urlPrefix = u.protocol + "//" + u.host + "/"  + u.pathname.split("/")[1] + "/";
   return urlPrefix + "json/GoJsonRpcService";
 }
 
@@ -229,11 +228,11 @@ function isAdminUid(uid) {
 }
 
 function getProblemIdFromUrl() {
-  return parseUri(location).queryKey["problem_id"];
+  return new URL(location).searchParams.get("problem_id");
 }
 
 function getGameIdFromUrl() {
-  return parseUri(location).queryKey["game_id"];
+  return new URL(location).searchParams.get("game_id");
 }
 
 function getMyStoneColor() {

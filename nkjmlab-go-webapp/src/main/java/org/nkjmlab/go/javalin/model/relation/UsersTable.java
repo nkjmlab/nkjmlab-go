@@ -45,13 +45,6 @@ public class UsersTable extends BasicH2Table<User> {
     super(Sorm.create(dataSource), User.class);
   }
 
-
-
-  public void createTableAndIndexesIfNotExists() {
-    createTableIfNotExists().createIndexesIfNotExists();
-  }
-
-
   public User getUser(String uid) {
     User entry = selectByPrimaryKey(uid);
     return entry;

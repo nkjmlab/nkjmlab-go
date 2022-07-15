@@ -185,15 +185,15 @@ function setCellNum(cellNum) {
 }
 
 function getWebSocketBaseUrl() {
+  const u = new URL(document.URL);
   function createWebSocketUrl(protocol) {
-    const u = parseUri(document.URL);
-    const urlPrefix = protocol + "://" + u.authority + "/";
+    const urlPrefix = protocol + "//" + u.host + "/";
     return urlPrefix + "websocket/play";
   }
-  if (parseUri(location).protocol === "https") {
-    return createWebSocketUrl("wss");
+  if (new URL(location).protocol === "https:") {
+    return createWebSocketUrl("wss:");
   } else {
-    return createWebSocketUrl("ws");
+    return createWebSocketUrl("ws:");
   }
 }
 
@@ -274,12 +274,11 @@ function isEnableLocalStorage() {
 }
 
 
-function swalConfirm(title, text, type, callback) {
+function swalConfirm(title, text, icon, callback) {
   Swal.fire({
-    animation: false,
     title: title,
     html: text ? text : null,
-    type: type ? type : null,
+    icon: icon ? icon : null,
     showCancelButton: true
   }).then((e) => {
     if (e.dismiss) {
@@ -292,17 +291,16 @@ function swalConfirm(title, text, type, callback) {
 
 const swalToast = Swal.mixin({
   toast: true,
-  type: 'info',
+  icon: 'info',
   timer: 3000,
 })
 
 
-function swalAlert(title, text, type, callback, confirmButtonText) {
+function swalAlert(title, text, icon, callback, confirmButtonText) {
   Swal.fire({
-    animation: true,
     title: title,
     html: text ? text : null,
-    type: type ? type : null,
+    icon: icon ? icon : null,
     confirmButtonText: confirmButtonText ? confirmButtonText : "OK"
   }).then((result) => {
     if (!callback) {
@@ -314,7 +312,6 @@ function swalAlert(title, text, type, callback, confirmButtonText) {
 
 function swalInput(title, text, inputValue, inputPlaceholder, callback) {
   Swal.fire({
-    animation: false,
     title: title,
     input: 'text',
     html: text ? text : null,
@@ -331,7 +328,6 @@ function swalInput(title, text, inputValue, inputPlaceholder, callback) {
 
 function swalTextArea(title, text, inputValue, inputPlaceholder, callback) {
   Swal.fire({
-    animation: false,
     title: title,
     input: 'textarea',
     html: text ? text : null,
@@ -466,8 +462,8 @@ function getServiceUrl() {
 }
 
 function getBaseUrl(depth) {
-  const u = parseUri(document.URL);
-  const urlPrefix = u.protocol + "://" + u.authority + "/" + u.directory.split("/")[depth] + "/";
+  const u = new URL(document.URL);
+  const urlPrefix = u.protocol + "://" + u.host + "/" + u.pathname.split("/")[depth] + "/";
   return urlPrefix;
 }
 

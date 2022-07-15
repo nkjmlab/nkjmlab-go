@@ -151,8 +151,7 @@ public class GoApplication {
     }
     {
       this.loginsTable = new LoginsTable(fileDbDataSource);
-      loginsTable.createTableIfNotExists();
-      loginsTable.createIndexesIfNotExists();
+      loginsTable.createTableIfNotExists().createIndexesIfNotExists();
       loginsTable.writeCsv(new File(BACKUP_DIR, "logins-" + System.currentTimeMillis() + ".csv"));
     }
 
@@ -160,7 +159,7 @@ public class GoApplication {
     {
       this.usersTable = new UsersTable(fileDbDataSource);
       usersTable.dropTableIfExists();
-      usersTable.createTableAndIndexesIfNotExists();
+      usersTable.createTableIfNotExists().createIndexesIfNotExists();
       try {
         File f = ResourceUtils.getResourceAsFile("/conf/users.csv");
         usersTable.readFromFileAndMerge(f);
@@ -188,7 +187,6 @@ public class GoApplication {
       gameRecordsTable.createTableIfNotExists().createIndexesIfNotExists();
       gameRecordsTable
           .writeCsv(new File(BACKUP_DIR, "game-record" + System.currentTimeMillis() + ".csv"));
-
       gameRecordsTable.recalculateAndUpdateRank(usersTable);
     }
     {
@@ -196,11 +194,8 @@ public class GoApplication {
       matchingRequestsTable.createTableIfNotExists().createIndexesIfNotExists();
     }
     {
-
       GameStatesTable gameStatesTable = new GameStatesTable(fileDbDataSource);
-      gameStatesTable.dropTableIfExists();
       gameStatesTable.createTableIfNotExists().createIndexesIfNotExists();
-
       gameStatesTable.trimAndBackupToFile(factory.getDatabaseDirectory(),
           TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
 
@@ -216,8 +211,6 @@ public class GoApplication {
     }
     this.webSocketManager = new WebsocketSessionsManager(gameStatesTables, problemsTable,
         usersTable, handsUpTable, matchingRequestsTable, memDbDataSource);
-
-
 
     prepareWebSocket();
     prepareJsonRpc();
@@ -288,7 +281,7 @@ public class GoApplication {
           ? new AuthService(usersTable, loginsTable, passwordsTable, ctx.req)
           : goJsonRpcService;
       JsonRpcResponse jres = jsonRpcService.callHttpJsonRpc(srv, jreq, ctx.res);
-      if (jres.getError() != null) {
+      if (jres.hasError()) {
         log.warn(jres);
       }
       String ret = mapper.toJson(jres);
