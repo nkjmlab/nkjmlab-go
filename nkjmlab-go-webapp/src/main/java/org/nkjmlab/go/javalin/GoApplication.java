@@ -3,18 +3,21 @@ package org.nkjmlab.go.javalin;
 import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import org.h2.jdbcx.JdbcConnectionPool;
+import org.nkjmlab.go.javalin.GoAccessManager.UserRole;
 import org.nkjmlab.go.javalin.fbauth.AuthService;
 import org.nkjmlab.go.javalin.fbauth.AuthServiceInterface;
-import org.nkjmlab.go.javalin.fbauth.FirebaseUserSession;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
@@ -34,29 +37,31 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.common.Tuple.Tuple2;
-import org.nkjmlab.sorm4j.internal.util.ParameterizedStringUtils;
-import org.nkjmlab.sorm4j.internal.util.Try;
 import org.nkjmlab.util.h2.H2LocalDataSourceFactory;
 import org.nkjmlab.util.h2.H2ServerUtils;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
+import org.nkjmlab.util.java.function.Try;
 import org.nkjmlab.util.java.io.SystemFileUtils;
 import org.nkjmlab.util.java.json.FileDatabaseConfigJson;
 import org.nkjmlab.util.java.lang.ProcessUtils;
 import org.nkjmlab.util.java.lang.ResourceUtils;
 import org.nkjmlab.util.java.lang.SystemPropertyUtils;
+import org.nkjmlab.util.java.net.UrlUtils;
 import org.nkjmlab.util.javax.servlet.JsonRpcService;
 import org.nkjmlab.util.javax.servlet.UserSession;
 import org.nkjmlab.util.javax.servlet.ViewModel;
-import org.nkjmlab.util.javax.servlet.ViewModel.Builder;
+import org.nkjmlab.util.javax.servlet.WebJarsUtils;
 import org.nkjmlab.util.jsonrpc.JsonRpcRequest;
 import org.nkjmlab.util.jsonrpc.JsonRpcResponse;
-import org.nkjmlab.util.thymeleaf.TemplateEngineBuilder;
+import org.nkjmlab.util.thymeleaf.ThymeleafTemplateEnginBuilder;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.javalin.Javalin;
+import io.javalin.http.Context;
+import io.javalin.http.Handler;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.plugin.rendering.template.JavalinThymeleaf;
 
@@ -79,8 +84,9 @@ public class GoApplication {
   public static final File INITIAL_ICON_DIR = new File(WEBROOT_DIR, "img/icon-initial");
 
   private static long THYMELEAF_EXPIRE_TIME_MILLI_SECOND = 1 * 1000;
+  private static final int TRIM_THRESHOLD_OF_GAME_STATE_TABLE = 30000;
+  private static final int INTERVAL_IN_WAITING_ROOM = 10;
 
-  private static int TRIM_THRESHOLD_OF_GAME_STATE_TABLE = 30000;
 
   private final DataSource memDbDataSource;
   private final DataSource fileDbDataSource;
@@ -96,6 +102,13 @@ public class GoApplication {
   private final GameRecordsTable gameRecordsTable;
   private final LoginsTable loginsTable;
   private final WebsocketSessionsManager webSocketManager;
+
+  private static final Map<String, String> webJarsVersions =
+      WebJarsUtils.findWebJarVersionsFromClassPath("jquery", "sweetalert2", "bootstrap",
+          "bootstrap-treeview", "jszip", "clipboard", "fortawesome__fontawesome-free",
+          "stacktrace-js", "datatables-tabletools", "firebase", "firebaseui", "ua-parser-js",
+          "blueimp-load-image", "emojionearea");
+
 
   public static void main(String[] args) {
     if (args.length != 0) {
@@ -132,18 +145,10 @@ public class GoApplication {
         factory.getUsername(), factory.getPassword());
     // H2Server.openBrowser(memDbDataSource, true);
 
-    TemplateEngine engine = new TemplateEngineBuilder().setPrefix("/templates/")
-        .setTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND).build();
-    engine.addDialect(new Java8TimeDialect());
+    TemplateEngine engine = ThymeleafTemplateEnginBuilder.builder()
+        .setTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND).addDialect(new Java8TimeDialect()).build();
     JavalinThymeleaf.configure(engine);
 
-    this.app = Javalin.create(config -> {
-      config.addStaticFiles(WEBROOT_DIR_NAME, Location.CLASSPATH);
-      config.autogenerateEtags = true;
-      // config.precompressStaticFiles = true;
-      config.enableCorsForAllOrigins();
-      config.enableWebjars();
-    });
 
     {
       this.problemsTable = new ProblemsTable(memDbDataSource);
@@ -212,6 +217,30 @@ public class GoApplication {
     this.webSocketManager = new WebsocketSessionsManager(gameStatesTables, problemsTable,
         usersTable, handsUpTable, matchingRequestsTable, memDbDataSource);
 
+
+    ScheduledExecutorService srv = Executors.newSingleThreadScheduledExecutor(runnable -> {
+      Thread t = Executors.defaultThreadFactory().newThread(runnable);
+      t.setDaemon(true);
+      return t;
+    });
+    srv.scheduleWithFixedDelay(Try.createRunnable(() -> {
+      Set<String> uids = matchingRequestsTable.createPairOfUsers(gameStatesTables);
+      webSocketManager.sendUpdateWaitingRequestStatus(uids);
+    }, e -> log.error(e)), INTERVAL_IN_WAITING_ROOM, INTERVAL_IN_WAITING_ROOM, TimeUnit.SECONDS);
+
+    this.app = Javalin.create(config -> {
+      config.addStaticFiles(staticFiles -> {
+        staticFiles.directory = WEBROOT_DIR_NAME;
+        staticFiles.location = Location.CLASSPATH;
+        staticFiles.precompress = false;
+        // staticFiles.precompress = true;
+      });
+      config.autogenerateEtags = true;
+      config.enableCorsForAllOrigins();
+      config.enableWebjars();
+      config.accessManager(new GoAccessManager(usersTable));
+    });
+
     prepareWebSocket();
     prepareJsonRpc();
     prepareGetHandler();
@@ -238,9 +267,8 @@ public class GoApplication {
 
 
   private void prepareWebSocket() {
-    app.ws("/websocket/play/checkcon", ws -> {
-      ws.onConnect(ctx -> log.trace("{}", ctx.session.getUpgradeRequest().getRequestURI()));
-    });
+    app.ws("/websocket/play/checkcon", ws -> ws
+        .onConnect(ctx -> log.trace("{}", ctx.session.getUpgradeRequest().getRequestURI())));
     app.ws("/websocket/play", ws -> {
       ws.onConnect(ctx -> webSocketManager.onConnect(ctx.session, ctx.queryParam("userId"),
           ctx.queryParam("gameId")));
@@ -248,19 +276,6 @@ public class GoApplication {
       ws.onError(ctx -> webSocketManager.onError(ctx.session, ctx.error()));
       ws.onMessage(ctx -> webSocketManager.onMessage(ctx.queryParam("gameId"), ctx));
     });
-
-
-    final int INTERVAL_IN_WAITING_ROOM = 10;
-
-    ScheduledExecutorService srv = Executors.newSingleThreadScheduledExecutor(runnable -> {
-      Thread t = Executors.defaultThreadFactory().newThread(runnable);
-      t.setDaemon(true);
-      return t;
-    });
-    srv.scheduleWithFixedDelay(Try.createRunnable(() -> {
-      Set<String> uids = matchingRequestsTable.createPairOfUsers(gameStatesTables);
-      webSocketManager.sendUpdateWaitingRequestStatus(uids);
-    }, e -> log.error(e)), INTERVAL_IN_WAITING_ROOM, INTERVAL_IN_WAITING_ROOM, TimeUnit.SECONDS);
   }
 
   private void prepareJsonRpc() {
@@ -302,94 +317,105 @@ public class GoApplication {
     }
   }
 
+
+
   private void prepareGetHandler() {
+    class GoHandler implements Handler {
+
+      private final Function<Context, Function<String, Function<ViewModel.Builder, Consumer<UserSession>>>> handler;
+
+      public GoHandler(
+          Function<Context, Function<String, Function<ViewModel.Builder, Consumer<UserSession>>>> handler) {
+        this.handler = handler;
+      }
+
+      @Override
+      public void handle(Context ctx) throws Exception {
+        ViewModel.Builder model = createDefaultModel(usersTable, ctx.req);
+        UserSession session = UserSession.wrap(ctx.req.getSession());
+        handler.apply(ctx).apply(UrlUtils.of(ctx.url()).getPath().replaceFirst("^/app/", ""))
+            .apply(model).accept(session);
+      }
+    }
+
     app.get("/app", ctx -> ctx.redirect("/app/index.html"));
 
-    app.get("/app/<pageName>", ctx -> {
-      String pageName =
-          ctx.pathParam("pageName") == null ? "index.html" : ctx.pathParam("pageName");
-      Builder model = createDefaultModel(usersTable, ctx.req);
-      switch (pageName) {
-        case "play.html" -> {
-          UserSession session = UserSession.wrap(ctx.req.getSession());
-          if (!session.isLogined()) {
-            model.put("requireToLogin", true);
-            break;
-          }
-          session.getUserId().ifPresent(uid -> {
-            boolean attend = loginsTable.isAttendance(uid);
-            model.put("isAttendance", attend);
-            model.put("problemGroupsJson", problemsTable.getProblemGroupsNode());
-          });
-        }
-        case "players-all.html" -> {
-          try {
-            isAdminOrThrow(usersTable, ctx.req);
-          } catch (Exception e) {
-            ctx.redirect("/app/index.html");
-            log.error(e.getMessage());
-            return;
-          }
-          List<Tuple2<User, Login>> users = usersTable.readAllWithLastLogin();
-          List<LoginJson> loginJsons = users.stream().map(t -> new LoginJson(t.getT2(), t.getT1()))
+    app.get("/app/index.html", new GoHandler(ctx -> filePath -> model -> session -> {
+      session.getUserId().ifPresent(uid -> {
+        boolean attend = loginsTable.isAttendance(uid);
+        model.put("isAttendance", attend);
+        model.put("problemGroupsJson", problemsTable.getProblemGroupsNode());
+      });
+      ctx.render(filePath, model.build().getMap());
+    }));
+
+    app.get("/app/play.html", new GoHandler(ctx -> filePath -> model -> session -> {
+      session.getUserId().ifPresent(uid -> {
+        boolean attend = loginsTable.isAttendance(uid);
+        model.put("isAttendance", attend);
+        model.put("problemGroupsJson", problemsTable.getProblemGroupsNode());
+      });
+      ctx.render(filePath, model.build().getMap());
+    }), UserRole.LOGIN_ROLES);
+
+    app.get("/app/players-all.html", new GoHandler(ctx -> filePath -> model -> session -> {
+      List<Tuple2<User, Login>> users = usersTable.readAllWithLastLogin();
+      List<LoginJson> loginJsons =
+          users.stream().map(t -> new LoginJson(t.getT2(), t.getT1())).collect(Collectors.toList());
+      model.put("userAccounts", loginJsons);
+      ctx.render("players.html", model.build().getMap());
+    }), UserRole.ADMIN);
+
+    app.get("/app/players.html", new GoHandler(ctx -> filePath -> model -> session -> {
+      List<Tuple2<User, Login>> users = usersTable.readAllWithLastLogin();
+      List<LoginJson> loginJsons = users.stream().filter(t -> t.getT1().isStudent())
+          .map(t -> new LoginJson(t.getT2(), t.getT1())).collect(Collectors.toList());
+      model.put("userAccounts", loginJsons);
+      ctx.render(filePath, model.build().getMap());
+    }), UserRole.ADMIN);
+
+    app.get("/app/games-all.html", new GoHandler(ctx -> filePath -> model -> session -> {
+      List<GameStateViewJson> tmp = gameStatesTables.readTodayGameJsons().stream().map(gsj -> {
+        String gameId = gsj.gameId();
+        GameStateViewJson json = new GameStateViewJson(gsj, handsUpTable.selectByPrimaryKey(gameId),
+            webSocketManager.getWatchingUniqueStudentsNum(gameId));
+        return json;
+      }).collect(Collectors.toList());
+      model.put("games", tmp);
+      ctx.render("games.html", model.build().getMap());
+    }), UserRole.ADMIN);
+
+    app.get("/app/games.html", new GoHandler(ctx -> filePath -> model -> session -> {
+      List<String> gids = webSocketManager.readActiveGameIdsOrderByGameId();
+      List<GameStateViewJson> tmp =
+          gids.stream().map(gid -> gameStatesTables.readLatestGameState(gid))
+              .map(gsj -> new GameStateViewJson(gsj, handsUpTable.selectByPrimaryKey(gsj.gameId()),
+                  webSocketManager.getWatchingUniqueStudentsNum(gsj.gameId())))
               .collect(Collectors.toList());
-          model.put("userAccounts", loginJsons);
-          pageName = "players.html";
-        }
-        case "players.html" -> {
-          try {
-            isAdminOrThrow(usersTable, ctx.req);
-          } catch (Exception e) {
-            ctx.redirect("/app/index.html");
-            log.error(e.getMessage());
-            return;
-          }
-          List<Tuple2<User, Login>> users = usersTable.readAllWithLastLogin();
-          List<LoginJson> loginJsons = users.stream().filter(t -> t.getT1().isStudent())
-              .map(t -> new LoginJson(t.getT2(), t.getT1())).collect(Collectors.toList());
-          model.put("userAccounts", loginJsons);
-        }
-        case "games-all.html" -> {
-          List<GameStateViewJson> tmp = gameStatesTables.readTodayGameJsons().stream().map(gsj -> {
-            String gameId = gsj.gameId();
-            GameStateViewJson json =
-                new GameStateViewJson(gsj, handsUpTable.selectByPrimaryKey(gameId),
-                    webSocketManager.getWatchingUniqueStudentsNum(gameId));
-            return json;
-          }).collect(Collectors.toList());
-          model.put("games", tmp);
-          pageName = "games.html";
-        }
-        case "games.html" -> {
-          List<String> gids = webSocketManager.readActiveGameIdsOrderByGameId();
-          List<GameStateViewJson> tmp =
-              gids.stream().map(gid -> gameStatesTables.readLatestGameState(gid)).map(gsj -> {
-                String gameId = gsj.gameId();
-                GameStateViewJson json =
-                    new GameStateViewJson(gsj, handsUpTable.selectByPrimaryKey(gameId),
-                        webSocketManager.getWatchingUniqueStudentsNum(gameId));
-                return json;
-              }).collect(Collectors.toList());
-          model.put("games",
-              tmp.stream().filter(j -> j.watchingStudentsNum() > 0).collect(Collectors.toList()));
-        }
-        case "fragment/game-record-table.html" -> {
+      model.put("games",
+          tmp.stream().filter(j -> j.watchingStudentsNum() > 0).collect(Collectors.toList()));
+      ctx.render(filePath, model.build().getMap());
+    }), UserRole.ADMIN);
+
+    app.get("/app/fragment/game-record-table.html",
+        new GoHandler(ctx -> filePath -> model -> session -> {
           String userId = ctx.queryParam("userId");
           List<GameRecord> records = gameRecordsTable.readByUserId(userId);
           model.put("records", records);
-        }
-        case "fragment/question-table.html", "fragment/question-table-small.html" -> {
-          List<String> gids = handsUpTable.readAllGameIds();
-          List<GameStateViewJson> tmp =
-              gameStatesTables.readLatestBoardsJson(gids).stream().map(gsj -> {
-                String gameId = gsj.gameId();
-                GameStateViewJson json =
-                    new GameStateViewJson(gsj, handsUpTable.selectByPrimaryKey(gameId), 0);
-                return json;
-              }).collect(Collectors.toList());
-          model.put("games", tmp);
-        }
-        case "fragment/waiting-request-table.html" -> {
+          ctx.render("fragment/game-record-table.html", model.build().getMap());
+        }), UserRole.ADMIN);
+
+    app.get("/app/fragment/question-table*", new GoHandler(ctx -> filePath -> model -> session -> {
+      List<String> gids = handsUpTable.readAllGameIds();
+      List<GameStateViewJson> tmp = gameStatesTables.readLatestBoardsJson(gids).stream()
+          .map(gsj -> new GameStateViewJson(gsj, handsUpTable.selectByPrimaryKey(gsj.gameId()), 0))
+          .toList();
+      model.put("games", tmp);
+      ctx.render(filePath, model.build().getMap());
+    }), UserRole.ADMIN);
+
+    app.get("/app/fragment/waiting-request-table.html",
+        new GoHandler(ctx -> filePath -> model -> session -> {
           String userId = ctx.queryParam("userId");
           if (userId != null) {
             List<MatchingRequest> tmp = matchingRequestsTable.readRequests();
@@ -398,19 +424,24 @@ public class GoApplication {
           } else {
             model.put("requests", matchingRequestsTable.readRequests());
           }
-        }
-        case "fragment/waiting-request-table-small.html" -> {
+          ctx.render(filePath, model.build().getMap());
+        }), UserRole.ADMIN);
+
+
+    app.get("/app/fragment/waiting-request-table-small.html",
+        new GoHandler(ctx -> filePath -> model -> session -> {
           String userId = ctx.queryParam("userId");
           List<MatchingRequest> tmp = matchingRequestsTable.readRequests();
           MatchingRequest req = tmp.stream().filter(r -> r.userId().equals(userId)).findAny()
               .orElse(new MatchingRequest());
           model.put("req", req);
           model.put("reqNum", tmp.size());
-        }
-      }
-      ctx.render(pageName, model.build().getMap());
-    });
+          ctx.render(filePath, model.build().getMap());
+        }), UserRole.ADMIN);
+
   }
+
+
 
   private static final int DEFAULT_MAX_CONNECTIONS =
       Math.min(ForkJoinPoolUtils.availableProcessors() * 2 * 2, 10);
@@ -440,10 +471,11 @@ public class GoApplication {
 
 
 
-  private Builder createDefaultModel(UsersTable usersTable, HttpServletRequest request) {
+  private ViewModel.Builder createDefaultModel(UsersTable usersTable, HttpServletRequest request) {
     ViewModel.Builder modelBuilder =
         ViewModel.builder().setFileModifiedDate(WEBROOT_DIR, 10, "js", "css");
     modelBuilder.put("currentUser", getCurrentUserAccount(usersTable, request));
+    modelBuilder.put("webjars", webJarsVersions);
     return modelBuilder;
   }
 
@@ -453,26 +485,6 @@ public class GoApplication {
     Optional<User> u = UserSession.wrap(request.getSession()).getUserId()
         .map(uid -> usersTable.selectByPrimaryKey(uid));
     return u.orElse(new User());
-  }
-
-  private void isAdminOrThrow(UsersTable usersTable, HttpServletRequest req) {
-    FirebaseUserSession session = FirebaseUserSession.wrap(req.getSession());
-    User u = null;
-    if (session.isSigninFirebase()) {
-      String email = session.getEmail().orElseThrow(() -> new RuntimeException(
-          ParameterizedStringUtils.newString("Email is not set in the session")));
-      u = usersTable.readByEmail(email);
-    } else if (session.isLogined()) {
-      u = session.getUserId().map(userId -> usersTable.selectByPrimaryKey(userId)).orElse(null);
-    }
-    if (u == null) {
-      throw new RuntimeException(ParameterizedStringUtils.newString("User is not found"));
-    }
-    if (!u.isAdmin()) {
-      throw new RuntimeException(ParameterizedStringUtils.newString("User is not admin"));
-    }
-
-
   }
 
   public static record LoginJson(Login login, User user) {
@@ -487,6 +499,7 @@ public class GoApplication {
       int watchingStudentsNum) {
 
   }
+
 
 
 }

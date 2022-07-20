@@ -140,7 +140,7 @@ class JsonRpcClient {
       url: this.request.url,
       data: JSON.stringify({
         jsonrpc: "2.0",
-        id: new Date().getTime(),
+        id: Math.floor(Math.random() * Date.now()),
         method: this.request.method,
         params: this.request.params
       }),

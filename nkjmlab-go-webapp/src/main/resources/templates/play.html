@@ -2,49 +2,49 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
-<object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
-<link rel="stylesheet" href="../css/emojionearea.css">
+  <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
+  <link rel="stylesheet" href="../css/emojionearea.css">
 
-<script src="/webjars/blueimp-load-image/5.16.0/js/load-image.all.min.js"></script>
-<script src="/webjars/emojionearea/3.1.4/dist/emojionearea.min.js"></script>
+  <script th:src="|/webjars/blueimp-load-image/${webjars.blueimp_load_image}/js/load-image.all.min.js|"></script>
+  <script th:src="|/webjars/emojionearea/${webjars.emojionearea}/dist/emojionearea.min.js|"></script>
 
-<script th:src="|../js/upload-icon.js?${js_upload_icon_js}|"></script>
-<script th:src="|../js/register-record.js?${js_register_record_js}|"></script>
-<script th:src="|../js/play-common.js?${js_play_common_js}|"></script>
-<script th:src="|../js/play-board.js?${js_play_board_js}|"></script>
-<script th:src="|../js/play-ws.js?${js_play_ws_js}|"></script>
-<script th:src="|../js/play-creator.js?${js_play_creator_js}|"></script>
-<script th:inline="javascript" th:if='${requireToLogin}'>
-  $(function() {
-    requireSignin();
-  });
-</script>
-<script th:inline="javascript">
-  var problems = [];
-  $(function() {
-    var problemsJson = /*[[${ problemGroupsJson }]]*/[];
-    var problemsData = JSON.parse(problemsJson);
-    for (var i = 0; i < problemsData.length; i++) {
-      for (var j = 0; j < problemsData[i].nodes.length; j++) {
-        problems.push(problemsData[i].nodes[j]);
-      }
-    }
-
-    $('#problem-tree').treeview({
-      data: problemsJson,
-      showTags: true
+  <script th:src="|../js/upload-icon.js?${js_upload_icon_js}|"></script>
+  <script th:src="|../js/register-record.js?${js_register_record_js}|"></script>
+  <script th:src="|../js/play-common.js?${js_play_common_js}|"></script>
+  <script th:src="|../js/play-board.js?${js_play_board_js}|"></script>
+  <script th:src="|../js/play-ws.js?${js_play_ws_js}|"></script>
+  <script th:src="|../js/play-creator.js?${js_play_creator_js}|"></script>
+  <script th:inline="javascript" th:if='${requireToLogin}'>
+    $(function () {
+      requireSignin();
     });
-    $('#problem-tree').treeview('collapseAll');
-  });
-</script>
-<style>
-#problem-tree .badge {
-  color: #212529;
-  background-color: #f8f9fa;
-}
-</style>
-<script th:src="|../js/play.js?${js_play_js}|"></script>
-<title>碁盤 | Go</title>
+  </script>
+  <script th:inline="javascript">
+    var problems = [];
+    $(function () {
+      var problemsJson = /*[[${ problemGroupsJson }]]*/[];
+      var problemsData = JSON.parse(problemsJson);
+      for (var i = 0; i < problemsData.length; i++) {
+        for (var j = 0; j < problemsData[i].nodes.length; j++) {
+          problems.push(problemsData[i].nodes[j]);
+        }
+      }
+
+      $('#problem-tree').treeview({
+        data: problemsJson,
+        showTags: true
+      });
+      $('#problem-tree').treeview('collapseAll');
+    });
+  </script>
+  <style>
+    #problem-tree .badge {
+      color: #212529;
+      background-color: #f8f9fa;
+    }
+  </style>
+  <script th:src="|../js/play.js?${js_play_js}|"></script>
+  <title>碁盤 | Go</title>
 </head>
 
 <body class="unselectable">
@@ -56,44 +56,35 @@
           <div class="btn-group me-2">
             <div class="btn-group">
               <div class="dropdown btn-group">
-                <button id="btn-vote-title"
-                  class="btn btn-sm btn-primary btn-group-header dropdown-toggle"
+                <button id="btn-vote-title" class="btn btn-sm btn-primary btn-group-header dropdown-toggle"
                   data-bs-toggle="dropdown">
                   <span class="d-none d-sm-inline">投票</span>
                   <!--  <i class="fas fa-box-ballot"></i> -->
                   <i class="fas fa-ticket-alt"></i>
                 </button>
                 <div class="dropdown-menu">
-                  <button id="btn-vote-circle" type="button"
-                    class="btn-vote btn btn-primary btn-sm dropdown-item">
+                  <button id="btn-vote-circle" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
                     ○ <span class="vote-result"></span>
                   </button>
-                  <button id="btn-vote-x" type="button"
-                    class="btn-vote btn btn-primary btn-sm dropdown-item">
+                  <button id="btn-vote-x" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
                     X <span class="vote-result"></span>
                   </button>
-                  <button id="btn-vote-rect" type="button"
-                    class="btn-vote btn btn-primary btn-sm dropdown-item">
+                  <button id="btn-vote-rect" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
                     □ <span class="vote-result"></span>
                   </button>
-                  <button id="btn-vote-tri" type="button"
-                    class="btn-vote btn btn-primary btn-sm dropdown-item">
+                  <button id="btn-vote-tri" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
                     △ <span class="vote-result"></span>
                   </button>
-                  <button id="btn-vote-a" type="button"
-                    class="btn-vote btn btn-primary btn-sm dropdown-item">
+                  <button id="btn-vote-a" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
                     A <span class="vote-result"></span>
                   </button>
-                  <button id="btn-vote-b" type="button"
-                    class="btn-vote btn btn-primary btn-sm dropdown-item">
+                  <button id="btn-vote-b" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
                     B <span class="vote-result"></span>
                   </button>
-                  <button id="btn-vote-c" type="button"
-                    class="btn-vote btn btn-primary btn-sm dropdown-item">
+                  <button id="btn-vote-c" type="button" class="btn-vote btn btn-primary btn-sm dropdown-item">
                     C <span class="vote-result"> </span>
                   </button>
-                  <button id="btn-vote-none" type="button"
-                    class="btn-vote btn btn-dark btn-sm dropdown-item">
+                  <button id="btn-vote-none" type="button" class="btn-vote btn btn-dark btn-sm dropdown-item">
                     <i class="fas fa-trash-alt"></i>
                   </button>
                 </div>
@@ -128,11 +119,10 @@
           <div class="selectable pe-2 mb-2" id="card-player-info">
             <div class="play-mode">
               対局 <i class="fas fa-border-all"></i> <span> <span id="black-player-icon"></span>
-                <label class="label label-default"><img src="../img/play/black-stone.png"
-                  width="20" /></label> <span class="black-player-id-label"> </span>
-              </span> <span class="ms-4"> <span id="white-player-icon"></span> <label
-                class="label label-default"><img src="../img/play/white-stone.png"
-                  width="20" /></label> <span class="white-player-id-label"> </span>
+                <label class="label label-default"><img src="../img/play/black-stone.png" width="20" /></label> <span
+                  class="black-player-id-label"> </span>
+              </span> <span class="ms-4"> <span id="white-player-icon"></span> <label class="label label-default"><img
+                    src="../img/play/white-stone.png" width="20" /></label> <span class="white-player-id-label"> </span>
               </span>
             </div>
             <div class="practice-mode">
@@ -140,8 +130,8 @@
                 class="practice-player-id-label"></span>
             </div>
             <div class="text-end">
-              <span class="badge bg-secondary"><i class="fas fa-glasses"></i></span> <span
-                class="small" id="login-users"></span>
+              <span class="badge bg-secondary"><i class="fas fa-glasses"></i></span> <span class="small"
+                id="login-users"></span>
             </div>
           </div>
         </div>
@@ -244,13 +234,12 @@
             <i class="fas fa-reply"></i> 戻す
           </button>
         </div>
-        <img id="circle-stones" class="symbols-area" src="../img/play/circle-stone.png"> <img
-          id="x-stones" class="symbols-area" src="../img/play/x-stone.png"><img
-          id="rectangle-stones" class="symbols-area" src="../img/play/rectangle-stone.png"> <img
-          id="triangle-stones" class="symbols-area" src="../img/play/triangle-stone.png"> <img
-          id="a-stones" class="symbols-area" src="../img/play/a-stone.png"> <img id="b-stones"
-          class="symbols-area" src="../img/play/b-stone.png"> <img id="c-stones"
-          class="symbols-area" src="../img/play/c-stone.png">
+        <img id="circle-stones" class="symbols-area" src="../img/play/circle-stone.png"> <img id="x-stones"
+          class="symbols-area" src="../img/play/x-stone.png"><img id="rectangle-stones" class="symbols-area"
+          src="../img/play/rectangle-stone.png"> <img id="triangle-stones" class="symbols-area"
+          src="../img/play/triangle-stone.png"> <img id="a-stones" class="symbols-area" src="../img/play/a-stone.png">
+        <img id="b-stones" class="symbols-area" src="../img/play/b-stone.png"> <img id="c-stones" class="symbols-area"
+          src="../img/play/c-stone.png">
       </div>
     </div>
     <div class="row no-gutters">
@@ -260,30 +249,29 @@
             <div class="btn-toolbar">
               <div class="btn-group me-2">
                 <div class="dropdown btn-group">
-                  <button class="btn btn-sm dropdown-toggle btn-outline-dark btn-group-header"
-                    data-bs-toggle="dropdown" id="btn-dropdown-board-menu">
+                  <button class="btn btn-sm dropdown-toggle btn-outline-dark btn-group-header" data-bs-toggle="dropdown"
+                    id="btn-dropdown-board-menu">
                     <span class="d-none d-sm-inline">碁盤</span> <i class="fas fa-border-all"></i>
                   </button>
                   <div class="dropdown-menu">
-                    <button
-                      class="btn btn-sm btn-secondary dropdown-item link-open-my-practice-board">
+                    <button class="btn btn-sm btn-secondary dropdown-item link-open-my-practice-board">
                       マイ碁盤 <i class="fas fa-border-all"></i>
                     </button>
-                    <a class="btn btn-sm btn-secondary dropdown-item"
-                      href="play.html?game_id=5588999"> 大盤 <!-- <i class="fas fa-users-class"></i> -->
+                    <a class="btn btn-sm btn-secondary dropdown-item" href="play.html?game_id=5588999"> 大盤
+                      <!-- <i class="fas fa-users-class"></i> -->
                       <i class="fas fa-users"></i>
                     </a>
                   </div>
                 </div>
-                <button class="btn btn-sm btn-primary btn-start" data-bs-toggle="modal"
-                  data-bs-backdrop="static" data-bs-target="#new-game-modal">
+                <button class="btn btn-sm btn-primary btn-start" data-bs-toggle="modal" data-bs-backdrop="static"
+                  data-bs-target="#new-game-modal">
                   初期化 <i class="fas fa-eraser"></i>
                 </button>
               </div>
               <div class="btn-group me-2">
                 <div class="dropdown btn-group">
-                  <button class="btn btn-sm dropdown-toggle btn-outline-dark btn-group-header"
-                    data-bs-toggle="dropdown" id="btn-dropdown-play-menu">
+                  <button class="btn btn-sm dropdown-toggle btn-outline-dark btn-group-header" data-bs-toggle="dropdown"
+                    id="btn-dropdown-play-menu">
                     <span class="d-none d-sm-inline">対局</span> <i class="fas fa-user-friends"></i>
                   </button>
                   <div class="dropdown-menu">
@@ -302,12 +290,12 @@
                 <button id="btn-find-opponent" class="btn btn-sm btn-primary student-only">
                   募集 <i class="fas fa-search"></i>
                 </button>
-                <button class="btn btn-sm btn-secondary" data-bs-toggle="modal"
-                  data-bs-backdrop="static" data-bs-target="#modal-records">
+                <button class="btn btn-sm btn-secondary" data-bs-toggle="modal" data-bs-backdrop="static"
+                  data-bs-target="#modal-records">
                   カード <i class="fas fa-book"></i>
                 </button>
-                <button class="btn btn-sm btn-success" data-bs-toggle="modal"
-                  data-bs-backdrop="static" data-bs-target="#modal-record">
+                <button class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-backdrop="static"
+                  data-bs-target="#modal-record">
                   記入 <i class="fas fa-pencil-alt"></i>
                 </button>
               </div>
@@ -340,8 +328,8 @@
               </button>
               <div class="btn-group ms-auto">
                 <div id="list-game-history" class="small selectable p-1"></div>
-                <button id="link-top-collapse-menu" data-bs-toggle="collapse"
-                  data-bs-target="#top-card-body" class="btn btn-sm btn-secondary">
+                <button id="link-top-collapse-menu" data-bs-toggle="collapse" data-bs-target="#top-card-body"
+                  class="btn btn-sm btn-secondary">
                   <i class="fas fa-user-lock"></i>
                 </button>
               </div>
@@ -363,7 +351,7 @@
                       <i class="fas fa-users"></i>
                     </button>
                     <a id="link-reset-localdata" href="#" class="btn btn-sm btn-secondary"><span
-                      class="d-none d-sm-inline">ユーザ初期化</span> <i class="fas fa-trash"></i> </a>
+                        class="d-none d-sm-inline">ユーザ初期化</span> <i class="fas fa-trash"></i> </a>
                   </div>
                 </div>
               </div>
@@ -378,8 +366,7 @@
                     </div>
                   </div>
                   <div class="teacher creator">
-                    <span class="small"><i class="fas fa-book-open"></i> <span
-                      id="div-problem-id"></span> </span>
+                    <span class="small"><i class="fas fa-book-open"></i> <span id="div-problem-id"></span> </span>
                   </div>
                 </div>
               </div>
@@ -393,11 +380,10 @@
             </div>
             <div id="hand-question-msg" style="display: none">
               <div class="float-end">
-                <span class="badge bg-danger me-2">質問中 <i class="fas fa-hand-paper"></i></span> <span
-                  class="small"> <i class="fas fa-hourglass-half"></i> <span
-                  id="order-of-question"></span> 人待ちです. <span class="text-muted">質問終了後は <span
-                    class="hanko">済</span> を押して下さい．
-                </span></span>
+                <span class="badge bg-danger me-2">質問中 <i class="fas fa-hand-paper"></i></span> <span class="small"> <i
+                    class="fas fa-hourglass-half"></i> <span id="order-of-question"></span> 人待ちです. <span
+                    class="text-muted">質問終了後は <span class="hanko">済</span> を押して下さい．
+                  </span></span>
               </div>
             </div>
           </div>
@@ -412,8 +398,7 @@
             <form>
               <div class="form-group m-0">
                 <div class="input-group input-group-sm">
-                  <input type="text" id="input-short-talk-global"
-                    class="form-control input-short-talk-global">
+                  <input type="text" id="input-short-talk-global" class="form-control input-short-talk-global">
                   <div class="input-group-append">
                     <button id="btn-short-talk-global" class="btn btn-secondary" type="button">
                       全体 <i class="fas fa-bullhorn"></i>
@@ -426,8 +411,7 @@
         </div>
         <div class="row">
           <div class="col-12">
-            <div id="hand-history-log-global-wrapper"
-              class="selectable border rounded bg-light mt-1 mb-1 p-1 small">
+            <div id="hand-history-log-global-wrapper" class="selectable border rounded bg-light mt-1 mb-1 p-1 small">
               <ul id="hand-history-log-global" class="p-1"></ul>
             </div>
           </div>
@@ -438,8 +422,7 @@
               <button id="btn-hand-history-global-expand" class="btn btn-sm btn-secondary">
                 <i class="fas fa-arrows-alt-v"></i>
               </button>
-              <button id="btn-hand-history-global-compress" class="btn btn-sm btn-secondary"
-                style="display: none;">
+              <button id="btn-hand-history-global-compress" class="btn btn-sm btn-secondary" style="display: none;">
                 <i class="fas fa-compress-alt"></i>
               </button>
             </div>
@@ -470,16 +453,14 @@
         </div>
         <div class="row">
           <div class="col-12">
-            <div id="hand-history-log-wrapper"
-              class="selectable border rounded bg-light mt-1 mb-1 p-1 small">
+            <div id="hand-history-log-wrapper" class="selectable border rounded bg-light mt-1 mb-1 p-1 small">
               <ul id="hand-history-log" class="p-1"></ul>
             </div>
             <div class="float-end">
               <button id="btn-hand-history-expand" class="btn btn-sm btn-secondary">
                 <i class="fas fa-arrows-alt-v"></i>
               </button>
-              <button id="btn-hand-history-compress" class="btn btn-sm btn-secondary"
-                style="display: none;">
+              <button id="btn-hand-history-compress" class="btn btn-sm btn-secondary" style="display: none;">
                 <i class="fas fa-compress-alt"></i>
               </button>
             </div>

@@ -1,46 +1,51 @@
 <!DOCTYPE HTML>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+
 <head th:fragment="meta-fragment">
-<meta name="robots" content="noindex,nofollow">
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<meta http-equiv="Cache-Control" content="no-cache">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
+    <meta name="robots" content="noindex,nofollow">
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Cache-Control" content="no-cache">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
 
-<link rel="stylesheet" href="/webjars/sweetalert2/11.4.18/dist/sweetalert2.min.css" />
-<link rel="stylesheet" href="/webjars/bootstrap/5.2.0-beta1/dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="/webjars/bootstrap-treeview/1.2.0/dist/bootstrap-treeview.min.css">
-<link rel="stylesheet" href="/webjars/datatables/media/css/jquery.dataTables.min.css">
-<link rel="stylesheet" href="/webjars/datatables-tabletools/2.2.4/css/dataTables.tableTools.css">
-<link rel="stylesheet" href="/webjars/datatables.net-buttons-dt/css/buttons.dataTables.min.css">
-<link rel="stylesheet" th:href="|../css/play.css?${css_play_css}|">
+    <link rel="stylesheet" th:href="|/webjars/bootstrap/${webjars.bootstrap}/dist/css/bootstrap.min.css|">
 
+    <link rel="stylesheet"
+        th:href="|/webjars/bootstrap-treeview/${webjars.bootstrap_treeview}/dist/bootstrap-treeview.min.css|">
+    <link rel="stylesheet" href="/webjars/datatables/media/css/jquery.dataTables.min.css">
+    <link rel="stylesheet"
+        th:href="|/webjars/datatables-tabletools/${webjars.datatables_tabletools}/css/dataTables.tableTools.css|">
+    <link rel="stylesheet" href="/webjars/datatables.net-buttons-dt/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" th:href="|../css/play.css?${css_play_css}|">
 
+    <script th:src="|/webjars/jquery/${webjars.jquery}/dist/jquery.min.js|"></script>
 
-<script src="/webjars/jquery/3.6.0/dist/jquery.min.js"></script>
+    <script th:src="|/webjars/bootstrap/${webjars.bootstrap}/dist/js/bootstrap.bundle.min.js|"></script>
+    <script
+        th:src="|/webjars/bootstrap-treeview/${webjars.bootstrap_treeview}/dist/bootstrap-treeview.min.js|"></script>
 
-<script src="/webjars/bootstrap/5.2.0-beta1/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/webjars/bootstrap-treeview/1.2.0/dist/bootstrap-treeview.min.js"></script>
+    <script th:src="|/webjars/stacktrace-js/${webjars.stacktrace_js}/dist/stacktrace.min.js|"></script>
+    <script th:src="|/webjars/sweetalert2/${webjars.sweetalert2}/dist/sweetalert2.all.min.js|"></script>
+    <script th:src="|/webjars/jszip/${webjars.jszip}/dist/jszip.min.js|"></script>
+    <script th:src="|/webjars/clipboard/${webjars.clipboard}/dist/clipboard.min.js|"></script>
+    <script
+        th:src="|/webjars/fortawesome__fontawesome-free/${webjars.fortawesome\_\_fontawesome_free}/js/all.min.js|"></script>
 
-<script src="/webjars/stacktrace-js/2.0.2/dist/stacktrace.min.js"></script>
-<script src="/webjars/sweetalert2/11.4.18/dist/sweetalert2.min.js"></script>
-<script src="/webjars/jszip/3.10.0/dist/jszip.min.js"></script>
-<script src="/webjars/clipboard/2.0.11/dist/clipboard.min.js"></script>
-<script src="/webjars/fortawesome__fontawesome-free/6.1.1/js/all.min.js"></script>
+    <script src="/webjars/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script
+        th:src="|/webjars/datatables-tabletools/${webjars.datatables_tabletools}/js/dataTables.tableTools.js|"></script>
+    <script src="/webjars/datatables.net-buttons-dt/js/buttons.dataTables.min.js"></script>
 
-<script src="/webjars/datatables/media/js/jquery.dataTables.min.js"></script>
-<script src="/webjars/datatables-tabletools/2.2.4/js/dataTables.tableTools.js"></script>
-<script src="/webjars/datatables.net-buttons-dt/js/buttons.dataTables.min.js"></script>
+    <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-app-compat.js|"></script>
+    <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-auth-compat.js|"></script>
+    <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-firestore-compat.js|"></script>
 
-<script src="/webjars/firebase/9.9.0/firebase-app-compat.js"></script>
-<script src="/webjars/firebase/9.9.0/firebase-auth-compat.js"></script>
-<script src="/webjars/firebase/9.9.0/firebase-firestore-compat.js"></script>
+    <script th:src="|/webjars/ua-parser-js/${webjars.ua_parser_js}/dist/ua-parser.min.js|"></script>
 
-
-<script src="/webjars/ua-parser-js/1.0.2/dist/ua-parser.min.js"></script>
-<script th:src="|../js/lib/jsonrpc-client.js?${js_lib_jsonrpc_client_js}|"></script>
-<script th:src="|../js/utils.js?${js_utils_js}|"></script>
-<script th:src="|../js/firebase.js?${js_firebase_js}|"></script>
+    <script th:src="|../js/lib/jsonrpc-client.js?${js_lib_jsonrpc_client_js}|"></script>
+    <script th:src="|../js/utils.js?${js_utils_js}|"></script>
+    <script th:src="|../js/firebase.js?${js_firebase_js}|"></script>
 
 
 </head>
+
 </html>

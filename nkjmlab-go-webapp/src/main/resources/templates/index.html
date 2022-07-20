@@ -2,15 +2,15 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
-<object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
-<link type="text/css" rel="stylesheet" href="/webjars/firebaseui/6.0.1/dist/firebaseui.css" />
-<script src="/webjars/firebaseui/6.0.1/dist/firebaseui.js"></script>
+  <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
+  <link type="text/css" rel="stylesheet" th:href="|/webjars/firebaseui/${webjars.firebaseui}/dist/firebaseui.css|" />
+  <script th:src="|/webjars/firebaseui/${webjars.firebaseui}/dist/firebaseui.js|"></script>
 
-<script th:src="|../js/play-common.js?${js_play_common_js}|"></script>
-<script th:src="|../js/check-environment.js?${js_check_environment_js}|"></script>
-<script th:src="|../js/firebase-login.js?${js_firebase_login_js}|"></script>
-<script th:src="|../js/index.js?${js_index_js}|"></script>
-<title>ようこそ | 囲碁の演習と対局</title>
+  <script th:src="|../js/play-common.js?${js_play_common_js}|"></script>
+  <script th:src="|../js/check-environment.js?${js_check_environment_js}|"></script>
+  <script th:src="|../js/firebase-login.js?${js_firebase_login_js}|"></script>
+  <script th:src="|../js/index.js?${js_index_js}|"></script>
+  <title>ようこそ | 囲碁の演習と対局</title>
 </head>
 
 <body>
@@ -26,15 +26,14 @@
     <div class="row mt-2 pt-2">
       <div class="col-12">
         <h1 class="my-auto flex-grow" style="font-family: Impact, sans-serif">
-          Let's GO <img style="height: 1em; width: auto"
-            src="https://i.gyazo.com/fc173199ee6bc65378496a775eebb5b1.png">
+          Let's GO <img style="height: 1em; width: auto" src="https://i.gyazo.com/fc173199ee6bc65378496a775eebb5b1.png">
         </h1>
         <p>このシステムはオンライン上での囲碁教育を支援するシステムです．Webブラウザが使える端末があれば，簡単に授業に参加することが出来ます．</p>
         <div class="already-logged-in" style="display: none">
           <div class="clearfix">
             <code id="user-email"></code>
             でログインしています． <a class="btn btn-sm btn-primary" href="play.html">碁盤へ <i
-              class="fas fa-arrow-circle-right"></i></a>
+                class="fas fa-arrow-circle-right"></i></a>
           </div>
           <div class="mt-2 small">
             <div class="text-muted">碁盤へ進めない場合は，ログアウトしてからもう一度ログインして下さい．</div>
@@ -103,7 +102,7 @@
         -->
         <div class="btn-group">
           <a class="btn btn-sm btn-info" href="https://scrapbox.io/toho-go/"> アプリについて <i
-            class="fas fa-external-link-alt"></i>
+              class="fas fa-external-link-alt"></i>
           </a>
         </div>
       </div>
