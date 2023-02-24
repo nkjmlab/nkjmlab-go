@@ -12,12 +12,11 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import javax.servlet.http.HttpServletRequest;
 import javax.sql.DataSource;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.nkjmlab.go.javalin.GoAccessManager.UserRole;
+import org.nkjmlab.go.javalin.GoApplication.LoginJson;
 import org.nkjmlab.go.javalin.fbauth.AuthService;
-import org.nkjmlab.go.javalin.fbauth.AuthServiceInterface;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
@@ -37,9 +36,11 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.common.Tuple.Tuple2;
-import org.nkjmlab.util.h2.H2LocalDataSourceFactory;
-import org.nkjmlab.util.h2.H2ServerUtils;
+import org.nkjmlab.sorm4j.util.h2.datasource.H2LocalDataSourceFactory;
+import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProcess;
+import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProperties;
 import org.nkjmlab.util.jackson.JacksonMapper;
+import org.nkjmlab.util.jakarta.servlet.UserSession;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
 import org.nkjmlab.util.java.function.Try;
 import org.nkjmlab.util.java.io.SystemFileUtils;
@@ -48,12 +49,9 @@ import org.nkjmlab.util.java.lang.ProcessUtils;
 import org.nkjmlab.util.java.lang.ResourceUtils;
 import org.nkjmlab.util.java.lang.SystemPropertyUtils;
 import org.nkjmlab.util.java.net.UrlUtils;
-import org.nkjmlab.util.javax.servlet.JsonRpcService;
-import org.nkjmlab.util.javax.servlet.UserSession;
-import org.nkjmlab.util.javax.servlet.ViewModel;
-import org.nkjmlab.util.javax.servlet.WebJarsUtils;
-import org.nkjmlab.util.jsonrpc.JsonRpcRequest;
-import org.nkjmlab.util.jsonrpc.JsonRpcResponse;
+import org.nkjmlab.util.java.web.ViewModel;
+import org.nkjmlab.util.java.web.WebJarsUtils;
+import org.nkjmlab.util.javalin.JavalinJsonRpcService;
 import org.nkjmlab.util.thymeleaf.ThymeleafTemplateEnginBuilder;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
@@ -63,7 +61,8 @@ import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import io.javalin.http.staticfiles.Location;
-import io.javalin.plugin.rendering.template.JavalinThymeleaf;
+import io.javalin.rendering.template.JavalinThymeleaf;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class GoApplication {
 
@@ -118,8 +117,7 @@ public class GoApplication {
     log.info("start (port:{}) => {}", port, SystemPropertyUtils.getJavaProperties());
 
     ProcessUtils.stopProcessBindingPortIfExists(port);
-    H2ServerUtils.startDefaultTcpServerProcessAndWaitFor();
-    H2ServerUtils.startDefaultWebConsoleServerProcessAndWaitFor();
+    new H2TcpServerProcess(H2TcpServerProperties.builder().build()).awaitStart();
 
     new GoApplication().start(port);
   }
@@ -147,7 +145,7 @@ public class GoApplication {
 
     TemplateEngine engine = ThymeleafTemplateEnginBuilder.builder()
         .setTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND).addDialect(new Java8TimeDialect()).build();
-    JavalinThymeleaf.configure(engine);
+    JavalinThymeleaf.init(engine);
 
 
     {
@@ -228,18 +226,28 @@ public class GoApplication {
       webSocketManager.sendUpdateWaitingRequestStatus(uids);
     }, e -> log.error(e)), INTERVAL_IN_WAITING_ROOM, INTERVAL_IN_WAITING_ROOM, TimeUnit.SECONDS);
 
+    // this.app = Javalin.create(config -> {
+    // config.addStaticFiles(staticFiles -> {
+    // staticFiles.directory = WEBROOT_DIR_NAME;
+    // staticFiles.location = Location.CLASSPATH;
+    // staticFiles.precompress = false;
+    // // staticFiles.precompress = true;
+    // });
+    // config.autogenerateEtags = true;
+    // config.enableCorsForAllOrigins();
+    // config.enableWebjars();
+    // config.accessManager(new GoAccessManager(usersTable));
+    // });
+
     this.app = Javalin.create(config -> {
-      config.addStaticFiles(staticFiles -> {
-        staticFiles.directory = WEBROOT_DIR_NAME;
-        staticFiles.location = Location.CLASSPATH;
-        staticFiles.precompress = false;
-        // staticFiles.precompress = true;
-      });
-      config.autogenerateEtags = true;
-      config.enableCorsForAllOrigins();
-      config.enableWebjars();
+      config.staticFiles.add(WEBROOT_DIR_NAME, Location.CLASSPATH);
+      config.staticFiles.enableWebjars();
+      config.http.generateEtags = true;
+      config.plugins.enableCors(cors -> cors.add(corsConfig -> corsConfig.anyHost()));
       config.accessManager(new GoAccessManager(usersTable));
     });
+
+
 
     prepareWebSocket();
     prepareJsonRpc();
@@ -278,30 +286,19 @@ public class GoApplication {
     });
   }
 
+
   private void prepareJsonRpc() {
 
     prepareFirebase();
 
-    final GoJsonRpcService goJsonRpcService =
-        new GoJsonRpcService(webSocketManager, gameStatesTables, problemsTable, usersTable,
-            loginsTable, matchingRequestsTable, votesTable, handsUpTable, gameRecordsTable);
+    GoJsonRpcService go = new GoJsonRpcService(webSocketManager, gameStatesTables, problemsTable,
+        usersTable, loginsTable, matchingRequestsTable, votesTable, handsUpTable, gameRecordsTable);
+    JavalinJsonRpcService srv = new JavalinJsonRpcService(GoApplication.getDefaultJacksonMapper());
 
+    app.post("/app/json/GoJsonRpcService", ctx -> srv.handle(ctx, go));
 
-    JacksonMapper mapper = GoApplication.getDefaultJacksonMapper();
-    JsonRpcService jsonRpcService = new JsonRpcService(mapper);
-
-    app.post("/app/json/GoJsonRpcService", ctx -> {
-      JsonRpcRequest jreq = jsonRpcService.toJsonRpcRequest(ctx.req);
-      Object srv = AuthServiceInterface.getDeclaredMethodNames().contains(jreq.getMethod())
-          ? new AuthService(usersTable, loginsTable, passwordsTable, ctx.req)
-          : goJsonRpcService;
-      JsonRpcResponse jres = jsonRpcService.callHttpJsonRpc(srv, jreq, ctx.res);
-      if (jres.hasError()) {
-        log.warn(jres);
-      }
-      String ret = mapper.toJson(jres);
-      ctx.result(ret).contentType("application/json");
-    });
+    app.post("/app/json/AuthRpcService", ctx -> srv.handle(ctx,
+        new AuthService(usersTable, loginsTable, passwordsTable, ctx.req())));
   }
 
 
@@ -331,10 +328,10 @@ public class GoApplication {
 
       @Override
       public void handle(Context ctx) throws Exception {
-        ViewModel.Builder model = createDefaultModel(usersTable, ctx.req);
-        UserSession session = UserSession.wrap(ctx.req.getSession());
-        handler.apply(ctx).apply(UrlUtils.of(ctx.url()).getPath().replaceFirst("^/app/", ""))
-            .apply(model).accept(session);
+        String filePath = UrlUtils.of(ctx.url()).getPath().replaceFirst("^/app/", "");
+        ViewModel.Builder model = createDefaultModel(usersTable, ctx.req());
+        UserSession session = UserSession.wrap(ctx.req().getSession());
+        handler.apply(ctx).apply(filePath).apply(model).accept(session);
       }
     }
 
@@ -346,7 +343,7 @@ public class GoApplication {
         model.put("isAttendance", attend);
         model.put("problemGroupsJson", problemsTable.getProblemGroupsNode());
       });
-      ctx.render(filePath, model.build().getMap());
+      ctx.render(filePath, model.build());
     }));
 
     app.get("/app/play.html", new GoHandler(ctx -> filePath -> model -> session -> {
@@ -355,7 +352,7 @@ public class GoApplication {
         model.put("isAttendance", attend);
         model.put("problemGroupsJson", problemsTable.getProblemGroupsNode());
       });
-      ctx.render(filePath, model.build().getMap());
+      ctx.render(filePath, model.build());
     }), UserRole.LOGIN_ROLES);
 
     app.get("/app/players-all.html", new GoHandler(ctx -> filePath -> model -> session -> {
@@ -363,7 +360,7 @@ public class GoApplication {
       List<LoginJson> loginJsons =
           users.stream().map(t -> new LoginJson(t.getT2(), t.getT1())).collect(Collectors.toList());
       model.put("userAccounts", loginJsons);
-      ctx.render("players.html", model.build().getMap());
+      ctx.render("players.html", model.build());
     }), UserRole.ADMIN);
 
     app.get("/app/players.html", new GoHandler(ctx -> filePath -> model -> session -> {
@@ -371,7 +368,7 @@ public class GoApplication {
       List<LoginJson> loginJsons = users.stream().filter(t -> t.getT1().isStudent())
           .map(t -> new LoginJson(t.getT2(), t.getT1())).collect(Collectors.toList());
       model.put("userAccounts", loginJsons);
-      ctx.render(filePath, model.build().getMap());
+      ctx.render(filePath, model.build());
     }), UserRole.ADMIN);
 
     app.get("/app/games-all.html", new GoHandler(ctx -> filePath -> model -> session -> {
@@ -382,7 +379,7 @@ public class GoApplication {
         return json;
       }).collect(Collectors.toList());
       model.put("games", tmp);
-      ctx.render("games.html", model.build().getMap());
+      ctx.render("games.html", model.build());
     }), UserRole.ADMIN);
 
     app.get("/app/games.html", new GoHandler(ctx -> filePath -> model -> session -> {
@@ -394,7 +391,7 @@ public class GoApplication {
               .collect(Collectors.toList());
       model.put("games",
           tmp.stream().filter(j -> j.watchingStudentsNum() > 0).collect(Collectors.toList()));
-      ctx.render(filePath, model.build().getMap());
+      ctx.render(filePath, model.build());
     }), UserRole.ADMIN);
 
     app.get("/app/fragment/game-record-table.html",
@@ -402,7 +399,7 @@ public class GoApplication {
           String userId = ctx.queryParam("userId");
           List<GameRecord> records = gameRecordsTable.readByUserId(userId);
           model.put("records", records);
-          ctx.render("fragment/game-record-table.html", model.build().getMap());
+          ctx.render("fragment/game-record-table.html", model.build());
         }), UserRole.ADMIN);
 
     app.get("/app/fragment/question-table*", new GoHandler(ctx -> filePath -> model -> session -> {
@@ -411,7 +408,7 @@ public class GoApplication {
           .map(gsj -> new GameStateViewJson(gsj, handsUpTable.selectByPrimaryKey(gsj.gameId()), 0))
           .toList();
       model.put("games", tmp);
-      ctx.render(filePath, model.build().getMap());
+      ctx.render(filePath, model.build());
     }), UserRole.ADMIN);
 
     app.get("/app/fragment/waiting-request-table.html",
@@ -424,7 +421,7 @@ public class GoApplication {
           } else {
             model.put("requests", matchingRequestsTable.readRequests());
           }
-          ctx.render(filePath, model.build().getMap());
+          ctx.render(filePath, model.build());
         }), UserRole.ADMIN);
 
 
@@ -436,8 +433,12 @@ public class GoApplication {
               .orElse(new MatchingRequest());
           model.put("req", req);
           model.put("reqNum", tmp.size());
-          ctx.render(filePath, model.build().getMap());
+          ctx.render(filePath, model.build());
         }), UserRole.ADMIN);
+
+    app.get("/app/*", new GoHandler(ctx -> filePath -> model -> session -> {
+      ctx.render(filePath, model.build());
+    }));
 
   }
 
@@ -472,10 +473,10 @@ public class GoApplication {
 
 
   private ViewModel.Builder createDefaultModel(UsersTable usersTable, HttpServletRequest request) {
-    ViewModel.Builder modelBuilder =
-        ViewModel.builder().setFileModifiedDate(WEBROOT_DIR, 10, "js", "css");
+    ViewModel.Builder modelBuilder = ViewModel.builder();
     modelBuilder.put("currentUser", getCurrentUserAccount(usersTable, request));
     modelBuilder.put("webjars", webJarsVersions);
+    modelBuilder.setFileModifiedDate(WEBROOT_DIR, 10, "js", "css");
     return modelBuilder;
   }
 

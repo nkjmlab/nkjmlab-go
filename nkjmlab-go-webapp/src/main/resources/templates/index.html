@@ -2,14 +2,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
-  <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
+  <object th:insert="~{/fragment/head.html::meta-fragment}" th:remove="tag"></object>
   <link type="text/css" rel="stylesheet" th:href="|/webjars/firebaseui/${webjars.firebaseui}/dist/firebaseui.css|" />
   <script th:src="|/webjars/firebaseui/${webjars.firebaseui}/dist/firebaseui.js|"></script>
 
-  <script th:src="|../js/play-common.js?${js_play_common_js}|"></script>
-  <script th:src="|../js/check-environment.js?${js_check_environment_js}|"></script>
-  <script th:src="|../js/firebase-login.js?${js_firebase_login_js}|"></script>
-  <script th:src="|../js/index.js?${js_index_js}|"></script>
+  <script th:src="|../js/play-common.js?${MODIFIED_DATES.js_play_common_js}|"></script>
+  <script th:src="|../js/check-environment.js?${MODIFIED_DATES.js_check_environment_js}|"></script>
+  <script th:src="|../js/firebase-login.js?${MODIFIED_DATES.js_firebase_login_js}|"></script>
+  <script th:src="|../js/index.js?${MODIFIED_DATES.js_index_js}|"></script>
   <title>ようこそ | 囲碁の演習と対局</title>
 </head>
 
@@ -108,7 +108,7 @@
       </div>
     </div>
   </div>
-  <div th:include="/fragment/modal-signup.html::fcontent" th:remove="tag"></div>
+  <div th:insert="~{/fragment/modal-signup.html::fcontent}" th:remove="tag"></div>
 </body>
 
 </html>

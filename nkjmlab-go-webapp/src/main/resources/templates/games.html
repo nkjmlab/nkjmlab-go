@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
-  <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
+  <object th:insert="~{/fragment/head.html::meta-fragment}" th:remove="tag"></object>
   <script th:inline="javascript">
     $(function () {
       var o = [3, "asc"];
@@ -14,7 +14,7 @@
         "pageLength": 1000,
         "order": [o]
       });
-      if (parseUri(location).file == "games.html") {
+      if (new URL(location).pathname.split('/').pop() == "games.html") {
         $("#page-description").text("1人以上の学生が閲覧している対局の一覧");
       } else {
         $("#page-description").text("全対局の一覧");
@@ -40,7 +40,7 @@
 
 <body>
   <div class="container-fluid">
-    <div th:include="/fragment/header-admin.html::fcontent" th:remove="tag"></div>
+    <div th:insert="~{/fragment/header-admin.html::fcontent}" th:remove="tag"></div>
     <hr>
   </div>
   <div class="container">

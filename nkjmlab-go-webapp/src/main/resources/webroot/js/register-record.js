@@ -34,7 +34,7 @@ $(function () {
       }
       swalConfirm("確認", "<strong>[" + jadge + "]</strong> を送信します", null, function () {
         setTimeout(function () {
-          new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "registerRecord", [
+          new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "registerRecord", [
             getUserId(), opponentUserId, jadge, memo], function (data) {
               const rank = data.result;
               swalAlert("登録完了", "<strong>[" + jadge + "]</strong> を登録しました", "info", function () {

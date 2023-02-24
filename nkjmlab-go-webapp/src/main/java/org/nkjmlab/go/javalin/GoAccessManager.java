@@ -4,12 +4,12 @@ import java.util.Set;
 import org.nkjmlab.go.javalin.fbauth.FirebaseUserSession;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
-import org.nkjmlab.sorm4j.internal.util.ParameterizedStringUtils;
-import org.nkjmlab.util.javax.servlet.UserSession;
-import io.javalin.core.security.AccessManager;
-import io.javalin.core.security.RouteRole;
+import org.nkjmlab.util.jakarta.servlet.UserSession;
+import org.nkjmlab.util.java.lang.ParameterizedStringFormat;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
+import io.javalin.security.AccessManager;
+import io.javalin.security.RouteRole;
 
 public class GoAccessManager implements AccessManager {
 
@@ -27,7 +27,7 @@ public class GoAccessManager implements AccessManager {
       User u = null;
       if (fSession.isSigninFirebase()) {
         String email = fSession.getEmail().orElseThrow(() -> new RuntimeException(
-            ParameterizedStringUtils.newString("Email is not set in the session")));
+            ParameterizedStringFormat.DEFAULT.format("Email is not set in the session")));
         u = usersTable.readByEmail(email);
       } else if (fSession.isLogined()) {
         u = fSession.getUserId().map(userId -> usersTable.selectByPrimaryKey(userId)).orElse(null);
@@ -55,15 +55,19 @@ public class GoAccessManager implements AccessManager {
   }
 
   @Override
-  public void manage(Handler handler, Context ctx, Set<RouteRole> routeRoles) throws Exception {
+  public void manage(Handler handler, Context ctx, Set<? extends RouteRole> routeRoles)
+      throws Exception {
     if (routeRoles.size() == 0) {
       handler.handle(ctx);
     } else if (routeRoles
-        .contains(UserRole.of(usersTable, UserSession.wrap(ctx.req.getSession())))) {
+        .contains(UserRole.of(usersTable, UserSession.wrap(ctx.req().getSession())))) {
       handler.handle(ctx);
     } else {
       ctx.redirect("/app/index.html");
     }
+
+
   }
+
 
 }

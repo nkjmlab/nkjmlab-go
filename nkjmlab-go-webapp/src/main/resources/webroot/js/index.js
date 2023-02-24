@@ -48,7 +48,7 @@ $(function () {
             }
             const uname = $("#signup-username-name").val();
 
-            new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "signupAsGuest", [
+            new JsonRpcClient(new JsonRpcRequest(getAuthRpcServiceUrl(), "signupAsGuest", [
                 stdId, uname, seatId], function () {
                     setUserId(stdId);
                     setUserName(uname);
@@ -79,7 +79,7 @@ $(function () {
             }
 
             const password = $("#signup-password").val();
-            new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "signinWithoutFirebase", [
+            new JsonRpcClient(new JsonRpcRequest(getAuthRpcServiceUrl(), "signinWithoutFirebase", [
                 stdId, password, seatId], function (data) {
                     if (data.result == null) {
                         swalAlert("エラー", "ログイン失敗", "error");

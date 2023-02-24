@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
-  <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
+  <object th:insert="~{/fragment/head.html::meta-fragment}" th:remove="tag"></object>
   <script>
     $(function () {
       var o = [1, "asc"];
@@ -15,7 +15,7 @@
         "order": [o]
       });
 
-      if (parseUri(location).file == "players.html") {
+      if (new URL(location).pathname.split('/').pop() == "players.html") {
         $("#page-description").text("学生一覧");
       } else {
         $("#page-description").text("全ユーザ(教員含む)の一覧");
@@ -41,7 +41,7 @@
 
 <body>
   <div class="container-fluid">
-    <div th:include="/fragment/header-admin.html::fcontent" th:remove="tag"></div>
+    <div th:insert="~{/fragment/header-admin.html::fcontent}" th:remove="tag"></div>
     <hr>
   </div>
   <div class="container">

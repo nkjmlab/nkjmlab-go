@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.time.LocalDateTime;
 import java.util.Optional;
-import javax.servlet.http.HttpServletRequest;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.PasswordsTable;
@@ -12,14 +11,15 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.sorm4j.result.RowMap;
-import org.nkjmlab.util.javax.servlet.HttpRequestUtils;
-import org.nkjmlab.util.javax.servlet.UserSession;
+import org.nkjmlab.util.jakarta.servlet.HttpRequestUtils;
+import org.nkjmlab.util.jakarta.servlet.UserSession;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.FirebaseOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
+import jakarta.servlet.http.HttpServletRequest;
 
 public class AuthService implements AuthServiceInterface {
   private static final org.apache.logging.log4j.Logger log =

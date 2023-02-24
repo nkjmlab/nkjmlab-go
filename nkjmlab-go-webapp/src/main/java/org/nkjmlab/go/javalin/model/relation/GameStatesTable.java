@@ -84,7 +84,7 @@ public class GameStatesTable extends BasicH2Table<GameState> {
     String selectSql =
         selectStarFrom(getTableName()) + where(cond(ROWNUM, "<=", deleteRowNum)) + orderBy(ID);
 
-    String st = getCallCsvWriteSql(outputFile, selectSql, StandardCharsets.UTF_8, ',');
+    String st = getCallCsvWriteSql(outputFile, selectSql, StandardCharsets.UTF_8, ',', null);
     log.info("{}", st);
     getOrm().executeUpdate(st);
 

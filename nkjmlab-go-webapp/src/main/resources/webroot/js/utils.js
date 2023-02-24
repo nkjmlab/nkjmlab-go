@@ -457,16 +457,6 @@ function toFormattedDateAndTime(milliseconds) {
   return str;
 }
 
-function getServiceUrl() {
-  return getBaseUrl(1);
-}
-
-function getBaseUrl(depth) {
-  const u = new URL(document.URL);
-  const urlPrefix = u.protocol + "://" + u.host + "/" + u.pathname.split("/")[depth] + "/";
-  return urlPrefix;
-}
-
 
 /*
 window.onerror = function (msg, file, line, col, error) {
@@ -513,7 +503,7 @@ function sendLog(msg, logLevel, stackNum) {
 
 function sendLogAux(msg, logLevel, stackTrace) {
   setTimeout(function () {
-    new JsonRpcClient(new JsonRpcRequest(getServiceUrl(), "sendLog",
+    new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "sendLog",
       [logLevel, stackTrace, { message: msg, device: getDeviceInfo() }, ""], function (data) {
       })).rpc();
   }, 10);

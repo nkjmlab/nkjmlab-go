@@ -151,8 +151,7 @@ class JsonRpcClient {
 
 
 function printError(data, textStatus, errorThrown, url, method, params) {
-  const msg = textStatus + ', ' + errorThrown + '. response: '
-    + JSON.stringify(data) + '. request: ' + url + ": " + method + "("
-    + JSON.stringify(params) + ")";
-  console.error(msg);
+  console.error(data.responseJSON.error.code + ' ' + data.responseJSON.error.message);
+  console.error(url + ": "
+    + method + "(" + JSON.stringify(params) + ")");
 }

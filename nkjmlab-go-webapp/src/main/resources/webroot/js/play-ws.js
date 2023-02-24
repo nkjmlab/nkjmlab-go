@@ -178,7 +178,7 @@ class PlayWebSocket {
             refreshProblemInfo();
           } else if (getProblem() == null
             || getProblem().problemId != gameState.problemId) {
-            new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "getProblem",
+            new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "getProblem",
               [gameState.problemId], function (data) {
                 setProblem(data.result);
                 refreshProblemInfo();

@@ -82,7 +82,7 @@ function refreshWaitingRequestFragment() {
         }
         swalAlert("次の対局", gameLink.split("=")[1], "info",
           function (e) {
-            new JsonRpcClient(new JsonRpcRequest(getBaseUrl(),
+            new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
               "exitWaitingRoom", [getUserId()], function (data) {
                 location.href = gameLink;
               })).rpc();
@@ -135,7 +135,7 @@ $(function () {
     if ($("#current-komi-wrapper").is(':visible')) {
       $("#current-komi-wrapper").hide();
     } else {
-      const client = new JsonRpcClient(new JsonRpcRequest(getBaseUrl(),
+      const client = new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
         "getKomi", [getGameId()], function (data) {
           $("#current-komi").html(data.result);
           $("#current-komi-wrapper").show();
@@ -153,7 +153,7 @@ $(function () {
         swalAlert("入力エラー", (!seatId ? "座席番号" : "") + "に無効な値が入力されました", "error");
         return;
       }
-      new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "registerAttendance", [getUserId(), seatId], function () {
+      new JsonRpcClient(new JsonRpcRequest(getAuthRpcServiceUrl(), "registerAttendance", [getUserId(), seatId], function () {
         setSeatId(seatId);
         location = "play.html";
       })).rpc();
@@ -258,7 +258,7 @@ $(function () {
         }
         gameState.handHistory = null;
         gameState.symbols = {};
-        new JsonRpcClient(new JsonRpcRequest(getBaseUrl(),
+        new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
           "sendGameState", [getGameId(), gameState],
           function (data) {
             loadMyBoard();
@@ -321,7 +321,7 @@ $(function () {
     function () {
       const mName = $(this).attr('id') == "btn-load-next-std"
         ? "getNextUser" : "getPrevUser";
-      new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), mName,
+      new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), mName,
         [getGameId()], function (data) {
           if (data.result.length == 0) { return; }
           setGameId(data.result);
@@ -334,7 +334,7 @@ $(function () {
     function () {
       const bid = $(this).attr('id');
       new JsonRpcClient(
-        new JsonRpcRequest(getBaseUrl(),
+        new JsonRpcRequest(getGoRpcServiceUrl(),
           bid == "btn-load-next-game" ? "getNextGame"
             : "getPrevGame", [getGameId()], function (
               data) {
@@ -356,7 +356,7 @@ $(function () {
       swalConfirm("削除", "「" + getProblem().groupId + " "
         + getProblem().name + "」を削除してよろしいですか？", "error",
         function (e) {
-          new JsonRpcClient(new JsonRpcRequest(getBaseUrl(),
+          new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
             "deleteProblem", [getProblem().problemId],
             function () {
               setProblem(null);
@@ -451,7 +451,7 @@ $(function () {
   $('#btn-vote-calc').on(
     'click',
     function (e) {
-      new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "getVoteResult",
+      new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "getVoteResult",
         [getProblem() == null ? -1 : getProblem().problemId,
         getGameId()], function (data) {
           $(".vote-result").text("");
@@ -497,7 +497,7 @@ $(function () {
       if (valId == "btn-vote-none") {
         vote = "blank";
         voteId = "blank";
-        new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "vote", [
+        new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "vote", [
           getGameId(), getUserId(),
           getProblem() == null ? -1 : getProblem().problemId,
           getVote(), getVoteId()], function (data) {
@@ -509,7 +509,7 @@ $(function () {
       swalConfirm("", val + "に投票しますか？", "", function (data) {
         vote = val;
         voteId = valId;
-        new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "vote", [
+        new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "vote", [
           getGameId(), getUserId(),
           getProblem() == null ? -1 : getProblem().problemId,
           getVote(), getVoteId()], function (data) {
@@ -532,7 +532,7 @@ $(function () {
   function handDown() {
     $("#btn-hand-up").show();
     $(".btn-hand-down").hide();
-    new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "handUp", [getGameId(),
+    new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "handUp", [getGameId(),
       false, ""], function (data) {
         let html = getUserName() + "： "
           + '質問を <span class="hanko">済</span> にしました';
@@ -590,7 +590,7 @@ $(function () {
   });
 
   function handUp(msg) {
-    new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "handUp", [getGameId(),
+    new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "handUp", [getGameId(),
       true, msg], function (data) { })).rpc();
   }
 
@@ -700,7 +700,7 @@ $(function () {
 
       setTimeout(function () {
         const msg = getUserId() + " (" + getUserName() + ") " + input;
-        new JsonRpcClient(new JsonRpcRequest(getBaseUrl(),
+        new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
           "sendGlobalMessage", [getUserId(), msg], function () {
           })).rpc();
         emojiArea.setText("");
@@ -713,7 +713,7 @@ $(function () {
     'click',
     function () {
       swalConfirm("募集", '対局相手を探します', null, function () {
-        new JsonRpcClient(new JsonRpcRequest(getBaseUrl(),
+        new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
           "enterWaitingRoom", [getUserId()],
           function (data) {
             $("#btn-find-opponent").prop("disabled", true);
@@ -726,7 +726,7 @@ $(function () {
     function () {
       swalConfirm("警告", "募集を取り消します．教員の指示がある時のみ使って下さい", "warning",
         function () {
-          new JsonRpcClient(new JsonRpcRequest(getBaseUrl(),
+          new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
             "exitWaitingRoom", [getUserId()], function (data) {
               location.reload();
             })).rpc();
@@ -786,7 +786,7 @@ function initView() {
 
     $("." + selector + "-player-id-label").html(uid);
 
-    new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "getUser", [uid],
+    new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "getUser", [uid],
       function (data) {
         let target = $("." + selector + "-player-id-label");
 

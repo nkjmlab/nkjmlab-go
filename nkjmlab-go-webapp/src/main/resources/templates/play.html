@@ -2,18 +2,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
-  <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
+  <object th:insert="~{/fragment/head.html::meta-fragment}" th:remove="tag"></object>
   <link rel="stylesheet" href="../css/emojionearea.css">
 
   <script th:src="|/webjars/blueimp-load-image/${webjars.blueimp_load_image}/js/load-image.all.min.js|"></script>
   <script th:src="|/webjars/emojionearea/${webjars.emojionearea}/dist/emojionearea.min.js|"></script>
 
-  <script th:src="|../js/upload-icon.js?${js_upload_icon_js}|"></script>
-  <script th:src="|../js/register-record.js?${js_register_record_js}|"></script>
-  <script th:src="|../js/play-common.js?${js_play_common_js}|"></script>
-  <script th:src="|../js/play-board.js?${js_play_board_js}|"></script>
-  <script th:src="|../js/play-ws.js?${js_play_ws_js}|"></script>
-  <script th:src="|../js/play-creator.js?${js_play_creator_js}|"></script>
+  <script th:src="|../js/upload-icon.js?${MODIFIED_DATES.js_upload_icon_js}|"></script>
+  <script th:src="|../js/register-record.js?${MODIFIED_DATES.js_register_record_js}|"></script>
+  <script th:src="|../js/play-common.js?${MODIFIED_DATES.js_play_common_js}|"></script>
+  <script th:src="|../js/play-board.js?${MODIFIED_DATES.js_play_board_js}|"></script>
+  <script th:src="|../js/play-ws.js?${MODIFIED_DATES.js_play_ws_js}|"></script>
+  <script th:src="|../js/play-creator.js?${MODIFIED_DATES.js_play_creator_js}|"></script>
   <script th:inline="javascript" th:if='${requireToLogin}'>
     $(function () {
       requireSignin();
@@ -43,13 +43,13 @@
       background-color: #f8f9fa;
     }
   </style>
-  <script th:src="|../js/play.js?${js_play_js}|"></script>
+  <script th:src="|../js/play.js?${MODIFIED_DATES.js_play_js}|"></script>
   <title>碁盤 | Go</title>
 </head>
 
 <body class="unselectable">
   <div class="container-fluid">
-    <div th:include="/fragment/header-play.html::fcontent" th:remove="tag"></div>
+    <div th:insert="~{/fragment/header-play.html::fcontent}" th:remove="tag"></div>
     <div class="row selectable py-1">
       <div class="col-12">
         <div class="float-start py-1">
@@ -167,7 +167,7 @@
         <div id="game-state-message" class="pt-2 problem-info"></div>
       </div>
     </div>
-    <div th:include="/fragment/creator.html::fcontent" th:remove="tag"></div>
+    <div th:insert="~{/fragment/creator.html::fcontent}" th:remove="tag"></div>
     <div id="row-game-area" class="row no-gutters mt-4 mb-4">
       <div class="col-12 col-sm-2">
         <div class="row">
@@ -469,11 +469,11 @@
       </div>
     </div>
   </div>
-  <div th:include="/fragment/modal-misc.html::fcontent" th:remove="tag"></div>
-  <div th:include="/fragment/modal-icon.html::fcontent" th:remove="tag"></div>
-  <div th:include="/fragment/modal-signup.html::fcontent" th:remove="tag"></div>
-  <div th:include="/fragment/modal-record.html::fcontent" th:remove="tag"></div>
-  <div th:include="/fragment/modal-records.html::fcontent" th:remove="tag"></div>
+  <div th:insert="~{/fragment/modal-misc.html::fcontent}" th:remove="tag"></div>
+  <div th:insert="~{/fragment/modal-icon.html::fcontent}" th:remove="tag"></div>
+  <div th:insert="~{/fragment/modal-signup.html::fcontent}" th:remove="tag"></div>
+  <div th:insert="~{/fragment/modal-record.html::fcontent}" th:remove="tag"></div>
+  <div th:insert="~{/fragment/modal-records.html::fcontent}" th:remove="tag"></div>
   <img id="moving-white-stone" src="../img/play/white-stone.png" style="display: none" />
   <img id="moving-black-stone" src="../img/play/black-stone.png" style="display: none" />
   <div id="moving-a-stone" style="display: none"></div>
@@ -486,7 +486,7 @@
   <audio id="audio-tap" preload="auto" muted>
     <source src="../audio/button63.mp3" type="audio/mpeg" />
   </audio>
-  <div th:include="/fragment/modal-creator.html::fcontent" th:remove="tag"></div>
+  <div th:insert="~{/fragment/modal-creator.html::fcontent}" th:remove="tag"></div>
 </body>
 
 </html>
