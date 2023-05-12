@@ -1,4 +1,4 @@
-package org.nkjmlab.go.javalin.fbauth;
+package org.nkjmlab.go.javalin.auth;
 
 import java.io.File;
 import java.io.FileInputStream;

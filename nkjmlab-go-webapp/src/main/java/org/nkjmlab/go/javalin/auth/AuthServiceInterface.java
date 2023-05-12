@@ -1,4 +1,4 @@
-package org.nkjmlab.go.javalin.fbauth;
+package org.nkjmlab.go.javalin.auth;
 
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 
