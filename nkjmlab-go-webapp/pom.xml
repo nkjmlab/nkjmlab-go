@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nkjmlab</groupId>
   <artifactId>nkjmlab-go-webapp</artifactId>
-  <version>0.9.6</version>
+  <version>0.9.7</version>
   <description>Go Web Application</description>
   <url>https://github.com/nkjmlab/nkjmlab-go-webapp</url>
   <licenses>
@@ -25,8 +25,8 @@
     <tag>HEAD</tag>
   </scm>
   <properties>
-    <nkjmlab-utils-version>0.9.0</nkjmlab-utils-version>
-    <sorm4j-version>1.4.12</sorm4j-version>
+    <nkjmlab-utils-version>0.9.2</nkjmlab-utils-version>
+    <sorm4j-version>1.4.14</sorm4j-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <downloadSources>true</downloadSources>
     <downloadJavadocs>true</downloadJavadocs>
@@ -55,19 +55,19 @@
     <dependency>
       <groupId>io.javalin</groupId>
       <artifactId>javalin</artifactId>
-      <version>5.3.2</version>
+      <version>5.5.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/io.javalin/javalin-rendering -->
     <dependency>
       <groupId>io.javalin</groupId>
       <artifactId>javalin-rendering</artifactId>
-      <version>5.3.2</version>
+      <version>5.5.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.eclipse.jetty.websocket/websocket-jetty-client -->
     <dependency>
       <groupId>org.eclipse.jetty.websocket</groupId>
       <artifactId>websocket-jetty-client</artifactId>
-      <version>11.0.13</version>
+      <version>11.0.15</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
     <dependency>
@@ -93,12 +93,6 @@
       <artifactId>thymeleaf</artifactId>
       <version>3.1.1.RELEASE</version>
     </dependency>
-    <!-- https://mvnrepository.com/artifact/org.thymeleaf.extras/thymeleaf-extras-java8time -->
-    <dependency>
-      <groupId>org.thymeleaf.extras</groupId>
-      <artifactId>thymeleaf-extras-java8time</artifactId>
-      <version>3.0.4.RELEASE</version>
-    </dependency>
     <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
     <dependency>
       <groupId>commons-io</groupId>
@@ -115,13 +109,13 @@
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.14.2</version>
+      <version>2.15.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>2.14.2</version>
+      <version>2.15.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j2-impl -->
     <dependency>
@@ -138,7 +132,7 @@
     <dependency>
       <groupId>org.webjars.npm</groupId>
       <artifactId>jquery</artifactId>
-      <version>3.6.3</version>
+      <version>3.6.4</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -149,7 +143,7 @@
     <dependency>
       <groupId>org.webjars.npm</groupId>
       <artifactId>bootstrap</artifactId>
-      <version>5.3.0-alpha1</version>
+      <version>5.2.3</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -171,7 +165,7 @@
     <dependency>
       <groupId>org.webjars.npm</groupId>
       <artifactId>sweetalert2</artifactId>
-      <version>11.6.15</version>
+      <version>11.7.3</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -182,7 +176,7 @@
     <dependency>
       <groupId>org.webjars.npm</groupId>
       <artifactId>fortawesome__fontawesome-free</artifactId>
-      <version>6.2.1</version>
+      <version>6.4.0</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -224,9 +218,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.webjars.bowergithub.datatables</groupId>
+      <groupId>org.webjars</groupId>
       <artifactId>datatables</artifactId>
-      <version>1.10.21</version>
+      <version>1.13.2</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -260,7 +254,7 @@
     <dependency>
       <groupId>org.webjars.npm</groupId>
       <artifactId>firebase</artifactId>
-      <version>9.17.1</version>
+      <version>9.19.1</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -304,7 +298,7 @@
     <dependency>
       <groupId>org.webjars.npm</groupId>
       <artifactId>ua-parser-js</artifactId>
-      <version>1.0.32</version>
+      <version>1.0.35</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -316,7 +310,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.9.2</version>
+      <version>5.9.3</version>
       <scope>test</scope>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->
@@ -343,6 +337,21 @@
         <version>3.3.0</version>
         <configuration>
           <includeScope>compile</includeScope>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>versions-maven-plugin</artifactId>
+        <version>2.15.0</version>
+        <configuration>
+          <ruleSet>
+            <ignoreVersions>
+              <ignoreVersion>
+                <type>regex</type>
+                <version>.*(alpha|beta|SNAPSHOT|M|rc).*</version>
+              </ignoreVersion>
+            </ignoreVersions>
+          </ruleSet>
         </configuration>
       </plugin>
     </plugins>
