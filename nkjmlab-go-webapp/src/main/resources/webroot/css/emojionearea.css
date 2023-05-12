@@ -1,3 +1,4 @@
+/*! EmojioneArea v3.1.4 | MIT license is modified.*/
 .dropdown-menu.textcomplete-dropdown[data-strategy="emojionearea"] {
   position: absolute;
   z-index: 1000;
@@ -556,5 +557,3 @@
 
 .emojionearea.emojionearea-standalone .emojionearea-editor.has-placeholder {
   background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMAQMAAABsu86kAAAABlBMVEUAAAC/v79T5hyIAAAAAXRSTlMAQObYZgAAABNJREFUCNdjYGNgQEb/P4AQqiAASiUEG6Vit44AAAAASUVORK5CYII=') !important; }
-
-/*# sourceMappingURL=emojionearea.css.map */

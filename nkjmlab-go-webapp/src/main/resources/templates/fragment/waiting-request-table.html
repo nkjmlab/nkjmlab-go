@@ -20,8 +20,8 @@
         </button> <span th:if='${req.isUnpaired}' class="small"><span class="badge bg-primary">募集中</span><span
           class="spinner-grow spinner-grow-sm text-primary" role="status"></span> </span></td>
       <td class="text-center h6"><img class="player-icon rounded"
-        th:src="|../img/icon/${req.userId}.png|"
-        onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'"></td>
+        th:src="|/img/icon/${req.userId}.png|"
+        onerror="this.onerror=null;this.src='/img/icon/no-player-icon.png'"></td>
       <td>
         <h6 class="mt-0">
           <span class="label label-success" th:text="${req.userId}"></span>

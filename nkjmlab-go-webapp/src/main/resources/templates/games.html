@@ -70,10 +70,10 @@
           <tbody>
             <tr th:each="item : ${games}">
               <td class="text-center h6"><img class="player-icon rounded"
-                  th:src="|../img/icon/${item.gameState.blackPlayerId}.png|"
-                  onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'"> <strong>vs.</strong>
-                <img class="player-icon rounded" th:src="|../img/icon/${item.gameState.whitePlayerId}.png|"
-                  onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'">
+                  th:src="|/img/icon/${item.gameState.blackPlayerId}.png|"
+                  onerror="this.onerror=null;this.src='/img/icon/no-player-icon.png'"> <strong>vs.</strong>
+                <img class="player-icon rounded" th:src="|/img/icon/${item.gameState.whitePlayerId}.png|"
+                  onerror="this.onerror=null;this.src='/img/icon/no-player-icon.png'">
               </td>
               <td class="h6"><span th:if="${item.handUp neq null}" class="badge bg-danger">挙手
                   <i class="fas fa-hand-paper"></i>

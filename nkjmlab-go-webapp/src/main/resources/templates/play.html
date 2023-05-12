@@ -3,17 +3,18 @@
 
 <head>
   <object th:insert="~{/fragment/head.html::meta-fragment}" th:remove="tag"></object>
-  <link rel="stylesheet" href="../css/emojionearea.css">
+  <link rel="stylesheet" href="/css/emojionearea.css">
 
   <script th:src="|/webjars/blueimp-load-image/${webjars.blueimp_load_image}/js/load-image.all.min.js|"></script>
   <script th:src="|/webjars/emojionearea/${webjars.emojionearea}/dist/emojionearea.min.js|"></script>
+  <script th:src="|/webjars/clipboard/${webjars.clipboard}/dist/clipboard.min.js|"></script>
 
-  <script th:src="|../js/upload-icon.js?${MODIFIED_DATES.js_upload_icon_js}|"></script>
-  <script th:src="|../js/register-record.js?${MODIFIED_DATES.js_register_record_js}|"></script>
-  <script th:src="|../js/play-common.js?${MODIFIED_DATES.js_play_common_js}|"></script>
-  <script th:src="|../js/play-board.js?${MODIFIED_DATES.js_play_board_js}|"></script>
-  <script th:src="|../js/play-ws.js?${MODIFIED_DATES.js_play_ws_js}|"></script>
-  <script th:src="|../js/play-creator.js?${MODIFIED_DATES.js_play_creator_js}|"></script>
+  <script th:src="|/js/upload-icon.js?${MODIFIED_DATES.js_upload_icon_js}|"></script>
+  <script th:src="|/js/register-record.js?${MODIFIED_DATES.js_register_record_js}|"></script>
+  <script th:src="|/js/play-common.js?${MODIFIED_DATES.js_play_common_js}|"></script>
+  <script th:src="|/js/play-board.js?${MODIFIED_DATES.js_play_board_js}|"></script>
+  <script th:src="|/js/play-ws.js?${MODIFIED_DATES.js_play_ws_js}|"></script>
+  <script th:src="|/js/play-creator.js?${MODIFIED_DATES.js_play_creator_js}|"></script>
   <script th:inline="javascript" th:if='${requireToLogin}'>
     $(function () {
       requireSignin();
@@ -43,7 +44,7 @@
       background-color: #f8f9fa;
     }
   </style>
-  <script th:src="|../js/play.js?${MODIFIED_DATES.js_play_js}|"></script>
+  <script th:src="|/js/play.js?${MODIFIED_DATES.js_play_js}|"></script>
   <title>碁盤 | Go</title>
 </head>
 
@@ -119,10 +120,10 @@
           <div class="selectable pe-2 mb-2" id="card-player-info">
             <div class="play-mode">
               対局 <i class="fas fa-border-all"></i> <span> <span id="black-player-icon"></span>
-                <label class="label label-default"><img src="../img/play/black-stone.png" width="20" /></label> <span
+                <label class="label label-default"><img src="/img/play/black-stone.png" width="20" /></label> <span
                   class="black-player-id-label"> </span>
               </span> <span class="ms-4"> <span id="white-player-icon"></span> <label class="label label-default"><img
-                    src="../img/play/white-stone.png" width="20" /></label> <span class="white-player-id-label"> </span>
+                    src="/img/play/white-stone.png" width="20" /></label> <span class="white-player-id-label"> </span>
               </span>
             </div>
             <div class="practice-mode">
@@ -234,12 +235,12 @@
             <i class="fas fa-reply"></i> 戻す
           </button>
         </div>
-        <img id="circle-stones" class="symbols-area" src="../img/play/circle-stone.png"> <img id="x-stones"
-          class="symbols-area" src="../img/play/x-stone.png"><img id="rectangle-stones" class="symbols-area"
-          src="../img/play/rectangle-stone.png"> <img id="triangle-stones" class="symbols-area"
-          src="../img/play/triangle-stone.png"> <img id="a-stones" class="symbols-area" src="../img/play/a-stone.png">
-        <img id="b-stones" class="symbols-area" src="../img/play/b-stone.png"> <img id="c-stones" class="symbols-area"
-          src="../img/play/c-stone.png">
+        <img id="circle-stones" class="symbols-area" src="/img/play/circle-stone.png"> <img id="x-stones"
+          class="symbols-area" src="/img/play/x-stone.png"><img id="rectangle-stones" class="symbols-area"
+          src="/img/play/rectangle-stone.png"> <img id="triangle-stones" class="symbols-area"
+          src="/img/play/triangle-stone.png"> <img id="a-stones" class="symbols-area" src="/img/play/a-stone.png">
+        <img id="b-stones" class="symbols-area" src="/img/play/b-stone.png"> <img id="c-stones" class="symbols-area"
+          src="/img/play/c-stone.png">
       </div>
     </div>
     <div class="row no-gutters">
@@ -474,8 +475,8 @@
   <div th:insert="~{/fragment/modal-signup.html::fcontent}" th:remove="tag"></div>
   <div th:insert="~{/fragment/modal-record.html::fcontent}" th:remove="tag"></div>
   <div th:insert="~{/fragment/modal-records.html::fcontent}" th:remove="tag"></div>
-  <img id="moving-white-stone" src="../img/play/white-stone.png" style="display: none" />
-  <img id="moving-black-stone" src="../img/play/black-stone.png" style="display: none" />
+  <img id="moving-white-stone" src="/img/play/white-stone.png" style="display: none" />
+  <img id="moving-black-stone" src="/img/play/black-stone.png" style="display: none" />
   <div id="moving-a-stone" style="display: none"></div>
   <div id="moving-b-stone" style="display: none"></div>
   <div id="moving-c-stone" style="display: none"></div>
@@ -484,7 +485,7 @@
   <div id="moving-rectangle-stone" style="display: none"></div>
   <div id="moving-triangle-stone" style="display: none"></div>
   <audio id="audio-tap" preload="auto" muted>
-    <source src="../audio/button63.mp3" type="audio/mpeg" />
+    <source src="/audio/button63.mp3" type="audio/mpeg" />
   </audio>
   <div th:insert="~{/fragment/modal-creator.html::fcontent}" th:remove="tag"></div>
 </body>

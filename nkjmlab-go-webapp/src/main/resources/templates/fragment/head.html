@@ -11,11 +11,12 @@
 
     <link rel="stylesheet"
         th:href="|/webjars/bootstrap-treeview/${webjars.bootstrap_treeview}/dist/bootstrap-treeview.min.css|">
-    <link rel="stylesheet" href="/webjars/datatables/media/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" charset="utf-8"
+      th:href="|/webjars/datatables/${webjars.datatables}/css/dataTables.bootstrap5.min.css|">
     <link rel="stylesheet"
         th:href="|/webjars/datatables-tabletools/${webjars.datatables_tabletools}/css/dataTables.tableTools.css|">
     <link rel="stylesheet" href="/webjars/datatables.net-buttons-dt/css/buttons.dataTables.min.css">
-    <link rel="stylesheet" th:href="|../css/play.css?${css_play_css}|">
+    <link rel="stylesheet" th:href="|/css/play.css?${css_play_css}|">
 
     <script th:src="|/webjars/jquery/${webjars.jquery}/dist/jquery.min.js|"></script>
 
@@ -25,15 +26,14 @@
 
     <script th:src="|/webjars/stacktrace-js/${webjars.stacktrace_js}/dist/stacktrace.min.js|"></script>
     <script th:src="|/webjars/sweetalert2/${webjars.sweetalert2}/dist/sweetalert2.all.min.js|"></script>
-    <script th:src="|/webjars/jszip/${webjars.jszip}/dist/jszip.min.js|"></script>
-    <script th:src="|/webjars/clipboard/${webjars.clipboard}/dist/clipboard.min.js|"></script>
     <script
         th:src="|/webjars/fortawesome__fontawesome-free/${webjars.fortawesome\_\_fontawesome_free}/js/all.min.js|"></script>
 
     <script src="/webjars/datatables/media/js/jquery.dataTables.min.js"></script>
     <script
         th:src="|/webjars/datatables-tabletools/${webjars.datatables_tabletools}/js/dataTables.tableTools.js|"></script>
-    <script src="/webjars/datatables.net-buttons-dt/js/buttons.dataTables.min.js"></script>
+  <script th:src="|/webjars/datatables/${webjars.datatables}/js/jquery.dataTables.min.js|"></script>
+  <script th:src="|/webjars/datatables/${webjars.datatables}/js/dataTables.bootstrap5.min.js|"></script>
 
     <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-app-compat.js|"></script>
     <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-auth-compat.js|"></script>
@@ -41,9 +41,9 @@
 
     <script th:src="|/webjars/ua-parser-js/${webjars.ua_parser_js}/dist/ua-parser.min.js|"></script>
 
-    <script th:src="|../js/lib/jsonrpc-client.js?${MODIFIED_DATES.js_lib_jsonrpc_client_js}|"></script>
-    <script th:src="|../js/utils.js?${MODIFIED_DATES.js_utils_js}|"></script>
-    <script th:src="|../js/firebase.js?${MODIFIED_DATES.js_firebase_js}|"></script>
+    <script th:src="|/js/lib/jsonrpc-client.js?${MODIFIED_DATES.js_lib_jsonrpc_client_js}|"></script>
+    <script th:src="|/js/utils.js?${MODIFIED_DATES.js_utils_js}|"></script>
+    <script th:src="|/js/firebase.js?${MODIFIED_DATES.js_firebase_js}|"></script>
 
 
 </head>

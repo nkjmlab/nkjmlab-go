@@ -73,8 +73,8 @@
           <tbody>
             <tr th:each="item, itemStat : ${userAccounts}">
               <td class="text-center"><span th:text="${itemStat.count}"></span>. <img class="player-icon rounded"
-                  th:src="|../img/icon/${item.login.userId}.png|"
-                  onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'"></td>
+                  th:src="|/img/icon/${item.login.userId}.png|"
+                  onerror="this.onerror=null;this.src='/img/icon/no-player-icon.png'"></td>
               <td class="h5"><a class="badge bg-primary" th:text="${item.login.userId}"
                   th:href="|play.html?game_id=${item.login.userId}|"></a></td>
               <td class="" th:text="${item.user.userName}"></td>

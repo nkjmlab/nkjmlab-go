@@ -3,7 +3,7 @@
 
 <head>
   <object th:insert="~{/fragment/head.html::meta-fragment}" th:remove="tag"></object>
-  <script th:src="|../js/play-common.js?${MODIFIED_DATES.js_play_common_js}|"></script>
+  <script th:src="|/js/play-common.js?${MODIFIED_DATES.js_play_common_js}|"></script>
   <script th:inline="javascript">
     function sendEnterRoom(uids) {
       uids.forEach(function (uid) {

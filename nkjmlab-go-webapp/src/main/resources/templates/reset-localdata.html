@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
 <head>
 <object th:insert="~{/fragment/head.html::meta-fragment}" th:remove="tag"></object>
-<script th:src="|../js/play-common.js?${MODIFIED_DATES.js_play_common_js}|"></script>
+<script th:src="|/js/play-common.js?${MODIFIED_DATES.js_play_common_js}|"></script>
 <script>
   $(function() {
     swalConfirm("初期化", "ローカルデータを初期化しますか？", "warning", function() {

@@ -261,8 +261,8 @@ function syncGameState(sessionId) {
 }
 
 function createImageTag(uid) {
-  const fallback = "this.onerror=null;this.src='../img/icon/no-player-icon.png'";
-  const imgTag = '<img class="player-icon rounded" src="../img/icon/' + uid
+  const fallback = "this.onerror=null;this.src='/img/icon/no-player-icon.png'";
+  const imgTag = '<img class="player-icon rounded" src="/img/icon/' + uid
     + '.png?' + dateNow + '" onerror=' + fallback + '>';
   return imgTag;
 }
