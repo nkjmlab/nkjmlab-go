@@ -15,8 +15,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.nkjmlab.go.javalin.GoAccessManager.UserRole;
-import org.nkjmlab.go.javalin.GoApplication.LoginJson;
-import org.nkjmlab.go.javalin.fbauth.AuthService;
+import org.nkjmlab.go.javalin.auth.AuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
@@ -54,7 +53,6 @@ import org.nkjmlab.util.java.web.WebJarsUtils;
 import org.nkjmlab.util.javalin.JavalinJsonRpcService;
 import org.nkjmlab.util.thymeleaf.ThymeleafTemplateEnginBuilder;
 import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import io.javalin.Javalin;
@@ -86,6 +84,7 @@ public class GoApplication {
   private static final int TRIM_THRESHOLD_OF_GAME_STATE_TABLE = 30000;
   private static final int INTERVAL_IN_WAITING_ROOM = 10;
 
+  private static final int WS_PING_INTERVAL_SEC = 27;
 
   private final DataSource memDbDataSource;
   private final DataSource fileDbDataSource;
@@ -105,9 +104,8 @@ public class GoApplication {
   private static final Map<String, String> webJarsVersions =
       WebJarsUtils.findWebJarVersionsFromClassPath("jquery", "sweetalert2", "bootstrap",
           "bootstrap-treeview", "jszip", "clipboard", "fortawesome__fontawesome-free",
-          "stacktrace-js", "datatables-tabletools", "firebase", "firebaseui", "ua-parser-js",
-          "blueimp-load-image", "emojionearea");
-
+          "stacktrace-js", "datatables", "datatables-tabletools", "firebase", "firebaseui",
+          "ua-parser-js", "blueimp-load-image", "emojionearea");
 
   public static void main(String[] args) {
     if (args.length != 0) {
@@ -136,6 +134,8 @@ public class GoApplication {
         H2LocalDataSourceFactory.builder(fileDbConf.databaseDirectory, fileDbConf.databaseName,
             fileDbConf.username, fileDbConf.password).build();
 
+    factory.makeFileDatabaseIfNotExists();
+
     this.memDbDataSource = createH2DataSource(factory.getInMemoryModeJdbcUrl(),
         factory.getUsername(), factory.getPassword());
     log.info("server jdbcUrl={}", factory.getServerModeJdbcUrl());
@@ -144,9 +144,8 @@ public class GoApplication {
     // H2Server.openBrowser(memDbDataSource, true);
 
     TemplateEngine engine = ThymeleafTemplateEnginBuilder.builder()
-        .setTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND).addDialect(new Java8TimeDialect()).build();
+        .setTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND).build();
     JavalinThymeleaf.init(engine);
-
 
     {
       this.problemsTable = new ProblemsTable(memDbDataSource);
@@ -215,7 +214,6 @@ public class GoApplication {
     this.webSocketManager = new WebsocketSessionsManager(gameStatesTables, problemsTable,
         usersTable, handsUpTable, matchingRequestsTable, memDbDataSource);
 
-
     ScheduledExecutorService srv = Executors.newSingleThreadScheduledExecutor(runnable -> {
       Thread t = Executors.defaultThreadFactory().newThread(runnable);
       t.setDaemon(true);
@@ -247,13 +245,10 @@ public class GoApplication {
       config.accessManager(new GoAccessManager(usersTable));
     });
 
-
-
     prepareWebSocket();
     prepareJsonRpc();
     prepareGetHandler();
   }
-
 
   private FileDatabaseConfigJson getFileDbConfig() {
     try {
@@ -272,20 +267,19 @@ public class GoApplication {
     return "jdbc:h2:mem:" + dbName + ";DB_CLOSE_DELAY=-1";
   }
 
-
-
   private void prepareWebSocket() {
     app.ws("/websocket/play/checkcon", ws -> ws
         .onConnect(ctx -> log.trace("{}", ctx.session.getUpgradeRequest().getRequestURI())));
     app.ws("/websocket/play", ws -> {
-      ws.onConnect(ctx -> webSocketManager.onConnect(ctx.session, ctx.queryParam("userId"),
-          ctx.queryParam("gameId")));
+      ws.onConnect(ctx -> {
+        webSocketManager.onConnect(ctx.session, ctx.queryParam("userId"), ctx.queryParam("gameId"));
+        ctx.enableAutomaticPings(WS_PING_INTERVAL_SEC, TimeUnit.SECONDS);
+      });
       ws.onClose(ctx -> webSocketManager.onClose(ctx.session, ctx.status(), ctx.reason()));
       ws.onError(ctx -> webSocketManager.onError(ctx.session, ctx.error()));
       ws.onMessage(ctx -> webSocketManager.onMessage(ctx.queryParam("gameId"), ctx));
     });
   }
-
 
   private void prepareJsonRpc() {
 
@@ -301,7 +295,6 @@ public class GoApplication {
         new AuthService(usersTable, loginsTable, passwordsTable, ctx.req())));
   }
 
-
   private boolean prepareFirebase() {
     try {
       String url = Files
@@ -313,8 +306,6 @@ public class GoApplication {
       return false;
     }
   }
-
-
 
   private void prepareGetHandler() {
     class GoHandler implements Handler {
@@ -424,7 +415,6 @@ public class GoApplication {
           ctx.render(filePath, model.build());
         }), UserRole.ADMIN);
 
-
     app.get("/app/fragment/waiting-request-table-small.html",
         new GoHandler(ctx -> filePath -> model -> session -> {
           String userId = ctx.queryParam("userId");
@@ -441,8 +431,6 @@ public class GoApplication {
     }));
 
   }
-
-
 
   private static final int DEFAULT_MAX_CONNECTIONS =
       Math.min(ForkJoinPoolUtils.availableProcessors() * 2 * 2, 10);
@@ -470,8 +458,6 @@ public class GoApplication {
     return new HikariDataSource(config);
   }
 
-
-
   private ViewModel.Builder createDefaultModel(UsersTable usersTable, HttpServletRequest request) {
     ViewModel.Builder modelBuilder = ViewModel.builder();
     modelBuilder.put("currentUser", getCurrentUserAccount(usersTable, request));
@@ -479,8 +465,6 @@ public class GoApplication {
     modelBuilder.setFileModifiedDate(WEBROOT_DIR, 10, "js", "css");
     return modelBuilder;
   }
-
-
 
   private User getCurrentUserAccount(UsersTable usersTable, HttpServletRequest request) {
     Optional<User> u = UserSession.wrap(request.getSession()).getUserId()
@@ -500,7 +484,5 @@ public class GoApplication {
       int watchingStudentsNum) {
 
   }
-
-
 
 }

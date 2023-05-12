@@ -1,11 +1,11 @@
 package org.nkjmlab.go.javalin;
 
 import java.util.Set;
-import org.nkjmlab.go.javalin.fbauth.FirebaseUserSession;
+import org.nkjmlab.go.javalin.auth.FirebaseUserSession;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.util.jakarta.servlet.UserSession;
-import org.nkjmlab.util.java.lang.ParameterizedStringFormat;
+import org.nkjmlab.util.java.lang.ParameterizedStringFormatter;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
 import io.javalin.security.AccessManager;
@@ -27,7 +27,7 @@ public class GoAccessManager implements AccessManager {
       User u = null;
       if (fSession.isSigninFirebase()) {
         String email = fSession.getEmail().orElseThrow(() -> new RuntimeException(
-            ParameterizedStringFormat.DEFAULT.format("Email is not set in the session")));
+            ParameterizedStringFormatter.DEFAULT.format("Email is not set in the session")));
         u = usersTable.readByEmail(email);
       } else if (fSession.isLogined()) {
         u = fSession.getUserId().map(userId -> usersTable.selectByPrimaryKey(userId)).orElse(null);

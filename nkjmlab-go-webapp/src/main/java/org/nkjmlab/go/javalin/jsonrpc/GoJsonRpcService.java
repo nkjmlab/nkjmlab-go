@@ -30,7 +30,7 @@ import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.util.java.Base64Utils;
 import org.nkjmlab.util.java.json.JsonMapper;
-import org.nkjmlab.util.java.lang.ParameterizedStringFormat;
+import org.nkjmlab.util.java.lang.ParameterizedStringFormatter;
 import org.nkjmlab.util.javax.imageio.ImageIoUtils;
 import org.threeten.bp.Instant;
 
@@ -366,7 +366,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       Object[] params = {bp.userId(), bp.userName(), bp.rank(), wp.userId(), wp.userName(), wp.rank(), diff,
           ro, s1, s2};
 
-      String msg = ParameterizedStringFormat.DEFAULT.format((String) "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge badge-info'>はじめから</span> {}, <span class='badge badge-info'>棋譜並べから</span> {} <br>", params);
+      String msg = ParameterizedStringFormatter.DEFAULT.format((String) "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge badge-info'>はじめから</span> {}, <span class='badge badge-info'>棋譜並べから</span> {} <br>", params);
       return msg;
     } catch (Exception e) {
       log.error(e);
