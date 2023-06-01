@@ -1,6 +1,5 @@
 package org.nkjmlab.go.javalin.jsonrpc;
 
-import static org.nkjmlab.go.javalin.GoApplication.*;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -8,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.nkjmlab.go.javalin.GoApplication;
-import org.nkjmlab.go.javalin.GoApplication.Const;
+import org.nkjmlab.go.javalin.GoApplication.GoWebAppConfig;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.problem.ProblemTextToJsonConverter;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
@@ -50,7 +49,6 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   private final GameRecordsTable gameRecordsTable;
 
   private static final JsonMapper mapper = GoApplication.getDefaultJacksonMapper();
-
 
   public GoJsonRpcService(WebsocketSessionsManager wsManager, GameStatesTables gameStatesTables,
       ProblemsTable problemsTable, UsersTable usersTable, LoginsTable loginsTable,
@@ -148,13 +146,15 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   }
 
   private File getProblemDir(String groupId) {
-    File dir = new File(Const.PROBLEM_DIR, groupId);
+    File dir = new File(GoWebAppConfig.PROBLEM_DIR, groupId);
     dir.mkdirs();
     return dir;
   }
 
   private File getProblemAutoBackupDir(String groupId) {
-    File dir = new File(Const.PROBLEM_BACKUP_DIR, groupId);
+    File dir =
+        new File(new File(GoWebAppConfig.WEB_APP_CONFIG.getAppRootDirectory(), "problem-auto-bkup"),
+            groupId);
     dir.mkdirs();
     return dir;
 
@@ -274,11 +274,11 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   public File uploadImage(String userId, String base64EncodedImage) {
     try {
       {
-        File outputFile = new File(Const.UPLOADED_ICON_DIR, userId + ".png");
+        File outputFile = new File(GoWebAppConfig.UPLOADED_ICON_DIR, userId + ".png");
         outputFile.mkdirs();
         ImageIoUtils.write(Base64Utils.decodeToImage(base64EncodedImage, "png"), "png", outputFile);
       }
-      File outputFile = new File(Const.CURRENT_ICON_DIR, userId + ".png");
+      File outputFile = new File(GoWebAppConfig.CURRENT_ICON_DIR, userId + ".png");
       outputFile.mkdirs();
       ImageIoUtils.write(Base64Utils.decodeToImage(base64EncodedImage, "png"), "png", outputFile);
       log.debug("Icon is uploaded={}", outputFile);
@@ -364,10 +364,12 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
       String s1 = start.get(roCol).get(Math.min(diff, 5));
       String s2 = midFlow.get(roCol).get(Math.min(diff, 5));
-      Object[] params = {bp.userId(), bp.userName(), bp.rank(), wp.userId(), wp.userName(), wp.rank(), diff,
-          ro, s1, s2};
+      Object[] params = {bp.userId(), bp.userName(), bp.rank(), wp.userId(), wp.userName(),
+          wp.rank(), diff, ro, s1, s2};
 
-      String msg = ParameterizedStringFormatter.DEFAULT.format((String) "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge badge-info'>はじめから</span> {}, <span class='badge badge-info'>棋譜並べから</span> {} <br>", params);
+      String msg = ParameterizedStringFormatter.DEFAULT.format(
+          (String) "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge badge-info'>はじめから</span> {}, <span class='badge badge-info'>棋譜並べから</span> {} <br>",
+          params);
       return msg;
     } catch (Exception e) {
       log.error(e);
