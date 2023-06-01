@@ -65,25 +65,25 @@ public class GoApplication {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
-  private static final File APP_ROOT_DIR = ResourceUtils.getResourceAsFile("/");
-  private static final String WEBROOT_DIR_NAME = "/webroot";
-  private static final File WEBROOT_DIR = new File(APP_ROOT_DIR, WEBROOT_DIR_NAME);
-  private static final File USER_HOME_DIR = SystemFileUtils.getUserHomeDirectory();
+  public static class Const {
 
-  public static final File BACKUP_DIR = new File(USER_HOME_DIR, "go-bkup/");
-  public static final File PROBLEM_DIR = new File(APP_ROOT_DIR, "problem");
-  public static final File PROBLEM_BACKUP_DIR = new File(APP_ROOT_DIR, "problem-auto-bkup");
+    public static final File INITIAL_ICON_DIR = new File(Const.WEBROOT_DIR, "img/icon-initial");
+    public static final File BACKUP_DIR = new File(Const.USER_HOME_DIR, "go-bkup/");
+    public static final File PROBLEM_DIR = new File(Const.APP_ROOT_DIR, "problem");
+    public static final File PROBLEM_BACKUP_DIR = new File(Const.APP_ROOT_DIR, "problem-auto-bkup");
+    public static final File CURRENT_ICON_DIR = new File(Const.WEBROOT_DIR, "img/icon");
+    public static final File UPLOADED_ICON_DIR = new File(Const.WEBROOT_DIR, "img/icon-uploaded");
+    public static final File RANDOM_ICON_DIR = new File(Const.WEBROOT_DIR, "img/icon-random");
+    static final File USER_HOME_DIR = SystemFileUtils.getUserHomeDirectory();
+    static final File WEBROOT_DIR = new File(Const.APP_ROOT_DIR, Const.WEBROOT_DIR_NAME);
+    static final String WEBROOT_DIR_NAME = "/webroot";
+    static final File APP_ROOT_DIR = ResourceUtils.getResourceAsFile("/");
+    private static final int TRIM_THRESHOLD_OF_GAME_STATE_TABLE = 30000;
+    private static final int INTERVAL_IN_WAITING_ROOM = 10;
+    private static final int WS_PING_INTERVAL_SEC = 27;
+    private static long THYMELEAF_EXPIRE_TIME_MILLI_SECOND = 1 * 1000;
 
-  public static final File CURRENT_ICON_DIR = new File(WEBROOT_DIR, "img/icon");
-  public static final File UPLOADED_ICON_DIR = new File(WEBROOT_DIR, "img/icon-uploaded");
-  public static final File RANDOM_ICON_DIR = new File(WEBROOT_DIR, "img/icon-random");
-  public static final File INITIAL_ICON_DIR = new File(WEBROOT_DIR, "img/icon-initial");
-
-  private static long THYMELEAF_EXPIRE_TIME_MILLI_SECOND = 1 * 1000;
-  private static final int TRIM_THRESHOLD_OF_GAME_STATE_TABLE = 30000;
-  private static final int INTERVAL_IN_WAITING_ROOM = 10;
-
-  private static final int WS_PING_INTERVAL_SEC = 27;
+  }
 
   private final DataSource memDbDataSource;
   private final DataSource fileDbDataSource;
@@ -100,14 +100,14 @@ public class GoApplication {
   private final LoginsTable loginsTable;
   private final WebsocketSessionsManager webSocketManager;
 
-  private static final Map<String, String> webJarsVersions = WebJarsUtils
+  private static final Map<String, String> WEB_JARS_VERSIONS = WebJarsUtils
       .findWebJarVersionsFromClassPath("jquery", "sweetalert2", "bootstrap", "bootstrap-treeview",
           "clipboard", "fortawesome__fontawesome-free", "stacktrace-js", "datatables", "firebase",
           "firebaseui", "ua-parser-js", "blueimp-load-image", "emojionearea");
 
   public static void main(String[] args) {
     if (args.length != 0) {
-      THYMELEAF_EXPIRE_TIME_MILLI_SECOND = Long.valueOf(args[0]);
+      Const.THYMELEAF_EXPIRE_TIME_MILLI_SECOND = Long.valueOf(args[0]);
     }
     int port = 4567;
     log.info("start (port:{}) => {}", port, SystemPropertyUtils.getJavaProperties());
@@ -143,17 +143,18 @@ public class GoApplication {
     // H2Server.openBrowser(memDbDataSource, true);
 
     TemplateEngine engine = ThymeleafTemplateEnginBuilder.builder()
-        .setTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND).build();
+        .setTtlMs(Const.THYMELEAF_EXPIRE_TIME_MILLI_SECOND).build();
     JavalinThymeleaf.init(engine);
 
     {
       this.problemsTable = new ProblemsTable(memDbDataSource);
-      problemsTable.dropAndInsertInitialProblemsToTable(PROBLEM_DIR);
+      problemsTable.dropAndInsertInitialProblemsToTable(Const.PROBLEM_DIR);
     }
     {
       this.loginsTable = new LoginsTable(fileDbDataSource);
       loginsTable.createTableIfNotExists().createIndexesIfNotExists();
-      loginsTable.writeCsv(new File(BACKUP_DIR, "logins-" + System.currentTimeMillis() + ".csv"));
+      loginsTable
+          .writeCsv(new File(Const.BACKUP_DIR, "logins-" + System.currentTimeMillis() + ".csv"));
     }
 
     this.handsUpTable = new HandUpsTable(memDbDataSource);
@@ -186,8 +187,8 @@ public class GoApplication {
     {
       this.gameRecordsTable = new GameRecordsTable(fileDbDataSource);
       gameRecordsTable.createTableIfNotExists().createIndexesIfNotExists();
-      gameRecordsTable
-          .writeCsv(new File(BACKUP_DIR, "game-record" + System.currentTimeMillis() + ".csv"));
+      gameRecordsTable.writeCsv(
+          new File(Const.BACKUP_DIR, "game-record" + System.currentTimeMillis() + ".csv"));
       gameRecordsTable.recalculateAndUpdateRank(usersTable);
     }
     {
@@ -198,7 +199,7 @@ public class GoApplication {
       GameStatesTable gameStatesTable = new GameStatesTable(fileDbDataSource);
       gameStatesTable.createTableIfNotExists().createIndexesIfNotExists();
       gameStatesTable.trimAndBackupToFile(factory.getDatabaseDirectory(),
-          TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
+          Const.TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
 
       GameStatesTable gameStatesTableInMem = new GameStatesTable(memDbDataSource);
       gameStatesTableInMem.createTableIfNotExists().createIndexesIfNotExists();
@@ -221,7 +222,8 @@ public class GoApplication {
     srv.scheduleWithFixedDelay(Try.createRunnable(() -> {
       Set<String> uids = matchingRequestsTable.createPairOfUsers(gameStatesTables);
       webSocketManager.sendUpdateWaitingRequestStatus(uids);
-    }, e -> log.error(e)), INTERVAL_IN_WAITING_ROOM, INTERVAL_IN_WAITING_ROOM, TimeUnit.SECONDS);
+    }, e -> log.error(e)), Const.INTERVAL_IN_WAITING_ROOM, Const.INTERVAL_IN_WAITING_ROOM,
+        TimeUnit.SECONDS);
 
     // this.app = Javalin.create(config -> {
     // config.addStaticFiles(staticFiles -> {
@@ -237,7 +239,7 @@ public class GoApplication {
     // });
 
     this.app = Javalin.create(config -> {
-      config.staticFiles.add(WEBROOT_DIR_NAME, Location.CLASSPATH);
+      config.staticFiles.add(Const.WEBROOT_DIR_NAME, Location.CLASSPATH);
       config.staticFiles.enableWebjars();
       config.http.generateEtags = true;
       config.plugins.enableCors(cors -> cors.add(corsConfig -> corsConfig.anyHost()));
@@ -272,7 +274,7 @@ public class GoApplication {
     app.ws("/websocket/play", ws -> {
       ws.onConnect(ctx -> {
         webSocketManager.onConnect(ctx.session, ctx.queryParam("userId"), ctx.queryParam("gameId"));
-        ctx.enableAutomaticPings(WS_PING_INTERVAL_SEC, TimeUnit.SECONDS);
+        ctx.enableAutomaticPings(Const.WS_PING_INTERVAL_SEC, TimeUnit.SECONDS);
       });
       ws.onClose(ctx -> webSocketManager.onClose(ctx.session, ctx.status(), ctx.reason()));
       ws.onError(ctx -> webSocketManager.onError(ctx.session, ctx.error()));
@@ -436,8 +438,8 @@ public class GoApplication {
   private ViewModel.Builder createDefaultModel(UsersTable usersTable, HttpServletRequest request) {
     ViewModel.Builder modelBuilder = ViewModel.builder();
     modelBuilder.put("currentUser", getCurrentUserAccount(usersTable, request));
-    modelBuilder.put("webjars", webJarsVersions);
-    modelBuilder.setFileModifiedDate(WEBROOT_DIR, 10, "js", "css");
+    modelBuilder.put("webjars", WEB_JARS_VERSIONS);
+    modelBuilder.setFileModifiedDate(Const.WEBROOT_DIR, 10, "js", "css");
     return modelBuilder;
   }
 

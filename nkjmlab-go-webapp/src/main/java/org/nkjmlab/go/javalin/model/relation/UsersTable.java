@@ -13,6 +13,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
+import org.nkjmlab.go.javalin.GoApplication.Const;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
@@ -120,8 +121,8 @@ public class UsersTable extends BasicH2Table<User> {
 
 
   public static void createIcon(String userId) {
-    File uploadedIcon = new File(UPLOADED_ICON_DIR, userId + ".png");
-    File initialIcon = new File(INITIAL_ICON_DIR, userId + ".png");
+    File uploadedIcon = new File(Const.UPLOADED_ICON_DIR, userId + ".png");
+    File initialIcon = new File(Const.INITIAL_ICON_DIR, userId + ".png");
 
     File srcFile =
         uploadedIcon
@@ -130,13 +131,13 @@ public class UsersTable extends BasicH2Table<User> {
                 : (initialIcon
                     .exists()
                         ? initialIcon
-                        : getRandom(Stream.of(RANDOM_ICON_DIR.listFiles())
+                        : getRandom(Stream.of(Const.RANDOM_ICON_DIR.listFiles())
                             .filter(f -> f.getName().toLowerCase().endsWith(".png")
                                 || f.getName().toLowerCase().endsWith(".jpg"))
                             .toList()).orElseThrow());
     try {
       org.apache.commons.io.FileUtils.copyFile(srcFile,
-          new File(CURRENT_ICON_DIR, userId + ".png"));
+          new File(Const.CURRENT_ICON_DIR, userId + ".png"));
     } catch (IOException e) {
       log.warn(e, e);
     }

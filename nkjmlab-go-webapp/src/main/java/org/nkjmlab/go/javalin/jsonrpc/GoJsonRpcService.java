@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.nkjmlab.go.javalin.GoApplication;
+import org.nkjmlab.go.javalin.GoApplication.Const;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.problem.ProblemTextToJsonConverter;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
@@ -147,13 +148,13 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   }
 
   private File getProblemDir(String groupId) {
-    File dir = new File(PROBLEM_DIR, groupId);
+    File dir = new File(Const.PROBLEM_DIR, groupId);
     dir.mkdirs();
     return dir;
   }
 
   private File getProblemAutoBackupDir(String groupId) {
-    File dir = new File(PROBLEM_BACKUP_DIR, groupId);
+    File dir = new File(Const.PROBLEM_BACKUP_DIR, groupId);
     dir.mkdirs();
     return dir;
 
@@ -273,11 +274,11 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   public File uploadImage(String userId, String base64EncodedImage) {
     try {
       {
-        File outputFile = new File(UPLOADED_ICON_DIR, userId + ".png");
+        File outputFile = new File(Const.UPLOADED_ICON_DIR, userId + ".png");
         outputFile.mkdirs();
         ImageIoUtils.write(Base64Utils.decodeToImage(base64EncodedImage, "png"), "png", outputFile);
       }
-      File outputFile = new File(CURRENT_ICON_DIR, userId + ".png");
+      File outputFile = new File(Const.CURRENT_ICON_DIR, userId + ".png");
       outputFile.mkdirs();
       ImageIoUtils.write(Base64Utils.decodeToImage(base64EncodedImage, "png"), "png", outputFile);
       log.debug("Icon is uploaded={}", outputFile);
