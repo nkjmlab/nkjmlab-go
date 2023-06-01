@@ -34,14 +34,12 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.common.Tuple.Tuple2;
-import org.nkjmlab.sorm4j.util.h2.datasource.H2LocalDataSourceFactory;
 import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProcess;
 import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProperties;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.jakarta.servlet.UserSession;
 import org.nkjmlab.util.java.function.Try;
 import org.nkjmlab.util.java.io.SystemFileUtils;
-import org.nkjmlab.util.java.json.FileDatabaseConfigJson;
 import org.nkjmlab.util.java.lang.ProcessUtils;
 import org.nkjmlab.util.java.lang.ResourceUtils;
 import org.nkjmlab.util.java.lang.SystemPropertyUtils;
@@ -71,7 +69,6 @@ public class GoApplication {
             "fortawesome__fontawesome-free", "stacktrace-js", "datatables", "firebase",
             "firebaseui", "ua-parser-js", "blueimp-load-image", "emojionearea")
         .build();
-
 
     private static long THYMELEAF_EXPIRE_TIME_MILLI_SECOND = 1 * 1000;
 
@@ -122,20 +119,11 @@ public class GoApplication {
 
     log.info("log4j2.configurationFile={}, Logger level={}",
         System.getProperty("log4j2.configurationFile"), log.getLevel());
-    FileDatabaseConfigJson fileDbConf = getFileDbConfig();
 
-    H2LocalDataSourceFactory factory =
-        H2LocalDataSourceFactory.builder(fileDbConf.databaseDirectory, fileDbConf.databaseName,
-            fileDbConf.username, fileDbConf.password).build();
+    DataSourceManager basicDataSource = new DataSourceManager();
 
-    factory.makeFileDatabaseIfNotExists();
-
-    DataSource memDbDataSource = DataSourceUtils.createHikariDataSource(
-        factory.getInMemoryModeJdbcUrl(), factory.getUsername(), factory.getPassword());
-    log.info("server jdbcUrl={}", factory.getServerModeJdbcUrl());
-
-    DataSource fileDbDataSource = DataSourceUtils.createHikariDataSource(
-        factory.getServerModeJdbcUrl(), factory.getUsername(), factory.getPassword());
+    DataSource memDbDataSource = basicDataSource.createHikariDataSource();
+    DataSource fileDbDataSource = basicDataSource.createHikariDataSource();
     // H2Server.openBrowser(memDbDataSource, true);
 
     TemplateEngine engine = ThymeleafTemplateEnginBuilder.builder()
@@ -195,7 +183,7 @@ public class GoApplication {
     {
       GameStatesTable gameStatesTable = new GameStatesTable(fileDbDataSource);
       gameStatesTable.createTableIfNotExists().createIndexesIfNotExists();
-      gameStatesTable.trimAndBackupToFile(factory.getDatabaseDirectory(),
+      gameStatesTable.trimAndBackupToFile(basicDataSource.getFactory().getDatabaseDirectory(),
           TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
 
       GameStatesTable gameStatesTableInMem = new GameStatesTable(memDbDataSource);
@@ -235,18 +223,6 @@ public class GoApplication {
     prepareGetHandler(webSocketManager);
   }
 
-  private FileDatabaseConfigJson getFileDbConfig() {
-    try {
-      return getDefaultJacksonMapper().toObject(ResourceUtils.getResourceAsFile("/conf/h2.json"),
-          FileDatabaseConfigJson.Builder.class).build();
-    } catch (Exception e) {
-      log.warn("Try to load h2.json.default");
-      return getDefaultJacksonMapper()
-          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json.default"),
-              FileDatabaseConfigJson.Builder.class)
-          .build();
-    }
-  }
 
   private static void prepareWebSocket(Javalin app, WebsocketSessionsManager webSocketManager) {
     final int WS_PING_INTERVAL_SEC = 27;
