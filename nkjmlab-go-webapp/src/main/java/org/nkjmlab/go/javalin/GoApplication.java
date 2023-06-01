@@ -101,11 +101,10 @@ public class GoApplication {
   private final LoginsTable loginsTable;
   private final WebsocketSessionsManager webSocketManager;
 
-  private static final Map<String, String> webJarsVersions =
-      WebJarsUtils.findWebJarVersionsFromClassPath("jquery", "sweetalert2", "bootstrap",
-          "bootstrap-treeview", "jszip", "clipboard", "fortawesome__fontawesome-free",
-          "stacktrace-js", "datatables", "datatables-tabletools", "firebase", "firebaseui",
-          "ua-parser-js", "blueimp-load-image", "emojionearea");
+  private static final Map<String, String> webJarsVersions = WebJarsUtils
+      .findWebJarVersionsFromClassPath("jquery", "sweetalert2", "bootstrap", "bootstrap-treeview",
+          "clipboard", "fortawesome__fontawesome-free", "stacktrace-js", "datatables", "firebase",
+          "firebaseui", "ua-parser-js", "blueimp-load-image", "emojionearea");
 
   public static void main(String[] args) {
     if (args.length != 0) {

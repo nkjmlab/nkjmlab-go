@@ -25,8 +25,8 @@
     <tag>HEAD</tag>
   </scm>
   <properties>
-    <nkjmlab-utils-version>0.9.2</nkjmlab-utils-version>
-    <sorm4j-version>1.4.14</sorm4j-version>
+    <nkjmlab-utils-version>0.9.3</nkjmlab-utils-version>
+    <sorm4j-version>1.4.16</sorm4j-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <downloadSources>true</downloadSources>
     <downloadJavadocs>true</downloadJavadocs>
@@ -228,28 +228,6 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency>
-      <groupId>org.webjars.bower</groupId>
-      <artifactId>datatables-tabletools</artifactId>
-      <version>2.2.4</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.webjars.bowergithub.datatables</groupId>
-      <artifactId>dist-datatables-buttons-datatables</artifactId>
-      <version>2.2.2</version>
-      <exclusions>
-        <exclusion>
-          <groupId>*</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
     <!-- https://mvnrepository.com/artifact/org.webjars.npm/firebase -->
     <dependency>
       <groupId>org.webjars.npm</groupId>
@@ -348,7 +326,7 @@
             <ignoreVersions>
               <ignoreVersion>
                 <type>regex</type>
-                <version>.*(alpha|beta|SNAPSHOT|M|rc).*</version>
+                <version>(?i).*(alpha|beta|snapshot|pre|rc|M\d).*</version>
               </ignoreVersion>
             </ignoreVersions>
           </ruleSet>
