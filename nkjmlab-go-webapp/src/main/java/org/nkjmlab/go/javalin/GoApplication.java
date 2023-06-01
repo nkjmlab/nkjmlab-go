@@ -13,7 +13,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
-import org.h2.jdbcx.JdbcConnectionPool;
 import org.nkjmlab.go.javalin.GoAccessManager.UserRole;
 import org.nkjmlab.go.javalin.auth.AuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService;
@@ -40,7 +39,6 @@ import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProcess;
 import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProperties;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.jakarta.servlet.UserSession;
-import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
 import org.nkjmlab.util.java.function.Try;
 import org.nkjmlab.util.java.io.SystemFileUtils;
 import org.nkjmlab.util.java.json.FileDatabaseConfigJson;
@@ -53,8 +51,6 @@ import org.nkjmlab.util.java.web.WebJarsUtils;
 import org.nkjmlab.util.javalin.JavalinJsonRpcService;
 import org.nkjmlab.util.thymeleaf.ThymeleafTemplateEnginBuilder;
 import org.thymeleaf.TemplateEngine;
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
 import io.javalin.Javalin;
 import io.javalin.http.Context;
 import io.javalin.http.Handler;
@@ -64,6 +60,8 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public class GoApplication {
 
+
+
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
@@ -71,6 +69,7 @@ public class GoApplication {
   private static final String WEBROOT_DIR_NAME = "/webroot";
   private static final File WEBROOT_DIR = new File(APP_ROOT_DIR, WEBROOT_DIR_NAME);
   private static final File USER_HOME_DIR = SystemFileUtils.getUserHomeDirectory();
+
   public static final File BACKUP_DIR = new File(USER_HOME_DIR, "go-bkup/");
   public static final File PROBLEM_DIR = new File(APP_ROOT_DIR, "problem");
   public static final File PROBLEM_BACKUP_DIR = new File(APP_ROOT_DIR, "problem-auto-bkup");
@@ -135,10 +134,11 @@ public class GoApplication {
 
     factory.makeFileDatabaseIfNotExists();
 
-    this.memDbDataSource = createH2DataSource(factory.getInMemoryModeJdbcUrl(),
+    this.memDbDataSource = DataSourceUtils.createHikariDataSource(factory.getInMemoryModeJdbcUrl(),
         factory.getUsername(), factory.getPassword());
     log.info("server jdbcUrl={}", factory.getServerModeJdbcUrl());
-    this.fileDbDataSource = createHikariDataSource(factory.getServerModeJdbcUrl(),
+
+    this.fileDbDataSource = DataSourceUtils.createHikariDataSource(factory.getServerModeJdbcUrl(),
         factory.getUsername(), factory.getPassword());
     // H2Server.openBrowser(memDbDataSource, true);
 
@@ -431,31 +431,7 @@ public class GoApplication {
 
   }
 
-  private static final int DEFAULT_MAX_CONNECTIONS =
-      Math.min(ForkJoinPoolUtils.availableProcessors() * 2 * 2, 10);
-  private static final int DEFAULT_TIMEOUT_SECONDS = 30;
 
-  private JdbcConnectionPool createH2DataSource(String url, String user, String password) {
-    JdbcConnectionPool ds = JdbcConnectionPool.create(url, user, password);
-    ds.setMaxConnections(DEFAULT_MAX_CONNECTIONS);
-    ds.setLoginTimeout(DEFAULT_TIMEOUT_SECONDS);
-    return ds;
-  }
-
-  public static HikariDataSource createHikariDataSource(String url, String user, String password) {
-    HikariConfig config = new HikariConfig();
-    config.setJdbcUrl(url);
-    config.setUsername(user);
-    config.setPassword(password);
-    config.setMaximumPoolSize(DEFAULT_MAX_CONNECTIONS);
-    config.setConnectionTimeout(DEFAULT_TIMEOUT_SECONDS * 1000);
-    config.addDataSourceProperty("useServerPrepStmts", "true");
-    config.addDataSourceProperty("cachePrepStmts", "true");
-    config.addDataSourceProperty("prepStmtCacheSize", "250");
-    config.addDataSourceProperty("prepStmtCacheSqlLimit", "2048");
-    config.addDataSourceProperty("minimumIdle", "2048");
-    return new HikariDataSource(config);
-  }
 
   private ViewModel.Builder createDefaultModel(UsersTable usersTable, HttpServletRequest request) {
     ViewModel.Builder modelBuilder = ViewModel.builder();
