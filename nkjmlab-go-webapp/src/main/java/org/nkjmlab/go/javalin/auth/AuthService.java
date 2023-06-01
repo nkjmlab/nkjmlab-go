@@ -22,6 +22,24 @@ import com.google.firebase.auth.FirebaseToken;
 import jakarta.servlet.http.HttpServletRequest;
 
 public class AuthService implements AuthServiceInterface {
+
+  public static class Factory {
+    private final UsersTable usersTable;
+    private final LoginsTable loginsTable;
+    private final PasswordsTable passwordsTable;
+
+    public Factory(UsersTable usersTable, LoginsTable loginsTable, PasswordsTable passwordsTable) {
+      this.usersTable = usersTable;
+      this.loginsTable = loginsTable;
+      this.passwordsTable = passwordsTable;
+    }
+
+    public AuthService create(HttpServletRequest request) {
+      return new AuthService(usersTable, loginsTable, passwordsTable, request);
+    }
+
+  }
+
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
@@ -31,7 +49,7 @@ public class AuthService implements AuthServiceInterface {
   private final HttpServletRequest request;
 
 
-  public AuthService(UsersTable usersTable, LoginsTable loginsTable, PasswordsTable passwordsTable,
+  private AuthService(UsersTable usersTable, LoginsTable loginsTable, PasswordsTable passwordsTable,
       HttpServletRequest request) {
     this.usersTable = usersTable;
     this.loginsTable = loginsTable;

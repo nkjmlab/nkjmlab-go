@@ -23,15 +23,12 @@ import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WriteCallback;
 import org.nkjmlab.go.javalin.GoApplication;
+import org.nkjmlab.go.javalin.GoTables;
 import org.nkjmlab.go.javalin.model.common.Agehama;
 import org.nkjmlab.go.javalin.model.common.Hand;
 import org.nkjmlab.go.javalin.model.common.Hand.HandType;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
-import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
-import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
-import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
-import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
@@ -58,31 +55,19 @@ public class WebsocketSessionsManager {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
-  private final ProblemsTable problemsTable;
-  private final GameStatesTables gameStatesTables;
-  private final UsersTable usersTable;
-  private final HandUpsTable handsUpTable;
-  private final MatchingRequestsTable matchingRequestsTable;
   private final WebsoketSessionsTable websoketSessionsTable;
-
 
   private final Queue<String> globalMessages = new ConcurrentLinkedQueue<>();
   private final WebSocketJsonSenderService jsonSenderService = new WebSocketJsonSenderService();
 
+  private GoTables goTables;
 
-  public WebsocketSessionsManager(GameStatesTables gameStatesTables, ProblemsTable problemsTable,
-      UsersTable usersTable, HandUpsTable handsUpTable, MatchingRequestsTable matchingRequestsTable,
-      DataSource memDbDataSource) {
-    this.gameStatesTables = gameStatesTables;
-    this.problemsTable = problemsTable;
-    this.usersTable = usersTable;
-    this.handsUpTable = handsUpTable;
-    this.matchingRequestsTable = matchingRequestsTable;
+
+  public WebsocketSessionsManager(GoTables goTables, DataSource memDbDataSource) {
+    this.goTables = goTables;
     this.websoketSessionsTable = new WebsoketSessionsTable(memDbDataSource);
     this.websoketSessionsTable.createTableIfNotExists().createIndexesIfNotExists();
-
   }
-
 
   public void onMessage(String gameId, WsMessageContext ctx) {
     GameState gs = ctx.messageAsClass(GameState.class);
@@ -107,7 +92,7 @@ public class WebsocketSessionsManager {
 
   public void onConnect(Session session, String userId, String gameId) {
 
-    if (!usersTable.exists(userId)) {
+    if (!goTables.usersTable.exists(userId)) {
       log.info("userId=[{}] dose not exists", userId);
       jsonSenderService.submitRequestToLogin(session, userId);
       return;
@@ -115,12 +100,13 @@ public class WebsocketSessionsManager {
     websoketSessionsTable.registerSession(gameId, userId, session);
 
     jsonSenderService.submitInitSession(session, session.hashCode(),
-        usersTable.selectByPrimaryKey(userId));
+        goTables.usersTable.selectByPrimaryKey(userId));
 
-    Optional.ofNullable(handsUpTable.selectByPrimaryKey(gameId)).ifPresent(h -> jsonSenderService
-        .submitHandUpOrDown(List.of(session), true, handsUpTable.readOrder(gameId)));
+    Optional.ofNullable(goTables.handsUpTable.selectByPrimaryKey(gameId))
+        .ifPresent(h -> jsonSenderService.submitHandUpOrDown(List.of(session), true,
+            goTables.handsUpTable.readOrder(gameId)));
 
-    Optional.ofNullable(matchingRequestsTable.selectByPrimaryKey(userId))
+    Optional.ofNullable(goTables.matchingRequestsTable.selectByPrimaryKey(userId))
         .ifPresent(h -> jsonSenderService.submitUpdateWaitingRequestStatus(List.of(session)));
 
     jsonSenderService.submitGlobalMessages(session, globalMessages);
@@ -130,13 +116,13 @@ public class WebsocketSessionsManager {
 
 
   public void goBack(String gameId) {
-    gameStatesTables.deleteLatestGameState(gameId);
+    goTables.gameStatesTables.deleteLatestGameState(gameId);
     sendLatestGameStateToSessions(gameId);
   }
 
 
   public ProblemJson loadProblem(String gameId, long problemId) {
-    Problem p = problemsTable.selectByPrimaryKey(problemId);
+    Problem p = goTables.problemsTable.selectByPrimaryKey(problemId);
     Hand[] handHistory = mapper.toObject(p.handHistory(), Hand[].class);
     Hand lastHand =
         handHistory.length != 0 ? handHistory[handHistory.length - 1] : Hand.createDummyHand();
@@ -146,19 +132,19 @@ public class WebsocketSessionsManager {
         mapper.toObject(p.symbols(), new TypeReference<Map<String, Integer>>() {}), handHistory,
         p.id(), new HashMap<>());
     sendGameState(gameId, json);
-    return ProblemJson.createFrom(problemsTable.selectByPrimaryKey(problemId));
+    return ProblemJson.createFrom(goTables.problemsTable.selectByPrimaryKey(problemId));
   }
 
 
 
   public void newGame(String gameId, GameState json) {
-    GameState newGameJson = gameStatesTables.createNewGameState(gameId, json.blackPlayerId(),
-        json.whitePlayerId(), json.cells().length);
+    GameState newGameJson = goTables.gameStatesTables.createNewGameState(gameId,
+        json.blackPlayerId(), json.whitePlayerId(), json.cells().length);
     sendGameState(gameId, newGameJson);
   }
 
   private void sendEntriesToSessions(String gameId) {
-    List<UserJson> users = websoketSessionsTable.readUsers(usersTable, gameId).stream()
+    List<UserJson> users = websoketSessionsTable.readUsers(goTables.usersTable, gameId).stream()
         .map(u -> new UserJson(u, true)).collect(Collectors.toList());
 
     jsonSenderService.submitEntries(websoketSessionsTable.getSessionsByGameId(gameId), users);
@@ -168,7 +154,7 @@ public class WebsocketSessionsManager {
   public void sendGameState(String gameId, GameState json) {
     GameState newJson = removeHagashi(json);
 
-    gameStatesTables.saveGameState(newJson);
+    goTables.gameStatesTables.saveGameState(newJson);
     sendGameStateToSessions(gameId, newJson);
   }
 
@@ -217,11 +203,12 @@ public class WebsocketSessionsManager {
   private void sendHandUpToSessions(String gameId, boolean handUp, int order) {
     jsonSenderService.submitHandUpOrDown(websoketSessionsTable.getSessionsByGameId(gameId), handUp,
         order);
-    jsonSenderService.submitUpdateHandUpTable(websoketSessionsTable.getAdminSessions(usersTable));
+    jsonSenderService
+        .submitUpdateHandUpTable(websoketSessionsTable.getAdminSessions(goTables.usersTable));
   }
 
   public void sendLatestGameStateToSessions(String gameId) {
-    sendGameStateToSessions(gameId, gameStatesTables.readLatestGameState(gameId));
+    sendGameStateToSessions(gameId, goTables.gameStatesTables.readLatestGameState(gameId));
   }
 
 
@@ -473,12 +460,12 @@ public class WebsocketSessionsManager {
   }
 
   public int getWatchingUniqueStudentsNum(String gameId) {
-    return websoketSessionsTable.getWatchingUniqueStudentsNum(usersTable, gameId);
+    return websoketSessionsTable.getWatchingUniqueStudentsNum(goTables.usersTable, gameId);
   }
 
 
   public List<String> readActiveGameIdsOrderByGameId() {
-    return websoketSessionsTable.readActiveGameIdsOrderByGameId(usersTable);
+    return websoketSessionsTable.readActiveGameIdsOrderByGameId(goTables.usersTable);
   }
 
 }

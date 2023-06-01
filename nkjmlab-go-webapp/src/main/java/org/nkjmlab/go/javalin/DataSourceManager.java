@@ -32,15 +32,26 @@ public class DataSourceManager {
     log.info("server jdbcUrl={}", factory.getServerModeJdbcUrl());
   }
 
-  public DataSource createHikariDataSource() {
+  public DataSource createHikariInMemoryDataSource() {
     return createHikariDataSource(factory.getInMemoryModeJdbcUrl(), factory.getUsername(),
         factory.getPassword());
   }
 
-  public JdbcConnectionPool createH2DataSource() {
+  public DataSource createHikariServerModeDataSource() {
+    return createHikariDataSource(factory.getServerModeJdbcUrl(), factory.getUsername(),
+        factory.getPassword());
+  }
+
+  public JdbcConnectionPool createH2InMemoryDataSource() {
     return createH2DataSource(factory.getInMemoryModeJdbcUrl(), factory.getUsername(),
         factory.getPassword());
   }
+
+  public JdbcConnectionPool createH2ServerModeDataSource() {
+    return createH2DataSource(factory.getServerModeJdbcUrl(), factory.getUsername(),
+        factory.getPassword());
+  }
+
 
   private static HikariDataSource createHikariDataSource(String url, String user, String password) {
     HikariConfig config = new HikariConfig();

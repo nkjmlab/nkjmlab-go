@@ -1,7 +1,6 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.go.javalin.GoApplication.*;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -127,17 +126,14 @@ public class UsersTable extends BasicH2Table<User> {
         new File(new File(GoWebAppConfig.WEB_APP_CONFIG.getWebRootDirectory(), "img/icon-initial"),
             userId + ".png");
 
-    File srcFile =
-        uploadedIcon
-            .exists()
-                ? uploadedIcon
-                : (initialIcon
-                    .exists()
-                        ? initialIcon
-                        : getRandom(Stream.of(new File(GoApplication.GoWebAppConfig.WEB_APP_CONFIG.getWebRootDirectory(), "img/icon-random").listFiles())
-                            .filter(f -> f.getName().toLowerCase().endsWith(".png")
-                                || f.getName().toLowerCase().endsWith(".jpg"))
-                            .toList()).orElseThrow());
+    File srcFile = uploadedIcon.exists() ? uploadedIcon
+        : (initialIcon.exists() ? initialIcon
+            : getRandom(Stream
+                .of(new File(GoApplication.GoWebAppConfig.WEB_APP_CONFIG.getWebRootDirectory(),
+                    "img/icon-random").listFiles())
+                .filter(f -> f.getName().toLowerCase().endsWith(".png")
+                    || f.getName().toLowerCase().endsWith(".jpg"))
+                .toList()).orElseThrow());
     try {
       org.apache.commons.io.FileUtils.copyFile(srcFile,
           new File(GoWebAppConfig.CURRENT_ICON_DIR, userId + ".png"));
