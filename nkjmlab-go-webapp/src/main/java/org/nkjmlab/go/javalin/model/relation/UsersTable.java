@@ -12,8 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
-import org.nkjmlab.go.javalin.GoApplication;
-import org.nkjmlab.go.javalin.GoApplication.GoWebAppConfig;
+import org.nkjmlab.go.javalin.GoWebAppConfig;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
@@ -129,7 +128,7 @@ public class UsersTable extends BasicH2Table<User> {
     File srcFile = uploadedIcon.exists() ? uploadedIcon
         : (initialIcon.exists() ? initialIcon
             : getRandom(Stream
-                .of(new File(GoApplication.GoWebAppConfig.WEB_APP_CONFIG.getWebRootDirectory(),
+                .of(new File(GoWebAppConfig.WEB_APP_CONFIG.getWebRootDirectory(),
                     "img/icon-random").listFiles())
                 .filter(f -> f.getName().toLowerCase().endsWith(".png")
                     || f.getName().toLowerCase().endsWith(".jpg"))

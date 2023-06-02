@@ -2,9 +2,9 @@ package org.nkjmlab.go.javalin;
 
 import java.io.File;
 import javax.sql.DataSource;
-import org.nkjmlab.go.javalin.GoApplication.GoWebAppConfig;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable;
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
@@ -13,7 +13,6 @@ import org.nkjmlab.go.javalin.model.relation.PasswordsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.VotesTable;
-import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.util.java.io.SystemFileUtils;
 import org.nkjmlab.util.java.lang.ResourceUtils;
 
@@ -32,7 +31,7 @@ public class GoTables {
   public final GameRecordsTable gameRecordsTable;
   public final PasswordsTable passwordsTable;
 
-  public GoTables(GameStatesTables gameStatesTables, ProblemsTable problemsTable,
+  private GoTables(GameStatesTables gameStatesTables, ProblemsTable problemsTable,
       UsersTable usersTable, PasswordsTable passwordsTable, LoginsTable loginsTable,
       MatchingRequestsTable matchingRequestsTable, VotesTable votesTable, HandUpsTable handsUpTable,
       GameRecordsTable gameRecordsTable) {
@@ -47,93 +46,113 @@ public class GoTables {
     this.gameRecordsTable = gameRecordsTable;
   }
 
-  public static GoTables prepareTables(DataSourceManager basicDataSource,
-      DataSource fileDbDataSource, DataSource memDbDataSource) {
-    final int TRIM_THRESHOLD_OF_GAME_STATE_TABLE = 30000;
+  public static GoTables prepareTables(DataSourceManager basicDataSource) {
 
-    final ProblemsTable problemsTable;
-    final HandUpsTable handsUpTable;
-    final UsersTable usersTable;
-    final PasswordsTable passwordsTable;
-    final MatchingRequestsTable matchingRequestsTable;
-    final GameStatesTables gameStatesTables;
-    final VotesTable votesTable;
-    final GameRecordsTable gameRecordsTable;
-    final LoginsTable loginsTable;
+    DataSource memDbDataSource = basicDataSource.createHikariInMemoryDataSource();
+    DataSource fileDbDataSource = basicDataSource.createHikariServerModeDataSource();
 
 
-    {
-      problemsTable = new ProblemsTable(memDbDataSource);
-      problemsTable.dropAndInsertInitialProblemsToTable(GoWebAppConfig.PROBLEM_DIR);
-    }
-    {
-      loginsTable = new LoginsTable(fileDbDataSource);
-      loginsTable.createTableIfNotExists().createIndexesIfNotExists();
-      loginsTable.writeCsv(new File(new File(SystemFileUtils.getUserHomeDirectory(), "go-bkup/"),
-          "logins-" + System.currentTimeMillis() + ".csv"));
-    }
-    {
-      handsUpTable = new HandUpsTable(memDbDataSource);
-    }
-    {
-      usersTable = new UsersTable(fileDbDataSource);
-      usersTable.dropTableIfExists();
-      usersTable.createTableIfNotExists().createIndexesIfNotExists();
-      try {
-        File f = ResourceUtils.getResourceAsFile("/conf/users.csv");
-        usersTable.readFromFileAndMerge(f);
-      } catch (Exception e) {
-        log.error(e, e);
-        log.warn("load users.csv.default ...");
-        File f = ResourceUtils.getResourceAsFile("/conf/users.csv.default");
-        usersTable.readFromFileAndMerge(f);
-      }
-    }
-    {
-      passwordsTable = new PasswordsTable(fileDbDataSource);
-      passwordsTable.createTableIfNotExists().createIndexesIfNotExists();
-      try {
-        File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv");
-        passwordsTable.readFromFileAndMerge(f);
-      } catch (Exception e) {
-        log.warn("load password.csv.default ...");
-        File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv.default");
-        passwordsTable.readFromFileAndMerge(f);
-      }
-    }
-    {
-      gameRecordsTable = new GameRecordsTable(fileDbDataSource);
-      gameRecordsTable.createTableIfNotExists().createIndexesIfNotExists();
-      gameRecordsTable
-          .writeCsv(new File(new File(SystemFileUtils.getUserHomeDirectory(), "go-bkup/"),
-              "game-record" + System.currentTimeMillis() + ".csv"));
-      gameRecordsTable.recalculateAndUpdateRank(usersTable);
-    }
-    {
-      matchingRequestsTable = new MatchingRequestsTable(memDbDataSource);
-      matchingRequestsTable.createTableIfNotExists().createIndexesIfNotExists();
-    }
-    {
-      GameStatesTable gameStatesTable = new GameStatesTable(fileDbDataSource);
-      gameStatesTable.createTableIfNotExists().createIndexesIfNotExists();
-      gameStatesTable.trimAndBackupToFile(basicDataSource.getFactory().getDatabaseDirectory(),
-          TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
+    final ProblemsTable problemsTable = prepareProblemTables(memDbDataSource);
+    final HandUpsTable handsUpTable = new HandUpsTable(memDbDataSource);
+    final MatchingRequestsTable matchingRequestsTable =
+        prepareMatchingRequestsTable(memDbDataSource);
+    final PasswordsTable passwordsTable = preparePasswordsTable(memDbDataSource);
+    final UsersTable usersTable = prepareUsersTable(memDbDataSource);
+    final VotesTable votesTable = prepareVotesTable(memDbDataSource);
 
-      GameStatesTable gameStatesTableInMem = new GameStatesTable(memDbDataSource);
-      gameStatesTableInMem.createTableIfNotExists().createIndexesIfNotExists();
-      gameStatesTableInMem.insert(gameStatesTable.selectAll().toArray(GameState[]::new));
+    final GameStatesTables gameStatesTables =
+        prepareGameStateTables(basicDataSource, fileDbDataSource, memDbDataSource);
+    final GameRecordsTable gameRecordsTable = prepareGameRecordsTable(fileDbDataSource, usersTable);
+    final LoginsTable loginsTable = prepareLoginsTable(fileDbDataSource);
 
-      gameStatesTables = new GameStatesTables(gameStatesTable, gameStatesTableInMem);
-    }
-    {
-      votesTable = new VotesTable(memDbDataSource);
-      votesTable.createTableIfNotExists().createIndexesIfNotExists();
-    }
 
     GoTables goTables = new GoTables(gameStatesTables, problemsTable, usersTable, passwordsTable,
         loginsTable, matchingRequestsTable, votesTable, handsUpTable, gameRecordsTable);
 
     return goTables;
+  }
+
+  private static GameRecordsTable prepareGameRecordsTable(DataSource fileDbDataSource,
+      UsersTable usersTable) {
+    GameRecordsTable gameRecordsTable = new GameRecordsTable(fileDbDataSource);
+    gameRecordsTable.createTableIfNotExists().createIndexesIfNotExists();
+    gameRecordsTable.writeCsv(new File(new File(SystemFileUtils.getUserHomeDirectory(), "go-bkup/"),
+        "game-record" + System.currentTimeMillis() + ".csv"));
+    gameRecordsTable.recalculateAndUpdateRank(usersTable);
+    return gameRecordsTable;
+  }
+
+  private static VotesTable prepareVotesTable(DataSource memDbDataSource) {
+    VotesTable votesTable = new VotesTable(memDbDataSource);
+    votesTable.createTableIfNotExists().createIndexesIfNotExists();
+    return votesTable;
+  }
+
+  private static MatchingRequestsTable prepareMatchingRequestsTable(DataSource memDbDataSource) {
+    MatchingRequestsTable matchingRequestsTable = new MatchingRequestsTable(memDbDataSource);
+    matchingRequestsTable.createTableIfNotExists().createIndexesIfNotExists();
+    return matchingRequestsTable;
+  }
+
+  private static GameStatesTables prepareGameStateTables(DataSourceManager basicDataSource,
+      DataSource fileDbDataSource, DataSource memDbDataSource) {
+    final int TRIM_THRESHOLD_OF_GAME_STATE_TABLE = 30000;
+
+    GameStatesTable gameStatesTable = new GameStatesTable(fileDbDataSource);
+    gameStatesTable.createTableIfNotExists().createIndexesIfNotExists();
+    gameStatesTable.trimAndBackupToFile(basicDataSource.getFactory().getDatabaseDirectory(),
+        TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
+
+    GameStatesTable gameStatesTableInMem = new GameStatesTable(memDbDataSource);
+    gameStatesTableInMem.createTableIfNotExists().createIndexesIfNotExists();
+    gameStatesTableInMem.insert(gameStatesTable.selectAll().toArray(GameState[]::new));
+
+    GameStatesTables gameStatesTables = new GameStatesTables(gameStatesTable, gameStatesTableInMem);
+    return gameStatesTables;
+  }
+
+  private static PasswordsTable preparePasswordsTable(DataSource dataSource) {
+    PasswordsTable passwordsTable = new PasswordsTable(dataSource);
+    passwordsTable.createTableIfNotExists().createIndexesIfNotExists();
+    try {
+      File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv");
+      passwordsTable.readFromFileAndMerge(f);
+    } catch (Exception e) {
+      log.warn("load password.csv.default ...");
+      File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv.default");
+      passwordsTable.readFromFileAndMerge(f);
+    }
+    return passwordsTable;
+  }
+
+  private static LoginsTable prepareLoginsTable(DataSource fileDbDataSource) {
+    LoginsTable loginsTable = new LoginsTable(fileDbDataSource);
+    loginsTable.createTableIfNotExists().createIndexesIfNotExists();
+    loginsTable.writeCsv(new File(new File(SystemFileUtils.getUserHomeDirectory(), "go-bkup/"),
+        "logins-" + System.currentTimeMillis() + ".csv"));
+    return loginsTable;
+  }
+
+  private static UsersTable prepareUsersTable(DataSource dataSource) {
+    UsersTable usersTable = new UsersTable(dataSource);
+    usersTable.dropTableIfExists();
+    usersTable.createTableIfNotExists().createIndexesIfNotExists();
+    try {
+      File f = ResourceUtils.getResourceAsFile("/conf/users.csv");
+      usersTable.readFromFileAndMerge(f);
+    } catch (Exception e) {
+      log.error(e, e);
+      log.warn("load users.csv.default ...");
+      File f = ResourceUtils.getResourceAsFile("/conf/users.csv.default");
+      usersTable.readFromFileAndMerge(f);
+    }
+    return usersTable;
+  }
+
+  private static ProblemsTable prepareProblemTables(DataSource memDbDataSource) {
+    ProblemsTable problemsTable = new ProblemsTable(memDbDataSource);
+    problemsTable.dropAndInsertInitialProblemsToTable(GoWebAppConfig.PROBLEM_DIR);
+    return problemsTable;
   }
 
 }

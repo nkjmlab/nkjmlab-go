@@ -1,6 +1,12 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.cond;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.from;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.literal;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.orderByAsc;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.select;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.where;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -136,5 +142,7 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
     }
 
   }
+
+
 
 }

@@ -7,7 +7,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import org.nkjmlab.go.javalin.GoAccessManager.UserRole;
-import org.nkjmlab.go.javalin.GoApplication.GoWebAppConfig;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
