@@ -1,4 +1,4 @@
-package org.nkjmlab.go.javalin.model.problem;
+package org.nkjmlab.go.javalin.obsolete;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -24,6 +22,7 @@ import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.common.Stone;
 import org.nkjmlab.go.javalin.model.common.Stone.Color;
 import org.nkjmlab.go.javalin.model.common.Stone.Symbol;
+import org.nkjmlab.go.javalin.util.ProblemIdGenerator;
 
 public class ProblemTextToJsonConverter {
   private static final org.apache.logging.log4j.Logger log =
@@ -46,26 +45,8 @@ public class ProblemTextToJsonConverter {
     return new ArrayList<>();
   }
 
-  private static final Queue<Long> ids = new ConcurrentLinkedQueue<>();
 
-
-
-  public static synchronized long getNewId() {
-    while (true) {
-      long id = System.currentTimeMillis();
-      if (!ids.contains(id)) {
-        ids.offer(id);
-        if (ids.size() > 1000) {
-          ids.poll();
-        }
-        return id;
-      }
-      try {
-        Thread.sleep(1);
-      } catch (InterruptedException e) {
-      }
-    }
-  }
+  private static final ProblemIdGenerator problemIdGenerator = new ProblemIdGenerator();
 
   private static Map<File, ProblemJson> convertTxtToJson(Path pathToProblemTxtDir) {
     Map<File, ProblemJson> result = new LinkedHashMap<>();
@@ -78,7 +59,7 @@ public class ProblemTextToJsonConverter {
         try {
           List<String> lines = Files.readAllLines(file.toPath());
           Builder json = new Builder();
-          json.setProblemId(getNewId());
+          json.setProblemId(problemIdGenerator.getNewId());
           json.setGroupId(groupDir.getName());
           String name = file.getName().replace(".txt", "");
           json.setName(name);

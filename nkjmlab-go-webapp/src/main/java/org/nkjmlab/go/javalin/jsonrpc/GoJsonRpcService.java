@@ -10,7 +10,6 @@ import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.GoTables;
 import org.nkjmlab.go.javalin.GoWebAppConfig;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
-import org.nkjmlab.go.javalin.model.problem.ProblemTextToJsonConverter;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
@@ -19,6 +18,7 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
+import org.nkjmlab.go.javalin.util.ProblemIdGenerator;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.util.java.Base64Utils;
@@ -92,6 +92,8 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     return problemJson;
   }
 
+  private final ProblemIdGenerator problemIdGenerator = new ProblemIdGenerator();
+
   private Problem createNewProblem(String gameId, long problemId, String groupId, String name,
       String message) {
     Problem prevP = goTables.problemsTable.selectByPrimaryKey(problemId);
@@ -100,8 +102,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       autoBackupProblemJsonToFile(ProblemJson.createFrom(prevP));
     }
     return new Problem(
-        prevP != null ? prevP.id()
-            : (problemId == -1 ? ProblemTextToJsonConverter.getNewId() : problemId),
+        prevP != null ? prevP.id() : (problemId == -1 ? problemIdGenerator.getNewId() : problemId),
         LocalDateTime.now(), groupId, name, mapper.toJson(currentState.cells()),
         mapper.toJson(currentState.symbols()), mapper.toJson(currentState.agehama()),
         mapper.toJson(currentState.handHistory()), message == null ? "" : message);
