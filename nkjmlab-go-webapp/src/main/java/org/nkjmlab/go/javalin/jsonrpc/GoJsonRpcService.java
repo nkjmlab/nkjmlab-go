@@ -18,7 +18,7 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
-import org.nkjmlab.go.javalin.util.ProblemIdGenerator;
+import org.nkjmlab.go.javalin.util.CurrentTimeMillisIdGenerator;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.util.java.Base64Utils;
@@ -92,7 +92,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     return problemJson;
   }
 
-  private final ProblemIdGenerator problemIdGenerator = new ProblemIdGenerator();
+  private final CurrentTimeMillisIdGenerator problemIdGenerator = new CurrentTimeMillisIdGenerator();
 
   private Problem createNewProblem(String gameId, long problemId, String groupId, String name,
       String message) {

@@ -126,7 +126,7 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
   public static record MatchingRequest(@PrimaryKey String userId, String seatId, String userName,
       int rank, @Index String gameId, LocalDateTime createdAt) {
 
-    public static final String UNPAIRED = "UNPAIRED";
+    static final String UNPAIRED = "UNPAIRED";
 
     public MatchingRequest() {
       this("", "", "", 30, UNPAIRED, LocalDateTime.now());

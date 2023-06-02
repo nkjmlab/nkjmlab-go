@@ -22,7 +22,7 @@ import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.common.Stone;
 import org.nkjmlab.go.javalin.model.common.Stone.Color;
 import org.nkjmlab.go.javalin.model.common.Stone.Symbol;
-import org.nkjmlab.go.javalin.util.ProblemIdGenerator;
+import org.nkjmlab.go.javalin.util.CurrentTimeMillisIdGenerator;
 
 public class ProblemTextToJsonConverter {
   private static final org.apache.logging.log4j.Logger log =
@@ -46,7 +46,7 @@ public class ProblemTextToJsonConverter {
   }
 
 
-  private static final ProblemIdGenerator problemIdGenerator = new ProblemIdGenerator();
+  private static final CurrentTimeMillisIdGenerator problemIdGenerator = new CurrentTimeMillisIdGenerator();
 
   private static Map<File, ProblemJson> convertTxtToJson(Path pathToProblemTxtDir) {
     Map<File, ProblemJson> result = new LinkedHashMap<>();
