@@ -1,6 +1,5 @@
 package org.nkjmlab.go.javalin;
 
-import java.nio.file.Files;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -129,9 +128,7 @@ public class GoApplication {
 
   private static boolean prepareFirebase() {
     try {
-      String url = Files
-          .readAllLines(ResourceUtils.getResourceAsFile("/conf/firebase-url.conf").toPath()).get(0);
-      AuthService.initialize(url, ResourceUtils.getResourceAsFile("/conf/firebase.json"));
+      AuthService.initialize(ResourceUtils.getResourceAsFile("/conf/firebase.json"));
       return true;
     } catch (Exception e) {
       log.warn("Skip firebase settings");

@@ -137,7 +137,7 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
           LocalDateTime.now());
     }
 
-    public boolean isUnpaired() {
+    private boolean isUnpaired() {
       return UNPAIRED.equals(gameId);
     }
 

@@ -134,10 +134,10 @@ public class AuthService implements AuthServiceInterface {
   }
 
 
-  public static void initialize(String url, File firebaseJson) {
+  public static void initialize(File firebaseJson) {
     try (FileInputStream serviceAccount = new FileInputStream(firebaseJson)) {
       FirebaseOptions options = FirebaseOptions.builder()
-          .setCredentials(GoogleCredentials.fromStream(serviceAccount)).setDatabaseUrl(url).build();
+          .setCredentials(GoogleCredentials.fromStream(serviceAccount)).build();
       FirebaseApp.initializeApp(options);
     } catch (Exception e) {
       log.error(e, e);
