@@ -9,6 +9,7 @@ import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProcess;
 import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProperties;
+import org.nkjmlab.util.firebase.auth.BasicFirebaseService;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.function.Try;
 import org.nkjmlab.util.java.lang.ProcessUtils;
@@ -62,7 +63,6 @@ public class GoApplication {
         new WebsocketSessionsManager(goTables, basicDataSource.createHikariInMemoryDataSource());
 
     scheduleCheckMatchingRequest(webSocketManager, goTables);
-    prepareFirebase();
 
 
     this.app = Javalin.create(config -> {
@@ -74,11 +74,14 @@ public class GoApplication {
       config.accessManager(new GoAccessManager(goTables.usersTable));
     });
 
+    BasicFirebaseService firebaseService =
+        new BasicFirebaseService(ResourceUtils.getResourceAsFile("/conf/firebase.json"));
+
 
     prepareWebSocket(app, webSocketManager);
     prepareJsonRpc(app, webSocketManager, new GoJsonRpcService(webSocketManager, goTables),
-        new AuthService.Factory(goTables.usersTable, goTables.loginsTable,
-            goTables.passwordsTable));
+        new AuthService.Factory(goTables.usersTable, goTables.loginsTable, goTables.passwordsTable,
+            firebaseService));
 
 
     GoAppHandlers.prepareGetHandler(app, webSocketManager, goTables);
@@ -125,17 +128,6 @@ public class GoApplication {
     app.post("/app/json/AuthRpcService",
         ctx -> srv.handle(ctx, authServiceFactory.create(ctx.req())));
   }
-
-  private static boolean prepareFirebase() {
-    try {
-      AuthService.initialize(ResourceUtils.getResourceAsFile("/conf/firebase.json"));
-      return true;
-    } catch (Exception e) {
-      log.warn("Skip firebase settings");
-      return false;
-    }
-  }
-
 
 
   public static JacksonMapper getDefaultJacksonMapper() {
