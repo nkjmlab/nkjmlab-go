@@ -5,11 +5,13 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import org.nkjmlab.go.javalin.auth.AuthService;
+import org.nkjmlab.go.javalin.auth.GoAuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProcess;
 import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProperties;
-import org.nkjmlab.util.firebase.auth.BasicFirebaseService;
+import org.nkjmlab.util.firebase.auth.BasicFirebaseAuthHandler;
+import org.nkjmlab.util.firebase.auth.FirebaseAuthHandler;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.function.Try;
 import org.nkjmlab.util.java.lang.ProcessUtils;
@@ -65,26 +67,30 @@ public class GoApplication {
     scheduleCheckMatchingRequest(webSocketManager, goTables);
 
 
+    FirebaseAuthHandler firebaseService = BasicFirebaseAuthHandler.create(
+        goTables.usersTable.readAll().stream().map(u -> u.email()).toList(),
+        ResourceUtils.getResourceAsFile("/conf/firebase.json"));
+    GoAuthService authService = new GoAuthService(goTables.usersTable, firebaseService);
+
+
     this.app = Javalin.create(config -> {
       config.staticFiles.add(GoWebAppConfig.WEB_APP_CONFIG.getWebRootDirectory().getName(),
           Location.CLASSPATH);
       config.staticFiles.enableWebjars();
       config.http.generateEtags = true;
       config.plugins.enableCors(cors -> cors.add(corsConfig -> corsConfig.anyHost()));
-      config.accessManager(new GoAccessManager(goTables.usersTable));
+      config.accessManager(new GoAccessManager(goTables.usersTable, authService));
     });
 
-    BasicFirebaseService firebaseService =
-        new BasicFirebaseService(ResourceUtils.getResourceAsFile("/conf/firebase.json"));
 
 
     prepareWebSocket(app, webSocketManager);
     prepareJsonRpc(app, webSocketManager, new GoJsonRpcService(webSocketManager, goTables),
         new AuthService.Factory(goTables.usersTable, goTables.loginsTable, goTables.passwordsTable,
-            firebaseService));
+            authService));
 
 
-    GoAppHandlers.prepareGetHandler(app, webSocketManager, goTables);
+    GoAppHandlers.prepareGetHandler(app, webSocketManager, goTables, authService);
   }
 
   private static void scheduleCheckMatchingRequest(WebsocketSessionsManager webSocketManager,

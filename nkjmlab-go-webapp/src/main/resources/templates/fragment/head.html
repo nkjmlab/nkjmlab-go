@@ -11,11 +11,10 @@
 
     <link rel="stylesheet"
         th:href="|/webjars/bootstrap-treeview/${webjars.bootstrap_treeview}/dist/bootstrap-treeview.min.css|">
-    <link rel="stylesheet" charset="utf-8"
-        th:href="|/webjars/datatables/${webjars.datatables}/css/dataTables.bootstrap5.min.css|">
-    <link rel="stylesheet"
-        th:href="|/webjars/datatables-tabletools/${webjars.datatables_tabletools}/css/dataTables.tableTools.css|">
-    <link rel="stylesheet" th:href="|/css/play.css?${css_play_css}|">
+    <link rel="stylesheet" th:href="|/webjars/datatables/${webjars.datatables}/css/dataTables.bootstrap5.min.css|">
+    <link rel="stylesheet" th:href="|/webjars/emojionearea/${webjars.emojionearea}/dist/emojionearea.min.css|">
+    <link rel="stylesheet" th:href="|/css/play.css?${MODIFIED_DATES.css_play_css}|">
+    <link rel="stylesheet" th:href="|/css/emojionearea-override.css?${MODIFIED_DATES.css_emojionearea_override_css}|">
 
     <script th:src="|/webjars/jquery/${webjars.jquery}/dist/jquery.min.js|"></script>
 
@@ -28,9 +27,6 @@
     <script
         th:src="|/webjars/fortawesome__fontawesome-free/${webjars.fortawesome\_\_fontawesome_free}/js/all.min.js|"></script>
 
-    <script src="/webjars/datatables/media/js/jquery.dataTables.min.js"></script>
-    <script
-        th:src="|/webjars/datatables-tabletools/${webjars.datatables_tabletools}/js/dataTables.tableTools.js|"></script>
     <script th:src="|/webjars/datatables/${webjars.datatables}/js/jquery.dataTables.min.js|"></script>
     <script th:src="|/webjars/datatables/${webjars.datatables}/js/dataTables.bootstrap5.min.js|"></script>
 

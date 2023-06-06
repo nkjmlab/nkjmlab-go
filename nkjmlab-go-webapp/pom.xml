@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nkjmlab</groupId>
   <artifactId>nkjmlab-go-webapp</artifactId>
-  <version>0.9.8</version>
+  <version>0.10.0</version>
   <description>Go Web Application</description>
   <url>https://github.com/nkjmlab/nkjmlab-go-webapp</url>
   <licenses>
@@ -25,7 +25,7 @@
     <tag>HEAD</tag>
   </scm>
   <properties>
-    <nkjmlab-utils-version>0.9.3</nkjmlab-utils-version>
+    <nkjmlab-utils-version>0.9.4</nkjmlab-utils-version>
     <sorm4j-version>1.4.16</sorm4j-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <downloadSources>true</downloadSources>
@@ -241,9 +241,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>org.webjars.bower</groupId>
+      <groupId>org.webjars.npm</groupId>
       <artifactId>emojionearea</artifactId>
-      <version>3.1.4</version>
+      <version>3.4.2</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>

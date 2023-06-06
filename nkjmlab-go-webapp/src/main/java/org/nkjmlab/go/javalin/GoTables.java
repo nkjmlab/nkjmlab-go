@@ -57,11 +57,12 @@ public class GoTables {
     final MatchingRequestsTable matchingRequestsTable =
         prepareMatchingRequestsTable(memDbDataSource);
     final PasswordsTable passwordsTable = preparePasswordsTable(memDbDataSource);
-    final UsersTable usersTable = prepareUsersTable(memDbDataSource);
     final VotesTable votesTable = prepareVotesTable(memDbDataSource);
 
     final GameStatesTables gameStatesTables =
         prepareGameStateTables(basicDataSource, fileDbDataSource, memDbDataSource);
+
+    final UsersTable usersTable = prepareUsersTable(fileDbDataSource);
     final GameRecordsTable gameRecordsTable = prepareGameRecordsTable(fileDbDataSource, usersTable);
     final LoginsTable loginsTable = prepareLoginsTable(fileDbDataSource);
 

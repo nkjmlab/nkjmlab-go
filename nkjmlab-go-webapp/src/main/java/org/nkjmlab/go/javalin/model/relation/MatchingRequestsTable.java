@@ -137,7 +137,8 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
           LocalDateTime.now());
     }
 
-    private boolean isUnpaired() {
+    // Thymeleaf templateからよばれるのでpublicのままにする必要がある．
+    public boolean isUnpaired() {
       return UNPAIRED.equals(gameId);
     }
 
