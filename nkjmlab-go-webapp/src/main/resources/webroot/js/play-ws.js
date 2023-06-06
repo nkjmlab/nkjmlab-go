@@ -30,7 +30,7 @@ class PlayWebSocket {
     });
 
 
-    connection.onmessage = e =>{
+    connection.onmessage = e => {
       const json = JSON.parse(e.data);
       switch (json.method) {
         case "REQUEST_TO_LOGIN":
@@ -178,7 +178,7 @@ class PlayWebSocket {
             refreshProblemInfo();
           } else if (getProblem() == null
             || getProblem().problemId != gameState.problemId) {
-            new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "getProblem",
+            new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "getProblem",
               [gameState.problemId], function (data) {
                 setProblem(data.result);
                 refreshProblemInfo();
@@ -191,18 +191,18 @@ class PlayWebSocket {
 
     };
 
-    connection.onopen = e =>{
+    connection.onopen = e => {
       console.log("connection is open.");
       // console.log(stringifyEvent(e));
     };
 
-    connection.onerror = e =>{
+    connection.onerror = e => {
       console.error("connection has an error.");
       swalAlert("ページを再読み込みします", "", "info", e => location.reload());
     };
 
 
-    connection.onclose = e =>{
+    connection.onclose = e => {
       console.warn("connection is closed.");
       setTimeout(() => self.startNewWsConnection(gameBoard), 500);
     };
@@ -312,6 +312,6 @@ class PlayWebSocket {
 
 function createConnection(userId, gameId, idToken) {
   const wsUrl = getWebSocketBaseUrl() + "?userId=" + userId + "&gameId=" + gameId + "&idToken=" + idToken;
-  console.log("start open websocket = [" + wsUrl + "]");
+  //console.log("start open websocket = [" + wsUrl + "]");
   return new WebSocket(wsUrl);
 }

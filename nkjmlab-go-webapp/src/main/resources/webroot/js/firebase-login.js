@@ -33,7 +33,7 @@ $(function () {
           flashError("メールアドレスの確認が必要です．メールボックスを確認し，メールアドレスの確認をして下さい．");
         });
       } else {
-        const req = new JsonRpcRequest(getServiceUrl(), "isSigninToFirebase", [],
+        const req = new JsonRpcRequest(getAuthRpcServiceUrl(), "isSigninToFirebase", [],
           function (data) {
             if (data.result) {
               $("#fb-loading").hide();
@@ -67,7 +67,7 @@ function signin(user) {
       }
       setSeatId(seatId);
       user.getIdToken(true).then(function (idToken) {
-        const req = new JsonRpcRequest(getServiceUrl(), "signinWithFirebase", [idToken, seatId],
+        const req = new JsonRpcRequest(getAuthRpcServiceUrl(), "signinWithFirebase", [idToken, seatId],
           function (data) {
             const u = data.result;
             if (u) {

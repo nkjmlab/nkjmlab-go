@@ -17,23 +17,23 @@ class GameBoard {
     this.lastHandNum = -1;
 
     const BLACK_STONE_IMAGE = new Image();
-    BLACK_STONE_IMAGE.src = '../img/play/black-stone.png';
+    BLACK_STONE_IMAGE.src = '/img/play/black-stone.png';
     const WHITE_STONE_IMAGE = new Image();
-    WHITE_STONE_IMAGE.src = '../img/play/white-stone.png';
+    WHITE_STONE_IMAGE.src = '/img/play/white-stone.png';
     const A_STONE_IMAGE = new Image();
-    A_STONE_IMAGE.src = '../img/play/a-stone.png';
+    A_STONE_IMAGE.src = '/img/play/a-stone.png';
     const B_STONE_IMAGE = new Image();
-    B_STONE_IMAGE.src = '../img/play/b-stone.png';
+    B_STONE_IMAGE.src = '/img/play/b-stone.png';
     const C_STONE_IMAGE = new Image();
-    C_STONE_IMAGE.src = '../img/play/c-stone.png';
+    C_STONE_IMAGE.src = '/img/play/c-stone.png';
     const X_STONE_IMAGE = new Image();
-    X_STONE_IMAGE.src = '../img/play/x-stone.png';
+    X_STONE_IMAGE.src = '/img/play/x-stone.png';
     const CIRCLE_STONE_IMAGE = new Image();
-    CIRCLE_STONE_IMAGE.src = '../img/play/circle-stone.png';
+    CIRCLE_STONE_IMAGE.src = '/img/play/circle-stone.png';
     const RECTANGLE_STONE_IMAGE = new Image();
-    RECTANGLE_STONE_IMAGE.src = '../img/play/rectangle-stone.png';
+    RECTANGLE_STONE_IMAGE.src = '/img/play/rectangle-stone.png';
     const TRIANGLE_STONE_IMAGE = new Image();
-    TRIANGLE_STONE_IMAGE.src = '../img/play/triangle-stone.png';
+    TRIANGLE_STONE_IMAGE.src = '/img/play/triangle-stone.png';
 
     this.STONE_IMAGES = {
       [BLANK_STONE]: null,

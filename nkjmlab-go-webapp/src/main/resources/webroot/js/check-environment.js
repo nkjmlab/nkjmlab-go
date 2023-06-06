@@ -19,7 +19,7 @@ $(function () {
   if (isEnableLocalStorage()) {
     $("#localStorage").html(
       $('<div class="alert alert-success">').html(
-        '<span class="badge badge-success">OK</span> '
+        '<span class="badge bg-success">OK</span> '
         + "Webブラウザ設定は正常です．"));
     $("#btn-login").html(
       '<span>ログイン <i class="fas fa-caret-circle-right"></i></span>');
@@ -29,7 +29,7 @@ $(function () {
       .html(
         $('<div class="alert alert-danger">')
           .html(
-            '<span class="badge badge-danger">ERROR</span> '
+            '<span class="badge bg-danger">ERROR</span> '
             + 'ローカルストレージを利用できません．Webブラウザがプライベートモードになっているならば，オフにして下さい．'
             + '<a class="alert-link" href="https://support.apple.com/ja-jp/HT203036">プライベートブラウズをオフにする  - Apple サポート<i class="fa fa-external-link"></i></a> を見る'));
     $("#btn-login").text("現在の環境では利用できません");
@@ -42,7 +42,7 @@ $(function () {
     connection.onopen = function (e) {
       $("#websocket").html(
         $('<div class="alert alert-success">').html(
-          '<span class="badge badge-success">OK</span> '
+          '<span class="badge bg-success">OK</span> '
           + "ネットワーク環境は正常です．"));
       enableWebsocket = true;
       $("#btn-login").attr("disabled", null);
@@ -51,7 +51,7 @@ $(function () {
     connection.onerror = function (e) {
       $("#websocket").html(
         $('<div class="alert alert-danger">').html(
-          '<span class="badge badge-danger">WARN</span> '
+          '<span class="badge bg-danger">WARN</span> '
           + "Websocketによる通信が出来ません．"));
       enableWebsocket = false;
       $("#btn-login").attr("disabled", true);
@@ -115,13 +115,13 @@ $(function () {
     if (unrecommended) {
       $("#os-browser").html(
         $('<div class="alert alert-warning">').html(
-          '<span class="badge badge-warning">WARN</span> '
+          '<span class="badge bg-warning">WARN</span> '
           + osAndBrowser
           + "は推奨Webブラウザ/OSではないため，正しく動作しない可能性があります．"));
     } else {
       $("#os-browser").html(
         $('<div class="alert alert-success">').html(
-          '<span class="badge badge-success">OK</span> '
+          '<span class="badge bg-success">OK</span> '
           + osAndBrowser + "は推奨環境です．"));
     }
   }

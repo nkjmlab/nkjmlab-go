@@ -18,7 +18,7 @@ $(function() {
               swalConfirm("確認", "保存してよろしいですか？", "warning", function(data) {
                 var problemId = btnId == 'btn-save-new-game-state-on-server'
                         ? -1 : $(modal + ".modal-problem-id").val();
-                new JsonRpcClient(new JsonRpcRequest(getBaseUrl(),
+                new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
                         "saveProblem", [getGameId(), problemId,
                             $(modal + ".modal-problem-group").val(),
                             $(modal + ".modal-problem-name").val(),
@@ -98,7 +98,7 @@ $(function() {
             }
             $(modal).modal("hide")
 
-            new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "saveProblem", [
+            new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "saveProblem", [
                 getGameId(), gameState.problemId, gameState.groupId,
                 gameState.name, gameState.message], function(data) {
               setProblem(data.result);

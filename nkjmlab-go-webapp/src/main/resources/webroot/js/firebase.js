@@ -13,7 +13,7 @@ firebase.initializeApp(firebaseConfig);
 function firebaseSignOut(callback) {
   firebase.auth().signOut().then(function (e) {
     const req = new JsonRpcRequest(
-      getServiceUrl(), "signoutFromFirebase", [],
+      getAuthRpcServiceUrl(), "signoutFromFirebase", [],
       function (data) {
         console.log("signout");
         if (callback) {

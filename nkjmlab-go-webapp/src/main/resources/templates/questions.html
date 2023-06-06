@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
-  <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
+  <object th:insert="~{/fragment/head.html::meta-fragment}" th:remove="tag"></object>
   <script th:inline="javascript">
     function refreshQuestionFragment() {
       $.get("./fragment/question-table.html", function (data) {
@@ -42,16 +42,16 @@
 
 <body>
   <div class="container-fluid">
-    <div th:include="/fragment/header-admin.html::fcontent" th:remove="tag"></div>
+    <div th:insert="~{/fragment/header-admin.html::fcontent}" th:remove="tag"></div>
     <hr>
   </div>
   <div class="container">
     <div class="row mt-2">
       <div class="col-12">
-        <h1 class="float-left">
+        <h1 class="float-start">
           質問待ち一覧 <i class="fas fa-user-friends"></i>
         </h1>
-        <div class="float-right">
+        <div class="float-end">
           <img src="https://i.gyazo.com/8fed75c4834ec6346054929e34c37a71.png" style="max-width: 8em">
         </div>
       </div>

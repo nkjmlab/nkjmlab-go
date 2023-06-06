@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
-  <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
+  <object th:insert="~{/fragment/head.html::meta-fragment}" th:remove="tag"></object>
   <script>
     $(function () {
       var o = [1, "asc"];
@@ -15,7 +15,7 @@
         "order": [o]
       });
 
-      if (parseUri(location).file == "players.html") {
+      if (new URL(location).pathname.split('/').pop() == "players.html") {
         $("#page-description").text("学生一覧");
       } else {
         $("#page-description").text("全ユーザ(教員含む)の一覧");
@@ -41,16 +41,16 @@
 
 <body>
   <div class="container-fluid">
-    <div th:include="/fragment/header-admin.html::fcontent" th:remove="tag"></div>
+    <div th:insert="~{/fragment/header-admin.html::fcontent}" th:remove="tag"></div>
     <hr>
   </div>
   <div class="container">
     <div class="row mt-2">
       <div class="col-12">
-        <h1 class="float-left">
+        <h1 class="float-start">
           学生一覧 <i class="fas fa-child"></i>
         </h1>
-        <div class="float-right">
+        <div class="float-end">
           <img src="https://i.gyazo.com/bddd755953961dc112560348f5a2a30c.png" style="max-width: 6em">
         </div>
       </div>
@@ -73,9 +73,9 @@
           <tbody>
             <tr th:each="item, itemStat : ${userAccounts}">
               <td class="text-center"><span th:text="${itemStat.count}"></span>. <img class="player-icon rounded"
-                  th:src="|../img/icon/${item.login.userId}.png|"
-                  onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'"></td>
-              <td class="h5"><a class="badge badge-primary" th:text="${item.login.userId}"
+                  th:src="|/img/icon/${item.login.userId}.png|"
+                  onerror="this.onerror=null;this.src='/img/icon/no-player-icon.png'"></td>
+              <td class="h5"><a class="badge bg-primary" th:text="${item.login.userId}"
                   th:href="|play.html?game_id=${item.login.userId}|"></a></td>
               <td class="" th:text="${item.user.userName}"></td>
               <td class="" th:text="${item.user.rank}"></td>

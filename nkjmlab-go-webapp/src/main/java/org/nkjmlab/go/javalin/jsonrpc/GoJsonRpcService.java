@@ -1,135 +1,108 @@
 package org.nkjmlab.go.javalin.jsonrpc;
 
-import static org.nkjmlab.go.javalin.GoApplication.*;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.nkjmlab.go.javalin.GoApplication;
+import org.nkjmlab.go.javalin.GoTables;
+import org.nkjmlab.go.javalin.GoWebAppConfig;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
-import org.nkjmlab.go.javalin.model.problem.ProblemTextToJsonConverter;
-import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
-import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameStateJson;
-import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
-import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
+import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
-import org.nkjmlab.go.javalin.model.relation.LoginsTable;
-import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
-import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
-import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
-import org.nkjmlab.go.javalin.model.relation.VotesTable;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
+import org.nkjmlab.go.javalin.util.CurrentTimeMillisIdGenerator;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
-import org.nkjmlab.go.javalin.websocket.WebsoketSessionsTable;
 import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.util.java.Base64Utils;
 import org.nkjmlab.util.java.json.JsonMapper;
-import org.nkjmlab.util.java.lang.ParameterizedStringUtils;
+import org.nkjmlab.util.java.lang.ParameterizedStringFormatter;
 import org.nkjmlab.util.javax.imageio.ImageIoUtils;
+import org.threeten.bp.Instant;
 
 public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
+  private final WebsocketSessionsManager webSocketManager;
 
-  private final GameStatesTables gameStatesTables;
-  private final ProblemsTable problemsTable;
-  private final UsersTable usersTable;
-  private final LoginsTable loginsTable;
-  private final MatchingRequestsTable matchingRequestsTable;
-  private final VotesTable votesTable;
-  private final WebsocketSessionsManager wsManager;
-  private final WebsoketSessionsTable websoketSessionsTable;
-  private final HandUpsTable handsUpTable;
-  private final GameRecordsTable gameRecordsTable;
+  private final GoTables goTables;
 
   private static final JsonMapper mapper = GoApplication.getDefaultJacksonMapper();
 
 
-  public GoJsonRpcService(WebsocketSessionsManager wsManager, GameStatesTables gameStatesTables,
-      ProblemsTable problemsTable, UsersTable usersTable, LoginsTable loginsTable,
-      MatchingRequestsTable matchingRequestsTable, VotesTable votesTable, HandUpsTable handsUpTable,
-      WebsoketSessionsTable websoketSessionsTable, GameRecordsTable gameRecordsTable) {
-    this.gameStatesTables = gameStatesTables;
-    this.problemsTable = problemsTable;
-    this.usersTable = usersTable;
-    this.loginsTable = loginsTable;
-    this.matchingRequestsTable = matchingRequestsTable;
-    this.wsManager = wsManager;
-    this.votesTable = votesTable;
-    this.handsUpTable = handsUpTable;
-    this.websoketSessionsTable = websoketSessionsTable;
-    this.gameRecordsTable = gameRecordsTable;
-
+  public GoJsonRpcService(WebsocketSessionsManager webSocketManager, GoTables goTables) {
+    this.webSocketManager = webSocketManager;
+    this.goTables = goTables;
   }
 
   @Override
-  public void sendGameState(String gameId, GameStateJson json) {
-    wsManager.sendGameState(gameId, json);
+  public void sendGameState(String gameId, GameState json) {
+    webSocketManager.sendGameState(gameId, json);
   }
 
 
   @Override
   public void sendGlobalMessage(String userId, String message) {
-    wsManager.sendGlobalMessage(message);
+    webSocketManager.sendGlobalMessage(message);
   }
 
 
   @Override
   public void syncGameState(int sessionId, String gameId, String userId) {
-    wsManager.updateSession(sessionId, gameId, userId);
-    wsManager.sendLatestGameStateToSessions(gameId);
+    webSocketManager.updateSession(sessionId, gameId, userId);
+    webSocketManager.sendLatestGameStateToSessions(gameId);
   }
 
   @Override
-  public void newGame(String gameId, GameStateJson json) {
-    wsManager.newGame(gameId, json);
+  public void newGame(String gameId, GameState json) {
+    webSocketManager.newGame(gameId, json);
   }
 
   @Override
   public ProblemJson loadProblem(String gameId, long problemId) {
-    return wsManager.loadProblem(gameId, problemId);
+    return webSocketManager.loadProblem(gameId, problemId);
   }
 
   @Override
   public ProblemJson getProblem(long problemId) {
-    Problem p = problemsTable.selectByPrimaryKey(problemId);
+    Problem p = goTables.problemsTable.selectByPrimaryKey(problemId);
     return p == null ? new ProblemJson(-1) : ProblemJson.createFrom(p);
   }
 
   @Override
-  public void goBack(String gameId, GameStateJson json) {
-    wsManager.goBack(gameId);
+  public void goBack(String gameId, GameState json) {
+    webSocketManager.goBack(gameId);
   }
 
   @Override
   public ProblemJson saveProblem(String gameId, long problemId, String groupId, String name,
       String message) {
     Problem newP = createNewProblem(gameId, problemId, groupId, name, message);
-    problemsTable.merge(newP);
-    problemsTable.clearProblemsJson();
+    goTables.problemsTable.merge(newP);
+    goTables.problemsTable.clearProblemsJson();
     ProblemJson problemJson = ProblemJson.createFrom(newP);
     saveProblemJsonToFile(problemJson);
     return problemJson;
   }
 
+  private final CurrentTimeMillisIdGenerator problemIdGenerator = new CurrentTimeMillisIdGenerator();
+
   private Problem createNewProblem(String gameId, long problemId, String groupId, String name,
       String message) {
-    Problem prevP = problemsTable.selectByPrimaryKey(problemId);
-    GameStateJson currentState = gameStatesTables.readLatestGameStateJson(gameId);
+    Problem prevP = goTables.problemsTable.selectByPrimaryKey(problemId);
+    GameState currentState = goTables.gameStatesTables.readLatestGameState(gameId);
     if (prevP != null) {
       autoBackupProblemJsonToFile(ProblemJson.createFrom(prevP));
     }
     return new Problem(
-        prevP != null ? prevP.id()
-            : (problemId == -1 ? ProblemTextToJsonConverter.getNewId() : problemId),
+        prevP != null ? prevP.id() : (problemId == -1 ? problemIdGenerator.getNewId() : problemId),
         LocalDateTime.now(), groupId, name, mapper.toJson(currentState.cells()),
         mapper.toJson(currentState.symbols()), mapper.toJson(currentState.agehama()),
         mapper.toJson(currentState.handHistory()), message == null ? "" : message);
@@ -137,7 +110,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   private void autoBackupProblemJsonToFile(ProblemJson p) {
     File bkupDir = getProblemAutoBackupDir(p.groupId());
-    File o = new File(bkupDir, new Date().getTime() + "-copy-" + p.name() + ".json");
+    File o = new File(bkupDir, Instant.now().toEpochMilli() + "-copy-" + p.name() + ".json");
     mapper.toJsonAndWrite(p, o, true);
   }
 
@@ -145,18 +118,20 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     File problemGroupDir = getProblemDir(p.groupId());
     File o = new File(problemGroupDir, p.name() + ".json");
     mapper.toJsonAndWrite(p, o, true);
-    log.info("Problep {} - {} is saved to {}", p.groupId(), p.name(), o);
+    log.info("Problem {} - {} is saved to {}", p.groupId(), p.name(), o);
 
   }
 
   private File getProblemDir(String groupId) {
-    File dir = new File(PROBLEM_DIR, groupId);
+    File dir = new File(GoWebAppConfig.PROBLEM_DIR, groupId);
     dir.mkdirs();
     return dir;
   }
 
   private File getProblemAutoBackupDir(String groupId) {
-    File dir = new File(PROBLEM_BACKUP_DIR, groupId);
+    File dir =
+        new File(new File(GoWebAppConfig.WEB_APP_CONFIG.getAppRootDirectory(), "problem-auto-bkup"),
+            groupId);
     dir.mkdirs();
     return dir;
 
@@ -164,19 +139,19 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public void deleteProblem(long problemId) {
-    Problem p = problemsTable.selectByPrimaryKey(problemId);
+    Problem p = goTables.problemsTable.selectByPrimaryKey(problemId);
     if (p == null) {
       return;
     }
     autoBackupProblemJsonToFile(ProblemJson.createFrom(p));
 
-    problemsTable.delete(p);
-    problemsTable.clearProblemsJson();
+    goTables.problemsTable.delete(p);
+    goTables.problemsTable.clearProblemsJson();
   }
 
   @Override
   public ProblemJson readProblem(long problemId) {
-    Problem p = problemsTable.selectByPrimaryKey(problemId);
+    Problem p = goTables.problemsTable.selectByPrimaryKey(problemId);
     if (p != null) {
       return ProblemJson.createFrom(p);
     }
@@ -186,39 +161,39 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public String getNextUser(String currentGameId) {
-    String nextUserId = loginsTable.getNextLoginUserId(usersTable, currentGameId);
+    String nextUserId = goTables.loginsTable.getNextLoginUserId(goTables.usersTable, currentGameId);
     return nextUserId;
   }
 
   @Override
   public String getPrevUser(String currentGameId) {
-    String nextUserId = loginsTable.getPrevLoginUserId(usersTable, currentGameId);
+    String nextUserId = goTables.loginsTable.getPrevLoginUserId(goTables.usersTable, currentGameId);
     return nextUserId;
   }
 
 
   @Override
   public String getNextQuestion(String currentGameId) {
-    String nextQuestionGameId = handsUpTable.getNextQuestion(currentGameId);
+    String nextQuestionGameId = goTables.handsUpTable.getNextQuestion(currentGameId);
     return nextQuestionGameId;
   }
 
 
   @Override
   public UserJson getUser(String userId) {
-    User u = usersTable.selectByPrimaryKey(userId);
+    User u = goTables.usersTable.selectByPrimaryKey(userId);
     if (u == null) {
       UserJson uj = new UserJson(userId);
       return uj;
     }
-    UserJson uj = new UserJson(u, loginsTable.isAttendance(userId));
+    UserJson uj = new UserJson(u, goTables.loginsTable.isAttendance(userId));
     return uj;
 
   }
 
   @Override
   public String getNextGame(String currentGameId) {
-    List<String> ids = websoketSessionsTable.readActiveGameIdsOrderByGameId(usersTable);
+    List<String> ids = webSocketManager.readActiveGameIdsOrderByGameId();
     return getNextId(ids, currentGameId);
   }
 
@@ -235,7 +210,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public String getPrevGame(String currentGameId) {
-    List<String> ids = websoketSessionsTable.readActiveGameIdsOrderByGameId(usersTable);
+    List<String> ids = webSocketManager.readActiveGameIdsOrderByGameId();
     Collections.reverse(ids);
     return getNextId(ids, currentGameId);
   }
@@ -244,21 +219,21 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   @Override
   public void enterWaitingRoom(String userId) {
     try {
-      User u = usersTable.selectByPrimaryKey(userId);
+      User u = goTables.usersTable.selectByPrimaryKey(userId);
       if (u == null) {
         log.error("userId {} is not found.", userId);
         return;
       }
-      usersTable.update(u);
+      goTables.usersTable.update(u);
 
       MatchingRequest matchingReq = MatchingRequest.createUnpaired(u);
-      if (!matchingRequestsTable.exists(matchingReq)) {
-        matchingRequestsTable.insert(matchingReq);
+      if (!goTables.matchingRequestsTable.exists(matchingReq)) {
+        goTables.matchingRequestsTable.insert(matchingReq);
       } else {
-        MatchingRequest m = matchingRequestsTable.selectByPrimaryKey(userId);
-        matchingRequestsTable.update(m);
+        MatchingRequest m = goTables.matchingRequestsTable.selectByPrimaryKey(userId);
+        goTables.matchingRequestsTable.update(m);
       }
-      wsManager.sendUpdateWaitingRequestStatus(Set.of(userId));
+      webSocketManager.sendUpdateWaitingRequestStatus(Set.of(userId));
     } catch (Exception e) {
       log.error("maching request for {} failed", userId);
       log.error(e, e);
@@ -268,23 +243,22 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public void exitWaitingRoom(String userId) {
-    // logger.debug("{} exited from waiting room.", userId);
-    matchingRequestsTable.deleteByPrimaryKey(userId);
-    wsManager.sendUpdateWaitingRequestStatus(Set.of(userId));
+    goTables.matchingRequestsTable.deleteByPrimaryKey(userId);
+    webSocketManager.sendUpdateWaitingRequestStatus(Set.of(userId));
   }
 
   @Override
   public File uploadImage(String userId, String base64EncodedImage) {
     try {
       {
-        File outputFile = new File(UPLOADED_ICON_DIR, userId + ".png");
+        File outputFile = new File(GoWebAppConfig.UPLOADED_ICON_DIR, userId + ".png");
         outputFile.mkdirs();
         ImageIoUtils.write(Base64Utils.decodeToImage(base64EncodedImage, "png"), "png", outputFile);
       }
-      File outputFile = new File(CURRENT_ICON_DIR, userId + ".png");
+      File outputFile = new File(GoWebAppConfig.CURRENT_ICON_DIR, userId + ".png");
       outputFile.mkdirs();
       ImageIoUtils.write(Base64Utils.decodeToImage(base64EncodedImage, "png"), "png", outputFile);
-      log.info("Icon is uploaded={}", outputFile);
+      log.debug("Icon is uploaded={}", outputFile);
       return outputFile;
     } catch (Exception e) {
       log.error(e, e);
@@ -300,12 +274,13 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public void vote(String gameId, String userId, long problemId, String vote, String voteId) {
-    votesTable.merge(new Vote(userId, problemId, vote, voteId, gameId, LocalDateTime.now()));
+    goTables.votesTable
+        .merge(new Vote(userId, problemId, vote, voteId, gameId, LocalDateTime.now()));
   }
 
   @Override
   public List<VoteResult> getVoteResult(long problemId, String gameId) {
-    List<VoteResult> ret = votesTable.readVoteResults(problemId, gameId);
+    List<VoteResult> ret = goTables.votesTable.readVoteResults(problemId, gameId);
     return ret;
   }
 
@@ -313,34 +288,33 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   public void handUp(String gameId, boolean handUp, String message) {
     if (handUp) {
       {
-        HandUp h = handsUpTable.selectByPrimaryKey(gameId);
+        HandUp h = goTables.handsUpTable.selectByPrimaryKey(gameId);
         if (h == null) {
-          handsUpTable.insert(new HandUp(gameId, LocalDateTime.now(), message));
+          goTables.handsUpTable.insert(new HandUp(gameId, LocalDateTime.now(), message));
         } else {
-          handsUpTable
+          goTables.handsUpTable
               .update(new HandUp(h.gameId(), h.createdAt(), h.message() + "<br>" + message));
         }
       }
-      wsManager.sendHandUp(gameId, handUp, handsUpTable.readOrder(gameId));
+      webSocketManager.sendHandUp(gameId, handUp, goTables.handsUpTable.readOrder(gameId));
     } else {
-      handsUpTable.deleteByPrimaryKey(gameId);
-      wsManager.sendHandDown(gameId);
+      goTables.handsUpTable.deleteByPrimaryKey(gameId);
+      webSocketManager.sendHandDown(gameId);
 
-      handsUpTable.readAllGameIds().stream().forEach(handupGameId -> wsManager
-          .sendHandUpOrder(handupGameId, handsUpTable.readOrder(handupGameId)));
+      goTables.handsUpTable.readAllGameIds().stream().forEach(handupGameId -> webSocketManager
+          .sendHandUpOrder(handupGameId, goTables.handsUpTable.readOrder(handupGameId)));
     }
 
   }
 
   @Override
   public int registerRecord(String userId, String opponentUserId, String jadge, String memo) {
-    // logger.debug("{},{},{},{}", userId, opponentUserId, jadge, memo);
-    int rank =
-        gameRecordsTable.registerRecordAndGetRank(usersTable, userId, opponentUserId, jadge, memo);
+    int rank = goTables.gameRecordsTable.registerRecordAndGetRank(goTables.usersTable, userId,
+        opponentUserId, jadge, memo);
 
-    User u = usersTable.selectByPrimaryKey(userId);
+    User u = goTables.usersTable.selectByPrimaryKey(userId);
     if (u.rank() != rank) {
-      usersTable.updateByPrimaryKey(RowMap.of("rank", rank), u.userId());
+      goTables.usersTable.updateByPrimaryKey(RowMap.of("rank", rank), u.userId());
       return rank;
     }
     return -1;
@@ -358,27 +332,27 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public String getKomi(String gameId) {
-    String msg = "";
     try {
-      GameStateJson gs = gameStatesTables.readLatestGameStateJson(gameId);
-      User bp = usersTable.selectByPrimaryKey(gs.blackPlayerId());
-      User wp = usersTable.selectByPrimaryKey(gs.whitePlayerId());
+      GameState gs = goTables.gameStatesTables.readLatestGameState(gameId);
+      User bp = goTables.usersTable.selectByPrimaryKey(gs.blackPlayerId());
+      User wp = goTables.usersTable.selectByPrimaryKey(gs.whitePlayerId());
       int diff = Math.abs(wp.rank() - bp.rank());
       int ro = gs.cells()[0].length;
       String roCol = ro == 19 ? "lg" : "sm";
 
       String s1 = start.get(roCol).get(Math.min(diff, 5));
       String s2 = midFlow.get(roCol).get(Math.min(diff, 5));
+      Object[] params = {bp.userId(), bp.userName(), bp.rank(), wp.userId(), wp.userName(),
+          wp.rank(), diff, ro, s1, s2};
 
-      msg = ParameterizedStringUtils.newString(
-          "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge badge-info'>はじめから</span> {}, <span class='badge badge-info'>棋譜並べから</span> {} <br>",
-          bp.userId(), bp.userName(), bp.rank(), wp.userId(), wp.userName(), wp.rank(), diff, ro,
-          s1, s2);
+      String msg = ParameterizedStringFormatter.DEFAULT.format(
+          (String) "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge badge-info'>はじめから</span> {}, <span class='badge badge-info'>棋譜並べから</span> {} <br>",
+          params);
+      return msg;
     } catch (Exception e) {
-      msg = "";
       log.error(e);
+      return "";
     }
-    return msg;
   }
 
 }

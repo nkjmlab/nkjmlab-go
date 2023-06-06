@@ -1,14 +1,20 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.from;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.orderByAsc;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectDistinct;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.where;
 import java.io.File;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
-import org.nkjmlab.go.javalin.model.problem.ProblemJsonReader;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
@@ -56,7 +62,7 @@ public class ProblemsTable extends BasicH2Table<Problem> {
   public void dropAndInsertInitialProblemsToTable(File problemDir) {
     log.info("{} is problem dir", problemDir);
     deleteAll();
-    List<ProblemJson> probs = ProblemJsonReader.readProblemJsons(problemDir.toPath());
+    List<ProblemJson> probs = readProblemJsons(problemDir.toPath());
     log.info("[{}] problems are loaded", probs.size());
     probs.forEach(j -> {
       try {
@@ -67,6 +73,43 @@ public class ProblemsTable extends BasicH2Table<Problem> {
         log.error(e, e);
       }
     });
+  }
+
+  private static List<File> readProblemJsonFiles(Path pathToProblemJsonDir) {
+    List<File> result = new ArrayList<>();
+    getGroupDirectories(pathToProblemJsonDir).forEach(groupDir -> {
+      Arrays.asList(groupDir.listFiles()).forEach(file -> {
+        if (!file.getName().endsWith(".json")) {
+          return;
+        }
+        result.add(file);
+      });
+    });
+    return result;
+  }
+
+  static List<ProblemJson> readProblemJsons(Path pathToProblemJsonDir) {
+    List<File> files = readProblemJsonFiles(pathToProblemJsonDir);
+    log.debug("detect [{}] problem files in [{}]", files.size(), pathToProblemJsonDir);
+    return files.stream().map(file -> {
+      try {
+        ProblemJson problem =
+            GoApplication.getDefaultJacksonMapper().toObject(file, ProblemJson.class);
+        return problem;
+      } catch (Exception e) {
+        log.error("file {}", file);
+        throw new RuntimeException(e);
+      }
+    }).collect(Collectors.toList());
+  }
+
+  private static List<File> getGroupDirectories(Path path) {
+    File[] files = path.toFile().listFiles();
+    if (files != null) {
+      return Arrays.asList(files).stream().filter(f -> f.isDirectory())
+          .collect(Collectors.toList());
+    }
+    return new ArrayList<>();
   }
 
   @OrmRecord

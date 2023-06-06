@@ -1,6 +1,7 @@
 package org.nkjmlab.go.javalin.model.common;
 
 import java.util.stream.Stream;
+import org.nkjmlab.sorm4j.util.datatype.OrmJsonColumnContainer;
 
 /**
  * stone<br>
@@ -8,6 +9,7 @@ import java.util.stream.Stream;
  * 2桁目 0：ブランク， 1:□， 2：△, 3:x
  *
  */
+@OrmJsonColumnContainer
 public record Hand(String type, int number, int x, int y, int stone, String options) {
 
   public static Hand createDummyHand() {

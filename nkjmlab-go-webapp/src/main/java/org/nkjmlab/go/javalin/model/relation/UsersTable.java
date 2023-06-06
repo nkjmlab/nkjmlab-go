@@ -1,7 +1,6 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.go.javalin.GoApplication.*;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -13,6 +12,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.sql.DataSource;
+import org.nkjmlab.go.javalin.GoWebAppConfig;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
@@ -26,9 +26,6 @@ import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Unique;
-import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils;
-import org.nkjmlab.util.orangesignal_csv.OrangeSignalCsvUtils.Row;
-import com.orangesignal.csv.CsvConfig;
 
 /***
  * Userという名前で統一したかったけど，H2のデフォルトのテーブルと衝突してしまうので，Playerに改名した．
@@ -47,13 +44,6 @@ public class UsersTable extends BasicH2Table<User> {
   public UsersTable(DataSource dataSource) {
     super(Sorm.create(dataSource), User.class);
   }
-
-
-
-  public void createTableAndIndexesIfNotExists() {
-    createTableIfNotExists().createIndexesIfNotExists();
-  }
-
 
   public User getUser(String uid) {
     User entry = selectByPrimaryKey(uid);
@@ -82,23 +72,24 @@ public class UsersTable extends BasicH2Table<User> {
 
 
   public void readFromFileAndMerge(File usersCsvFile) {
-    CsvConfig conf = OrangeSignalCsvUtils.createDefaultCsvConfig();
-    conf.setSkipLines(1);
-    List<Row> users = OrangeSignalCsvUtils.readAllRows(usersCsvFile, conf);
-    transformToUser(users).forEach(user -> {
+    BasicH2Table<UserCsv> table = new BasicH2Table<>(getOrm(), UserCsv.class);
+
+    transformToUser(table.readCsvWithHeader(usersCsvFile)).forEach(user -> {
       createIcon(user.userId());
       insert(user);
     });
   }
 
+  @OrmRecord
+  public static record UserCsv(String userId, String email, String username, String role) {
+
+  }
 
 
-  private static List<User> transformToUser(List<Row> rows) {
-    return rows.stream().map(row -> {
-      User user =
-          new User(row.get(0), row.get(1), row.get(2), row.get(3), "-1", 30, LocalDateTime.now());
-      return user;
-    }).collect(Collectors.toList());
+
+  private List<User> transformToUser(List<UserCsv> users) {
+    return users.stream().map(row -> new User(row.userId(), row.email(), row.username(), row.role(),
+        "-1", 30, LocalDateTime.now())).collect(Collectors.toList());
   }
 
   public List<User> readListByUids(Collection<String> uids) {
@@ -129,23 +120,22 @@ public class UsersTable extends BasicH2Table<User> {
 
 
   public static void createIcon(String userId) {
-    File uploadedIcon = new File(UPLOADED_ICON_DIR, userId + ".png");
-    File initialIcon = new File(INITIAL_ICON_DIR, userId + ".png");
+    File uploadedIcon = new File(GoWebAppConfig.UPLOADED_ICON_DIR, userId + ".png");
+    File initialIcon =
+        new File(new File(GoWebAppConfig.WEB_APP_CONFIG.getWebRootDirectory(), "img/icon-initial"),
+            userId + ".png");
 
-    File srcFile =
-        uploadedIcon
-            .exists()
-                ? uploadedIcon
-                : (initialIcon
-                    .exists()
-                        ? initialIcon
-                        : getRandom(Stream.of(RANDOM_ICON_DIR.listFiles())
-                            .filter(f -> f.getName().toLowerCase().endsWith(".png")
-                                || f.getName().toLowerCase().endsWith(".jpg"))
-                            .toList()).orElseThrow());
+    File srcFile = uploadedIcon.exists() ? uploadedIcon
+        : (initialIcon.exists() ? initialIcon
+            : getRandom(Stream
+                .of(new File(GoWebAppConfig.WEB_APP_CONFIG.getWebRootDirectory(),
+                    "img/icon-random").listFiles())
+                .filter(f -> f.getName().toLowerCase().endsWith(".png")
+                    || f.getName().toLowerCase().endsWith(".jpg"))
+                .toList()).orElseThrow());
     try {
       org.apache.commons.io.FileUtils.copyFile(srcFile,
-          new File(CURRENT_ICON_DIR, userId + ".png"));
+          new File(GoWebAppConfig.CURRENT_ICON_DIR, userId + ".png"));
     } catch (IOException e) {
       log.warn(e, e);
     }

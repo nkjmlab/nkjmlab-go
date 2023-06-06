@@ -12,10 +12,10 @@
   <tbody>
     <tr th:each="item : ${games}">
       <td class="text-center h6" th:text="${itemStat.count}"></td>
-      <td class="h5"><a class="badge badge-primary"
+      <td class="h5"><a class="badge bg-primary"
         th:href="|play.html?game_id=${item.gameState.gameId}|"><span
           th:text="${item.gameState.gameId}"></span> <i class="fas fa-user-friends"></i></a></td>
-      <td class="text-left" th:utext="${item.handUp.message}"></td>
+      <td class="text-start" th:utext="${item.handUp.message}"></td>
     </tr>
   </tbody>
 </table>

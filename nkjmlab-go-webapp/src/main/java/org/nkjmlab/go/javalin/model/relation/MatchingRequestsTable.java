@@ -1,6 +1,12 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.cond;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.from;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.literal;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.orderByAsc;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.select;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.where;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -68,7 +74,7 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
       }
 
       Set<String> pastOpponents = gameStatesTables.readPastOpponents(target.userId());
-      log.debug("[{}] has been matched with {} on today", target.userId(), pastOpponents);
+      log.trace("[{}] has been matched with {} on today", target.userId(), pastOpponents);
 
       MatchingRequest nextOpponent = selectNextOponent(target, pastOpponents);
       if (nextOpponent == null) {
@@ -79,7 +85,7 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
       String white = target.rank() >= nextOpponent.rank() ? nextOpponent.userId() : target.userId();
       String gameId = black + GameStatesTables.VS_SEPARATOR + white;
 
-      log.debug("[{}] is created", gameId);
+      log.trace("[{}] is created", gameId);
 
       updateByPrimaryKey(RowMap.of("game_id", gameId), target.userId);
       updateByPrimaryKey(RowMap.of("game_id", gameId), nextOpponent.userId);
@@ -120,7 +126,7 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
   public static record MatchingRequest(@PrimaryKey String userId, String seatId, String userName,
       int rank, @Index String gameId, LocalDateTime createdAt) {
 
-    public static final String UNPAIRED = "UNPAIRED";
+    static final String UNPAIRED = "UNPAIRED";
 
     public MatchingRequest() {
       this("", "", "", 30, UNPAIRED, LocalDateTime.now());
@@ -131,10 +137,13 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
           LocalDateTime.now());
     }
 
+    // Thymeleaf templateからよばれるのでpublicのままにする必要がある．
     public boolean isUnpaired() {
       return UNPAIRED.equals(gameId);
     }
 
   }
+
+
 
 }

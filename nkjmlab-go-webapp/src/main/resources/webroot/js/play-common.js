@@ -138,7 +138,7 @@ function sendGameStateByWs(connection, gameState) {
 }
 
 function sendGameStateByJsonRpc(gameState) {
-  new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "sendGameState", [
+  new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "sendGameState", [
     getGameId(), gameState], function (data) {
     }, function (data, textStatus, errorThrown) {
       swalAlert("ページを再読み込みします", "", "info", e => location.reload());
@@ -169,18 +169,18 @@ function sendNewGame(gameState, ro, callback) {
     };
   }
   setGameStateOptions(gameState);
-  new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "newGame", [getGameId(),
+  new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "newGame", [getGameId(),
     gameState], callback)).rpc();
 }
 
 function notifyLoginToBoard() {
-  new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "notifyLoginToBoard", [
+  new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "notifyLoginToBoard", [
     getGameId(), getUserId()], function (data) {
     })).rpc();
 }
 
 function goBack(gameState, callback) {
-  new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "goBack", [getGameId(),
+  new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "goBack", [getGameId(),
     gameState], function (data) {
     })).rpc();
 }
@@ -202,12 +202,18 @@ function selectorToStone(selector) {
   return SELECTOR_STONE_MAP[stone];
 }
 
-function getBaseUrl() {
-  const u = parseUri(document.URL);
-  const urlPrefix = u.protocol + "://" + u.authority + "/"
-    + u.directory.split("/")[1] + "/";
+function getGoRpcServiceUrl() {
+  const u = new URL(document.URL);
+  const urlPrefix = u.protocol + "//" + u.host + "/"  + u.pathname.split("/")[1] + "/";
   return urlPrefix + "json/GoJsonRpcService";
 }
+
+function getAuthRpcServiceUrl() {
+  const u = new URL(document.URL);
+  const urlPrefix = u.protocol + "//" + u.host + "/"  + u.pathname.split("/")[1] + "/";
+  return urlPrefix + "json/AuthRpcService";
+}
+
 
 function isStudent() {
   if (!getUserMode()) { return true; }
@@ -229,11 +235,11 @@ function isAdminUid(uid) {
 }
 
 function getProblemIdFromUrl() {
-  return parseUri(location).queryKey["problem_id"];
+  return new URL(location).searchParams.get("problem_id");
 }
 
 function getGameIdFromUrl() {
-  return parseUri(location).queryKey["game_id"];
+  return new URL(location).searchParams.get("game_id");
 }
 
 function getMyStoneColor() {
@@ -246,7 +252,7 @@ function _setGameIdWithPlayers(p1, p2) {
 }
 
 function syncGameState(sessionId) {
-  new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "syncGameState", [
+  new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "syncGameState", [
     sessionId, getGameId(), getUserId()], function (data) {
       initView();
       refreshProblemInfo();
@@ -255,8 +261,8 @@ function syncGameState(sessionId) {
 }
 
 function createImageTag(uid) {
-  const fallback = "this.onerror=null;this.src='../img/icon/no-player-icon.png'";
-  const imgTag = '<img class="player-icon rounded" src="../img/icon/' + uid
+  const fallback = "this.onerror=null;this.src='/img/icon/no-player-icon.png'";
+  const imgTag = '<img class="player-icon rounded" src="/img/icon/' + uid
     + '.png?' + dateNow + '" onerror=' + fallback + '>';
   return imgTag;
 }
@@ -273,6 +279,6 @@ function callLoadProblem(gameId, problemId, callback) {
   if (problemId == null) { return; }
   callback = callback != null ? callback : function (data) {
   };
-  new JsonRpcClient(new JsonRpcRequest(getBaseUrl(), "loadProblem", [gameId,
+  new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "loadProblem", [gameId,
     problemId], callback)).rpc();
 }

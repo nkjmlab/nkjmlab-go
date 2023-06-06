@@ -143,31 +143,31 @@ body.unselectable {
 }
 
 #moving-a-stone {
-  background-image: url("../img/play/a-stone.png");
+  background-image: url("/img/play/a-stone.png");
 }
 
 #moving-b-stone {
-  background-image: url("../img/play/b-stone.png");
+  background-image: url("/img/play/b-stone.png");
 }
 
 #moving-c-stone {
-  background-image: url("../img/play/c-stone.png");
+  background-image: url("/img/play/c-stone.png");
 }
 
 #moving-x-stone {
-  background-image: url("../img/play/x-stone.png");
+  background-image: url("/img/play/x-stone.png");
 }
 
 #moving-circle-stone {
-  background-image: url("../img/play/circle-stone.png");
+  background-image: url("/img/play/circle-stone.png");
 }
 
 #moving-rectangle-stone {
-  background-image: url("../img/play/rectangle-stone.png");
+  background-image: url("/img/play/rectangle-stone.png");
 }
 
 #moving-triangle-stone {
-  background-image: url("../img/play/triangle-stone.png");
+  background-image: url("/img/play/triangle-stone.png");
 }
 
 .log-comment {
@@ -230,11 +230,11 @@ body.unselectable {
 }
 
 #black-agehama-1, #black-agehama-2 {
-  background-image: url("../img/play/white-stone.png");
+  background-image: url("/img/play/white-stone.png");
 }
 
 #white-agehama-1, #white-agehama-2 {
-  background-image: url("../img/play/black-stone.png");
+  background-image: url("/img/play/black-stone.png");
 }
 
 #black-agehama-1, #white-agehama-1, #black-agehama-2, #white-agehama-2 {
@@ -243,19 +243,19 @@ body.unselectable {
 }
 
 #black-stones-cap, #white-stones-cap {
-  background-image: url("../img/play/cap.png");
+  background-image: url("/img/play/cap.png");
   background-repeat: no-repeat;
   background-size: contain;
 }
 
 #black-stones {
-  background-image: url("../img/play/black-stones.png");
+  background-image: url("/img/play/black-stones.png");
   background-repeat: no-repeat;
   background-size: contain;
 }
 
 #white-stones {
-  background-image: url("../img/play/white-stones.png");
+  background-image: url("/img/play/white-stones.png");
   background-repeat: no-repeat;
   background-size: contain;
 }

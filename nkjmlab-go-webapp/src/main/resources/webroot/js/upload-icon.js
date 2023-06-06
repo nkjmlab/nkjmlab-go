@@ -30,7 +30,7 @@ $(function() {
             swalConfirm("", "アイコン用にこの画像をアップロードしますか？", "info", function(e) {
               $("#modal-icon-upload").modal('hide');
               const imgData = $("#img-icon-preview").attr('src');
-              new JsonRpcClient(new JsonRpcRequest(getServiceUrl(),
+              new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
                       "uploadImage", [stdId, imgData], function(data) {
                         setTimeout(function() {
                           swalAlert("成功", "画像がアップロードされました", "info",

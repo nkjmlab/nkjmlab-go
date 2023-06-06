@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
 
 <head>
-  <object th:include="/fragment/head.html::meta-fragment" th:remove="tag"></object>
+  <object th:insert="~{/fragment/head.html::meta-fragment}" th:remove="tag"></object>
   <script th:inline="javascript">
     $(function () {
       var o = [3, "asc"];
@@ -14,7 +14,7 @@
         "pageLength": 1000,
         "order": [o]
       });
-      if (parseUri(location).file == "games.html") {
+      if (new URL(location).pathname.split('/').pop() == "games.html") {
         $("#page-description").text("1人以上の学生が閲覧している対局の一覧");
       } else {
         $("#page-description").text("全対局の一覧");
@@ -40,16 +40,16 @@
 
 <body>
   <div class="container-fluid">
-    <div th:include="/fragment/header-admin.html::fcontent" th:remove="tag"></div>
+    <div th:insert="~{/fragment/header-admin.html::fcontent}" th:remove="tag"></div>
     <hr>
   </div>
   <div class="container">
     <div class="row mt-2">
       <div class="col-12">
-        <h1 class="float-left">
+        <h1 class="float-start">
           対局一覧 <i class="fas fa-user-friends"></i>
         </h1>
-        <div class="float-right">
+        <div class="float-end">
           <img src="https://i.gyazo.com/15febca9d007c16b559d571491c3be58.png" style="max-width: 8em">
         </div>
       </div>
@@ -70,18 +70,18 @@
           <tbody>
             <tr th:each="item : ${games}">
               <td class="text-center h6"><img class="player-icon rounded"
-                  th:src="|../img/icon/${item.gameState.blackPlayerId}.png|"
-                  onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'"> <strong>vs.</strong>
-                <img class="player-icon rounded" th:src="|../img/icon/${item.gameState.whitePlayerId}.png|"
-                  onerror="this.onerror=null;this.src='../img/icon/no-player-icon.png'">
+                  th:src="|/img/icon/${item.gameState.blackPlayerId}.png|"
+                  onerror="this.onerror=null;this.src='/img/icon/no-player-icon.png'"> <strong>vs.</strong>
+                <img class="player-icon rounded" th:src="|/img/icon/${item.gameState.whitePlayerId}.png|"
+                  onerror="this.onerror=null;this.src='/img/icon/no-player-icon.png'">
               </td>
-              <td class="h6"><span th:if="${item.handUp neq null}" class="badge badge-danger">挙手
+              <td class="h6"><span th:if="${item.handUp neq null}" class="badge bg-danger">挙手
                   <i class="fas fa-hand-paper"></i>
                 </span></td>
               <td class="h6"><span class="badge" th:text="${item.watchingStudentsNum}"
-                  th:classappend="|${item.watchingStudentsNum eq 0 ? 'badge-secondary' : item.watchingStudentsNum eq 1 ? 'badge-danger':'badge-info'}"></span>
+                  th:classappend="|${item.watchingStudentsNum eq 0 ? 'bg-secondary' : item.watchingStudentsNum eq 1 ? 'bg-danger':'bg-info'}"></span>
               </td>
-              <td class="h5"><a class="badge badge-primary" th:href="|play.html?game_id=${item.gameState.gameId}|"><span
+              <td class="h5"><a class="badge bg-primary" th:href="|play.html?game_id=${item.gameState.gameId}|"><span
                     th:text="${item.gameState.gameId}"></span> <i class="fas fa-user-friends"></i></a></td>
               <td class="small" th:text="${#temporals.format(item.gameState.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
             </tr>
