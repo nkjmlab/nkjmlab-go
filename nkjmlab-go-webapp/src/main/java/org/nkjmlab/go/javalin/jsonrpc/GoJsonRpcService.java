@@ -265,10 +265,13 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
     public void createIcon(String userId) {
       File currentIcon = new File(currentIconDIr, userId + ".png");
+      if (currentIcon.exists()) {
+        return;
+      }
+
       File initialIcon = new File(initialIconDir, userId + ".png");
 
-      File srcFile = currentIcon.exists() ? currentIcon
-          : (initialIcon.exists() ? initialIcon : getRandomIcon());
+      File srcFile = initialIcon.exists() ? initialIcon : getRandomIcon();
       try {
         org.apache.commons.io.FileUtils.copyFile(srcFile,
             new File(currentIconDIr, userId + ".png"));
