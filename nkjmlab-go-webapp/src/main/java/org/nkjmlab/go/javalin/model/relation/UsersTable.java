@@ -2,17 +2,12 @@ package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
 import java.io.File;
-import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.sql.DataSource;
-import org.nkjmlab.go.javalin.GoWebAppConfig;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
@@ -34,7 +29,7 @@ import org.nkjmlab.sorm4j.util.table_def.annotation.Unique;
  *
  */
 public class UsersTable extends BasicH2Table<User> {
-  private static final org.apache.logging.log4j.Logger log =
+  static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
   private static final String EMAIL = "email";
@@ -74,11 +69,10 @@ public class UsersTable extends BasicH2Table<User> {
   public void readFromFileAndMerge(File usersCsvFile) {
     BasicH2Table<UserCsv> table = new BasicH2Table<>(getOrm(), UserCsv.class);
 
-    transformToUser(table.readCsvWithHeader(usersCsvFile)).forEach(user -> {
-      createIcon(user.userId());
-      insert(user);
-    });
+    transformToUser(table.readCsvWithHeader(usersCsvFile)).forEach(user -> insert(user));
   }
+
+
 
   @OrmRecord
   public static record UserCsv(String userId, String email, String username, String role) {
@@ -118,36 +112,6 @@ public class UsersTable extends BasicH2Table<User> {
   }
 
 
-
-  public static void createIcon(String userId) {
-    File uploadedIcon = new File(GoWebAppConfig.UPLOADED_ICON_DIR, userId + ".png");
-    File initialIcon =
-        new File(new File(GoWebAppConfig.WEB_APP_CONFIG.getWebRootDirectory(), "img/icon-initial"),
-            userId + ".png");
-
-    File srcFile = uploadedIcon.exists() ? uploadedIcon
-        : (initialIcon.exists() ? initialIcon
-            : getRandom(Stream
-                .of(new File(GoWebAppConfig.WEB_APP_CONFIG.getWebRootDirectory(),
-                    "img/icon-random").listFiles())
-                .filter(f -> f.getName().toLowerCase().endsWith(".png")
-                    || f.getName().toLowerCase().endsWith(".jpg"))
-                .toList()).orElseThrow());
-    try {
-      org.apache.commons.io.FileUtils.copyFile(srcFile,
-          new File(GoWebAppConfig.CURRENT_ICON_DIR, userId + ".png"));
-    } catch (IOException e) {
-      log.warn(e, e);
-    }
-  }
-
-
-  private static <E> Optional<E> getRandom(Collection<E> e) {
-    if (e.size() == 0) {
-      return Optional.empty();
-    }
-    return e.stream().skip((ThreadLocalRandom.current().nextInt(e.size()))).findFirst();
-  }
 
   public List<User> readAll() {
     return selectAll();

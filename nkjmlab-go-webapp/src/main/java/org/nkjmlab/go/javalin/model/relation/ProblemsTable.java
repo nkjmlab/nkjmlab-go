@@ -21,6 +21,8 @@ import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
+import org.nkjmlab.util.java.json.JsonMapper;
+import org.threeten.bp.Instant;
 import com.google.firebase.database.annotations.NotNull;
 
 public class ProblemsTable extends BasicH2Table<Problem> {
@@ -37,16 +39,57 @@ public class ProblemsTable extends BasicH2Table<Problem> {
   public static final String HAND_HISTORY = "hand_history";
   public static final String MESSAGE = "message";
 
+  private static final JsonMapper mapper = GoApplication.getDefaultJacksonMapper();
+
   private static List<String> groupNames = List.of("投票", "第1回", "第2回", "第3回", "第4回", "問題集 Part 1",
       "問題集 Part 2", "問題集 Part 3", "問題集 Part 4", "問題集 Part 5", "セキ", "模範碁");
 
-  public ProblemsTable(DataSource dataSource) {
+
+  private final File problemDir;
+
+  public ProblemsTable(DataSource dataSource, File problemDir) {
     super(Sorm.create(dataSource), Problem.class);
     this.problemGroupNodeFactory = new ProblemGroupNodeFactory(this);
     createTableIfNotExists().createIndexesIfNotExists();
+    this.problemDir = problemDir;
   }
 
 
+  @Override
+  public int merge(Problem p) {
+    ProblemJson problemJson = ProblemJson.createFrom(p);
+    saveProblemJsonToFile(problemJson);
+    return super.merge(p);
+  }
+
+
+  public void autoBackupProblemJsonToFile(ProblemJson p) {
+    File bkupDir = getProblemAutoBackupDir(p.groupId());
+    File o = new File(bkupDir, Instant.now().toEpochMilli() + "-copy-" + p.name() + ".json");
+    mapper.toJsonAndWrite(p, o, true);
+  }
+
+  private void saveProblemJsonToFile(ProblemJson p) {
+    File problemGroupDir = getProblemDir(p.groupId());
+    File o = new File(problemGroupDir, p.name() + ".json");
+    mapper.toJsonAndWrite(p, o, true);
+    log.info("Problem {} - {} is saved to {}", p.groupId(), p.name(), o);
+
+  }
+
+  private File getProblemDir(String groupId) {
+    File dir = new File(problemDir, groupId);
+    dir.mkdirs();
+    return dir;
+  }
+
+  private File getProblemAutoBackupDir(String groupId) {
+    File dir =
+        new File(new File(problemDir.getAbsolutePath() + File.separator + "auto-bkup"), groupId);
+    dir.mkdirs();
+    return dir;
+
+  }
 
   private List<String> getGroupsOrderByAsc() {
     return getOrm().readList(String.class,
@@ -59,7 +102,7 @@ public class ProblemsTable extends BasicH2Table<Problem> {
 
   }
 
-  public void dropAndInsertInitialProblemsToTable(File problemDir) {
+  public void dropAndInsertInitialProblemsToTable() {
     log.info("{} is problem dir", problemDir);
     deleteAll();
     List<ProblemJson> probs = readProblemJsons(problemDir.toPath());

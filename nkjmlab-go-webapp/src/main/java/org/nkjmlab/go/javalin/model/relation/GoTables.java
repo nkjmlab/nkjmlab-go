@@ -3,7 +3,7 @@ package org.nkjmlab.go.javalin.model.relation;
 import java.io.File;
 import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.DataSourceManager;
-import org.nkjmlab.go.javalin.GoWebAppConfig;
+import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService.Icons;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.util.java.io.SystemFileUtils;
 import org.nkjmlab.util.java.lang.ResourceUtils;
@@ -22,8 +22,9 @@ public class GoTables {
   public final HandUpsTable handsUpTable;
   public final GameRecordsTable gameRecordsTable;
   public final PasswordsTable passwordsTable;
+  public final Icons icons;
 
-  private GoTables(GameStatesTables gameStatesTables, ProblemsTable problemsTable,
+  private GoTables(File webrootDir, GameStatesTables gameStatesTables, ProblemsTable problemsTable,
       UsersTable usersTable, PasswordsTable passwordsTable, LoginsTable loginsTable,
       MatchingRequestsTable matchingRequestsTable, VotesTable votesTable, HandUpsTable handsUpTable,
       GameRecordsTable gameRecordsTable) {
@@ -36,15 +37,17 @@ public class GoTables {
     this.votesTable = votesTable;
     this.handsUpTable = handsUpTable;
     this.gameRecordsTable = gameRecordsTable;
+    this.icons = new Icons(webrootDir);
   }
 
-  public static GoTables prepareTables(DataSourceManager basicDataSource) {
+  public static GoTables prepareTables(File webrootDir, File appRootDir,
+      DataSourceManager basicDataSource) {
 
     DataSource memDbDataSource = basicDataSource.createHikariInMemoryDataSource();
     DataSource fileDbDataSource = basicDataSource.createHikariServerModeDataSource();
 
 
-    final ProblemsTable problemsTable = prepareProblemTables(memDbDataSource);
+    final ProblemsTable problemsTable = prepareProblemTables(appRootDir, memDbDataSource);
     final HandUpsTable handsUpTable = new HandUpsTable(memDbDataSource);
     final MatchingRequestsTable matchingRequestsTable =
         prepareMatchingRequestsTable(memDbDataSource);
@@ -59,8 +62,9 @@ public class GoTables {
     final LoginsTable loginsTable = prepareLoginsTable(fileDbDataSource);
 
 
-    GoTables goTables = new GoTables(gameStatesTables, problemsTable, usersTable, passwordsTable,
-        loginsTable, matchingRequestsTable, votesTable, handsUpTable, gameRecordsTable);
+    GoTables goTables =
+        new GoTables(webrootDir, gameStatesTables, problemsTable, usersTable, passwordsTable,
+            loginsTable, matchingRequestsTable, votesTable, handsUpTable, gameRecordsTable);
 
     return goTables;
   }
@@ -142,9 +146,10 @@ public class GoTables {
     return usersTable;
   }
 
-  private static ProblemsTable prepareProblemTables(DataSource memDbDataSource) {
-    ProblemsTable problemsTable = new ProblemsTable(memDbDataSource);
-    problemsTable.dropAndInsertInitialProblemsToTable(GoWebAppConfig.PROBLEM_DIR);
+  private static ProblemsTable prepareProblemTables(File appRootDir, DataSource memDbDataSource) {
+    final File PROBLEM_DIR = new File(appRootDir, "problem");
+    ProblemsTable problemsTable = new ProblemsTable(memDbDataSource, PROBLEM_DIR);
+    problemsTable.dropAndInsertInitialProblemsToTable();
     return problemsTable;
   }
 

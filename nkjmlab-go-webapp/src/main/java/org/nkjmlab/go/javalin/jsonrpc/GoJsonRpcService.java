@@ -1,16 +1,18 @@
 package org.nkjmlab.go.javalin.jsonrpc;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 import org.nkjmlab.go.javalin.GoApplication;
-import org.nkjmlab.go.javalin.GoWebAppConfig;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
-import org.nkjmlab.go.javalin.model.relation.GoTables;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
+import org.nkjmlab.go.javalin.model.relation.GoTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
@@ -19,13 +21,13 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
 import org.nkjmlab.go.javalin.util.CurrentTimeMillisIdGenerator;
+import org.nkjmlab.go.javalin.util.StreamUtils;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.util.java.Base64Utils;
 import org.nkjmlab.util.java.json.JsonMapper;
 import org.nkjmlab.util.java.lang.ParameterizedStringFormatter;
 import org.nkjmlab.util.javax.imageio.ImageIoUtils;
-import org.threeten.bp.Instant;
 
 public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   private static final org.apache.logging.log4j.Logger log =
@@ -88,18 +90,18 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     goTables.problemsTable.merge(newP);
     goTables.problemsTable.clearProblemsJson();
     ProblemJson problemJson = ProblemJson.createFrom(newP);
-    saveProblemJsonToFile(problemJson);
     return problemJson;
   }
 
-  private final CurrentTimeMillisIdGenerator problemIdGenerator = new CurrentTimeMillisIdGenerator();
+  private final CurrentTimeMillisIdGenerator problemIdGenerator =
+      new CurrentTimeMillisIdGenerator();
 
   private Problem createNewProblem(String gameId, long problemId, String groupId, String name,
       String message) {
     Problem prevP = goTables.problemsTable.selectByPrimaryKey(problemId);
     GameState currentState = goTables.gameStatesTables.readLatestGameState(gameId);
     if (prevP != null) {
-      autoBackupProblemJsonToFile(ProblemJson.createFrom(prevP));
+      goTables.problemsTable.autoBackupProblemJsonToFile(ProblemJson.createFrom(prevP));
     }
     return new Problem(
         prevP != null ? prevP.id() : (problemId == -1 ? problemIdGenerator.getNewId() : problemId),
@@ -108,34 +110,6 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
         mapper.toJson(currentState.handHistory()), message == null ? "" : message);
   }
 
-  private void autoBackupProblemJsonToFile(ProblemJson p) {
-    File bkupDir = getProblemAutoBackupDir(p.groupId());
-    File o = new File(bkupDir, Instant.now().toEpochMilli() + "-copy-" + p.name() + ".json");
-    mapper.toJsonAndWrite(p, o, true);
-  }
-
-  private void saveProblemJsonToFile(ProblemJson p) {
-    File problemGroupDir = getProblemDir(p.groupId());
-    File o = new File(problemGroupDir, p.name() + ".json");
-    mapper.toJsonAndWrite(p, o, true);
-    log.info("Problem {} - {} is saved to {}", p.groupId(), p.name(), o);
-
-  }
-
-  private File getProblemDir(String groupId) {
-    File dir = new File(GoWebAppConfig.PROBLEM_DIR, groupId);
-    dir.mkdirs();
-    return dir;
-  }
-
-  private File getProblemAutoBackupDir(String groupId) {
-    File dir =
-        new File(new File(GoWebAppConfig.WEB_APP_CONFIG.getAppRootDirectory(), "problem-auto-bkup"),
-            groupId);
-    dir.mkdirs();
-    return dir;
-
-  }
 
   @Override
   public void deleteProblem(long problemId) {
@@ -143,7 +117,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     if (p == null) {
       return;
     }
-    autoBackupProblemJsonToFile(ProblemJson.createFrom(p));
+    goTables.problemsTable.autoBackupProblemJsonToFile(ProblemJson.createFrom(p));
 
     goTables.problemsTable.delete(p);
     goTables.problemsTable.clearProblemsJson();
@@ -250,20 +224,68 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   @Override
   public File uploadImage(String userId, String base64EncodedImage) {
     try {
-      {
-        File outputFile = new File(GoWebAppConfig.UPLOADED_ICON_DIR, userId + ".png");
-        outputFile.mkdirs();
-        ImageIoUtils.write(Base64Utils.decodeToImage(base64EncodedImage, "png"), "png", outputFile);
-      }
-      File outputFile = new File(GoWebAppConfig.CURRENT_ICON_DIR, userId + ".png");
-      outputFile.mkdirs();
-      ImageIoUtils.write(Base64Utils.decodeToImage(base64EncodedImage, "png"), "png", outputFile);
-      log.debug("Icon is uploaded={}", outputFile);
-      return outputFile;
+      return goTables.icons.updateIcon(userId, base64EncodedImage);
     } catch (Exception e) {
       log.error(e, e);
       return null;
     }
+  }
+
+  public static class Icons {
+
+    private final File currentIconDIr;
+
+    private final File initialIconDir;
+
+    private final File randomIconDir;
+
+    public final File uploadedIconDir;
+
+    public Icons(File baseDir) {
+      this.currentIconDIr = new File(baseDir, "img/icon");
+      this.initialIconDir = new File(baseDir, "img/icon-initial");
+      this.randomIconDir = new File(baseDir, "img/icon-random");
+      this.uploadedIconDir = new File(baseDir, "img/icon-uploaded");
+    }
+
+    public File updateIcon(String userId, String base64EncodedImage) {
+      BufferedImage img = Base64Utils.decodeToImage(base64EncodedImage, "png");
+      saveImage(uploadedIconDir, userId, img);
+      File outputFile = saveImage(currentIconDIr, userId, img);
+      log.debug("Icon is uploaded={}", outputFile);
+      return outputFile;
+    }
+
+    private File saveImage(File dir, String userId, BufferedImage img) {
+      File outputFile = new File(dir, userId + ".png");
+      outputFile.mkdirs();
+      ImageIoUtils.write(img, "png", outputFile);
+      return outputFile;
+    }
+
+    public void createIcon(String userId) {
+      File currentIcon = new File(currentIconDIr, userId + ".png");
+      File initialIcon = new File(initialIconDir, userId + ".png");
+
+      File srcFile = currentIcon.exists() ? currentIcon
+          : (initialIcon.exists() ? initialIcon : getRandomIcon());
+      try {
+        org.apache.commons.io.FileUtils.copyFile(srcFile,
+            new File(currentIconDIr, userId + ".png"));
+      } catch (IOException e) {
+        log.warn(e, e);
+      }
+    }
+
+    private File getRandomIcon() {
+      return StreamUtils.getRandom(Stream.of(randomIconDir.listFiles())
+          .filter(f -> f.getName().toLowerCase().endsWith(".png")
+              || f.getName().toLowerCase().endsWith(".jpg"))
+          .toList()).orElseThrow();
+    }
+
+
+
   }
 
   @Override

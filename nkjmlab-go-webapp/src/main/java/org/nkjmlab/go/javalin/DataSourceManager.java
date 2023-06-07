@@ -32,6 +32,21 @@ public class DataSourceManager {
     log.info("server jdbcUrl={}", factory.getServerModeJdbcUrl());
   }
 
+  private static FileDatabaseConfigJson getFileDbConfig() {
+    try {
+      return JacksonMapper.getDefaultMapper()
+          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json"),
+              FileDatabaseConfigJson.Builder.class)
+          .build();
+    } catch (Exception e) {
+      log.warn("Try to load h2.json.default");
+      return JacksonMapper.getDefaultMapper()
+          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json.default"),
+              FileDatabaseConfigJson.Builder.class)
+          .build();
+    }
+  }
+
   public DataSource createHikariInMemoryDataSource() {
     return createHikariDataSource(factory.getInMemoryModeJdbcUrl(), factory.getUsername(),
         factory.getPassword());
@@ -76,20 +91,6 @@ public class DataSourceManager {
     return ds;
   }
 
-  private static FileDatabaseConfigJson getFileDbConfig() {
-    try {
-      return JacksonMapper.getDefaultMapper()
-          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json"),
-              FileDatabaseConfigJson.Builder.class)
-          .build();
-    } catch (Exception e) {
-      log.warn("Try to load h2.json.default");
-      return JacksonMapper.getDefaultMapper()
-          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json.default"),
-              FileDatabaseConfigJson.Builder.class)
-          .build();
-    }
-  }
 
   public H2LocalDataSourceFactory getFactory() {
     return factory;

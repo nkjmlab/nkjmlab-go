@@ -18,6 +18,7 @@ import org.nkjmlab.util.java.function.Try;
 import org.nkjmlab.util.java.lang.ProcessUtils;
 import org.nkjmlab.util.java.lang.ResourceUtils;
 import org.nkjmlab.util.java.lang.SystemPropertyUtils;
+import org.nkjmlab.util.java.web.WebApplicationConfig;
 import org.nkjmlab.util.javalin.JavalinJsonRpcService;
 import org.nkjmlab.util.thymeleaf.ThymeleafTemplateEnginBuilder;
 import org.thymeleaf.TemplateEngine;
@@ -31,6 +32,12 @@ public class GoApplication {
       org.apache.logging.log4j.LogManager.getLogger();
 
   private final Javalin app;
+
+  private static final WebApplicationConfig WEB_APP_CONFIG = WebApplicationConfig.builder()
+      .addWebJar("jquery", "sweetalert2", "bootstrap", "bootstrap-treeview", "clipboard",
+          "fortawesome__fontawesome-free", "stacktrace-js", "datatables", "firebase", "firebaseui",
+          "ua-parser-js", "blueimp-load-image", "emojionearea")
+      .build();
 
   public static void main(String[] args) {
 
@@ -60,7 +67,8 @@ public class GoApplication {
 
     DataSourceManager basicDataSource = new DataSourceManager();
 
-    GoTables goTables = GoTables.prepareTables(basicDataSource);
+    GoTables goTables = GoTables.prepareTables(WEB_APP_CONFIG.getWebRootDirectory(),
+        WEB_APP_CONFIG.getAppRootDirectory(), basicDataSource);
 
     WebsocketSessionsManager webSocketManager =
         new WebsocketSessionsManager(goTables, basicDataSource.createHikariInMemoryDataSource());
@@ -75,8 +83,7 @@ public class GoApplication {
 
 
     this.app = Javalin.create(config -> {
-      config.staticFiles.add(GoWebAppConfig.WEB_APP_CONFIG.getWebRootDirectory().getName(),
-          Location.CLASSPATH);
+      config.staticFiles.add(WEB_APP_CONFIG.getWebRootDirectory().getName(), Location.CLASSPATH);
       config.staticFiles.enableWebjars();
       config.http.generateEtags = true;
       config.plugins.enableCors(cors -> cors.add(corsConfig -> corsConfig.anyHost()));
@@ -87,11 +94,11 @@ public class GoApplication {
 
     prepareWebSocket(app, webSocketManager);
     prepareJsonRpc(app, webSocketManager, new GoJsonRpcService(webSocketManager, goTables),
-        new AuthService.Factory(goTables.usersTable, goTables.loginsTable, goTables.passwordsTable,
-            authService));
+        new AuthService.Factory(goTables, authService));
 
 
-    GoAppHandlers.prepareGetHandler(app, webSocketManager, goTables, authService);
+    new GoGetHandlers(app, webSocketManager, WEB_APP_CONFIG, goTables, authService)
+        .prepareGetHandlers();
   }
 
   private static void scheduleCheckMatchingRequest(WebsocketSessionsManager webSocketManager,
