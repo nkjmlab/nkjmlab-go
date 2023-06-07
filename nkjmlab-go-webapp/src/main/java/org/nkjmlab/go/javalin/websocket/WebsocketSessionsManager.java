@@ -23,13 +23,13 @@ import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WriteCallback;
 import org.nkjmlab.go.javalin.GoApplication;
-import org.nkjmlab.go.javalin.GoTables;
 import org.nkjmlab.go.javalin.model.common.Agehama;
 import org.nkjmlab.go.javalin.model.common.Hand;
 import org.nkjmlab.go.javalin.model.common.Hand.HandType;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
+import org.nkjmlab.go.javalin.model.relation.GoTables;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
@@ -60,7 +60,7 @@ public class WebsocketSessionsManager {
   private final Queue<String> globalMessages = new ConcurrentLinkedQueue<>();
   private final WebSocketJsonSenderService jsonSenderService = new WebSocketJsonSenderService();
 
-  private GoTables goTables;
+  private final GoTables goTables;
 
 
   public WebsocketSessionsManager(GoTables goTables, DataSource memDbDataSource) {

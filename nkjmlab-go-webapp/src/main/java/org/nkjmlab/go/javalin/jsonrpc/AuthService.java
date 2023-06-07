@@ -1,8 +1,8 @@
-package org.nkjmlab.go.javalin.auth;
+package org.nkjmlab.go.javalin.jsonrpc;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import org.nkjmlab.go.javalin.auth.GoAuthService.SigninSession;
+import org.nkjmlab.go.javalin.jsonrpc.GoAuthService.SigninSession;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.PasswordsTable;

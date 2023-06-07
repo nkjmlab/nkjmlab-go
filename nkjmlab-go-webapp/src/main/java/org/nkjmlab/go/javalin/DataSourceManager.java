@@ -20,7 +20,7 @@ public class DataSourceManager {
 
   private static final int DEFAULT_TIMEOUT_SECONDS = 30;
 
-  private H2LocalDataSourceFactory factory;
+  private final H2LocalDataSourceFactory factory;
 
   public DataSourceManager() {
     FileDatabaseConfigJson fileDbConf = getFileDbConfig();

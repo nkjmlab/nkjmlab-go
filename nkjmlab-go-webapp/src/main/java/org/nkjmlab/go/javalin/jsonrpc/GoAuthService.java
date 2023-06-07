@@ -1,4 +1,4 @@
-package org.nkjmlab.go.javalin.auth;
+package org.nkjmlab.go.javalin.jsonrpc;
 
 import java.util.Optional;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;

@@ -1,18 +1,10 @@
-package org.nkjmlab.go.javalin;
+package org.nkjmlab.go.javalin.model.relation;
 
 import java.io.File;
 import javax.sql.DataSource;
-import org.nkjmlab.go.javalin.model.relation.GameRecordsTable;
-import org.nkjmlab.go.javalin.model.relation.GameStatesTable;
+import org.nkjmlab.go.javalin.DataSourceManager;
+import org.nkjmlab.go.javalin.GoWebAppConfig;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
-import org.nkjmlab.go.javalin.model.relation.GameStatesTables;
-import org.nkjmlab.go.javalin.model.relation.HandUpsTable;
-import org.nkjmlab.go.javalin.model.relation.LoginsTable;
-import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable;
-import org.nkjmlab.go.javalin.model.relation.PasswordsTable;
-import org.nkjmlab.go.javalin.model.relation.ProblemsTable;
-import org.nkjmlab.go.javalin.model.relation.UsersTable;
-import org.nkjmlab.go.javalin.model.relation.VotesTable;
 import org.nkjmlab.util.java.io.SystemFileUtils;
 import org.nkjmlab.util.java.lang.ResourceUtils;
 

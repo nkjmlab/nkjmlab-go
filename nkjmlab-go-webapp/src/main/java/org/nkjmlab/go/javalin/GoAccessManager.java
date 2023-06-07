@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin;
 
 import java.util.Set;
-import org.nkjmlab.go.javalin.auth.GoAuthService;
+import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import io.javalin.http.Context;
