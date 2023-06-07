@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.nkjmlab</groupId>
   <artifactId>nkjmlab-go-webapp</artifactId>
-  <version>0.10.0</version>
+  <version>0.10.1</version>
   <description>Go Web Application</description>
   <url>https://github.com/nkjmlab/nkjmlab-go-webapp</url>
   <licenses>
@@ -20,8 +20,8 @@
     </developer>
   </developers>
   <scm>
-    <connection>scm:git:git@github.com:yuu-nkjmb/nkjmlab-go-webapp.git</connection>
-    <url>https://github.com/yuu-nkjm/nkjmlab-go-webapp</url>
+    <connection>scm:git:git@github.com:nkjmlab/nkjmlab-go.git</connection>
+    <url>https://github.com/nkjmlab/nkjmlab-go</url>
     <tag>HEAD</tag>
   </scm>
   <properties>
