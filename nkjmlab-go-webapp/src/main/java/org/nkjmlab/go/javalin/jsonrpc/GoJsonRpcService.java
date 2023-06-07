@@ -21,7 +21,7 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
 import org.nkjmlab.go.javalin.util.CurrentTimeMillisIdGenerator;
-import org.nkjmlab.go.javalin.util.StreamUtils;
+import org.nkjmlab.go.javalin.util.CollectionUtils;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.util.java.Base64Utils;
@@ -281,7 +281,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     }
 
     private File getRandomIcon() {
-      return StreamUtils.getRandom(Stream.of(randomIconDir.listFiles())
+      return CollectionUtils.getRandom(Stream.of(randomIconDir.listFiles())
           .filter(f -> f.getName().toLowerCase().endsWith(".png")
               || f.getName().toLowerCase().endsWith(".jpg"))
           .toList()).orElseThrow();

@@ -4,12 +4,12 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class StreamUtils {
+public class CollectionUtils {
 
-  private StreamUtils() {}
+  private CollectionUtils() {}
 
   public static <E> Optional<E> getRandom(Collection<E> e) {
-    if (e.size() == 0) {
+    if (e == null || e.size() == 0) {
       return Optional.empty();
     }
     return e.stream().skip((ThreadLocalRandom.current().nextInt(e.size()))).findFirst();
