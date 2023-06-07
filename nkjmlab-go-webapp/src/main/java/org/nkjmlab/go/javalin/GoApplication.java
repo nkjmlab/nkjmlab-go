@@ -103,7 +103,8 @@ public class GoApplication {
 
   private static void scheduleCheckMatchingRequest(WebsocketSessionsManager webSocketManager,
       GoTables goTables) {
-    final int INTERVAL_IN_WAITING_ROOM = 10;
+    // このインターバルが小さいと待合室に十分に人数が入っていない状態でマッチングが始まる可能性が高くなってしまう．30秒が妥当か．
+    final int MATCHING_INTERVAL_SEC = 30;
 
     ScheduledExecutorService srv = Executors.newSingleThreadScheduledExecutor(runnable -> {
       Thread t = Executors.defaultThreadFactory().newThread(runnable);
@@ -115,7 +116,7 @@ public class GoApplication {
       Set<String> uids =
           goTables.matchingRequestsTable.createPairOfUsers(goTables.gameStatesTables);
       webSocketManager.sendUpdateWaitingRequestStatus(uids);
-    }, e -> log.error(e)), INTERVAL_IN_WAITING_ROOM, INTERVAL_IN_WAITING_ROOM, TimeUnit.SECONDS);
+    }, e -> log.error(e)), 0, MATCHING_INTERVAL_SEC, TimeUnit.SECONDS);
 
   }
 
