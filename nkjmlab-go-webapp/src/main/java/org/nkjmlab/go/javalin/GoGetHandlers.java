@@ -3,7 +3,7 @@ package org.nkjmlab.go.javalin;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import org.nkjmlab.go.javalin.GoAccessManager.UserRole;
+import org.nkjmlab.go.javalin.GoAccessManager.AccessRole;
 import org.nkjmlab.go.javalin.GoGetHandler.GoViewHandler;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService.SigninSession;
@@ -41,20 +41,20 @@ public class GoGetHandlers {
 
   public void prepareGetHandlers() {
 
-    app.get("/app/play.html", createPlayHandler(), UserRole.LOGIN_ROLES);
-    app.get("/app/players-all.html", createPlayersAllHandler(), UserRole.ADMIN);
-    app.get("/app/players.html", createPlayersHandler(), UserRole.ADMIN);
-    app.get("/app/games-all.html", createGamesAllHandler(), UserRole.ADMIN);
-    app.get("/app/games.html", createGamesHandler(), UserRole.ADMIN);
+    app.get("/app/play.html", createPlayHandler(), AccessRole.LOGIN_ROLES);
+    app.get("/app/players-all.html", createPlayersAllHandler(), AccessRole.ADMIN);
+    app.get("/app/players.html", createPlayersHandler(), AccessRole.ADMIN);
+    app.get("/app/games-all.html", createGamesAllHandler(), AccessRole.ADMIN);
+    app.get("/app/games.html", createGamesHandler(), AccessRole.ADMIN);
     app.get("/app/fragment/game-record-table.html", createGameRecordTableHandler(),
-        UserRole.LOGIN_ROLES);
-    app.get("/app/fragment/question-table*", createQuestionTableHandler(), UserRole.ADMIN);
+        AccessRole.LOGIN_ROLES);
+    app.get("/app/fragment/question-table*", createQuestionTableHandler(), AccessRole.ADMIN);
 
     app.get("/app/fragment/waiting-request-table.html", createWaitingRequestHandler(),
-        UserRole.ADMIN);
+        AccessRole.ADMIN);
 
     app.get("/app/fragment/waiting-request-table-small.html", createWatingRequestSmallHandler(),
-        UserRole.LOGIN_ROLES);
+        AccessRole.LOGIN_ROLES);
 
     app.get("/app", ctx -> ctx.redirect("/app/index.html"));
     app.get("/app/*", createGoHandler(ctx -> filePath -> model -> {
