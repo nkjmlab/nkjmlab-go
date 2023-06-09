@@ -19,7 +19,7 @@ import org.nkjmlab.util.java.lang.ProcessUtils;
 import org.nkjmlab.util.java.lang.ResourceUtils;
 import org.nkjmlab.util.java.lang.SystemPropertyUtils;
 import org.nkjmlab.util.java.web.WebApplicationConfig;
-import org.nkjmlab.util.javalin.JavalinJsonRpcService;
+import org.nkjmlab.util.javalin.JsonRpcJavalinService;
 import org.nkjmlab.util.thymeleaf.ThymeleafTemplateEnginBuilder;
 import org.thymeleaf.TemplateEngine;
 import io.javalin.Javalin;
@@ -138,7 +138,8 @@ public class GoApplication {
 
   private static void prepareJsonRpc(Javalin app, WebsocketSessionsManager webSocketManager,
       GoJsonRpcService jsonRpcSrv, AuthService.Factory authServiceFactory) {
-    JavalinJsonRpcService srv = new JavalinJsonRpcService(GoApplication.getDefaultJacksonMapper());
+
+    JsonRpcJavalinService srv = new JsonRpcJavalinService(GoApplication.getDefaultJacksonMapper());
     app.post("/app/json/GoJsonRpcService", ctx -> srv.handle(ctx, jsonRpcSrv));
     app.post("/app/json/AuthRpcService",
         ctx -> srv.handle(ctx, authServiceFactory.create(ctx.req())));
