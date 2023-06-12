@@ -4,9 +4,10 @@ import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import org.nkjmlab.go.javalin.auth.AuthService;
-import org.nkjmlab.go.javalin.auth.GoAuthService;
+import org.nkjmlab.go.javalin.jsonrpc.AuthService;
+import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService;
+import org.nkjmlab.go.javalin.model.relation.GoTables;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProcess;
 import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProperties;
@@ -17,7 +18,8 @@ import org.nkjmlab.util.java.function.Try;
 import org.nkjmlab.util.java.lang.ProcessUtils;
 import org.nkjmlab.util.java.lang.ResourceUtils;
 import org.nkjmlab.util.java.lang.SystemPropertyUtils;
-import org.nkjmlab.util.javalin.JavalinJsonRpcService;
+import org.nkjmlab.util.java.web.WebApplicationConfig;
+import org.nkjmlab.util.javalin.JsonRpcJavalinService;
 import org.nkjmlab.util.thymeleaf.ThymeleafTemplateEnginBuilder;
 import org.thymeleaf.TemplateEngine;
 import io.javalin.Javalin;
@@ -30,6 +32,12 @@ public class GoApplication {
       org.apache.logging.log4j.LogManager.getLogger();
 
   private final Javalin app;
+
+  private static final WebApplicationConfig WEB_APP_CONFIG = WebApplicationConfig.builder()
+      .addWebJar("jquery", "sweetalert2", "bootstrap", "bootstrap-treeview", "clipboard",
+          "fortawesome__fontawesome-free", "stacktrace-js", "datatables", "firebase", "firebaseui",
+          "ua-parser-js", "blueimp-load-image", "emojionearea")
+      .build();
 
   public static void main(String[] args) {
 
@@ -59,7 +67,8 @@ public class GoApplication {
 
     DataSourceManager basicDataSource = new DataSourceManager();
 
-    GoTables goTables = GoTables.prepareTables(basicDataSource);
+    GoTables goTables = GoTables.prepareTables(WEB_APP_CONFIG.getWebRootDirectory(),
+        WEB_APP_CONFIG.getAppRootDirectory(), basicDataSource);
 
     WebsocketSessionsManager webSocketManager =
         new WebsocketSessionsManager(goTables, basicDataSource.createHikariInMemoryDataSource());
@@ -74,8 +83,7 @@ public class GoApplication {
 
 
     this.app = Javalin.create(config -> {
-      config.staticFiles.add(GoWebAppConfig.WEB_APP_CONFIG.getWebRootDirectory().getName(),
-          Location.CLASSPATH);
+      config.staticFiles.add(WEB_APP_CONFIG.getWebRootDirectory().getName(), Location.CLASSPATH);
       config.staticFiles.enableWebjars();
       config.http.generateEtags = true;
       config.plugins.enableCors(cors -> cors.add(corsConfig -> corsConfig.anyHost()));
@@ -86,16 +94,17 @@ public class GoApplication {
 
     prepareWebSocket(app, webSocketManager);
     prepareJsonRpc(app, webSocketManager, new GoJsonRpcService(webSocketManager, goTables),
-        new AuthService.Factory(goTables.usersTable, goTables.loginsTable, goTables.passwordsTable,
-            authService));
+        new AuthService.Factory(goTables, authService));
 
 
-    GoAppHandlers.prepareGetHandler(app, webSocketManager, goTables, authService);
+    new GoGetHandlers(app, webSocketManager, WEB_APP_CONFIG, goTables, authService)
+        .prepareGetHandlers();
   }
 
   private static void scheduleCheckMatchingRequest(WebsocketSessionsManager webSocketManager,
       GoTables goTables) {
-    final int INTERVAL_IN_WAITING_ROOM = 10;
+    // このインターバルが小さいと待合室に十分に人数が入っていない状態でマッチングが始まる可能性が高くなってしまう．30秒が妥当か．
+    final int MATCHING_INTERVAL_SEC = 30;
 
     ScheduledExecutorService srv = Executors.newSingleThreadScheduledExecutor(runnable -> {
       Thread t = Executors.defaultThreadFactory().newThread(runnable);
@@ -107,7 +116,7 @@ public class GoApplication {
       Set<String> uids =
           goTables.matchingRequestsTable.createPairOfUsers(goTables.gameStatesTables);
       webSocketManager.sendUpdateWaitingRequestStatus(uids);
-    }, e -> log.error(e)), INTERVAL_IN_WAITING_ROOM, INTERVAL_IN_WAITING_ROOM, TimeUnit.SECONDS);
+    }, e -> log.error(e)), 0, MATCHING_INTERVAL_SEC, TimeUnit.SECONDS);
 
   }
 
@@ -129,7 +138,8 @@ public class GoApplication {
 
   private static void prepareJsonRpc(Javalin app, WebsocketSessionsManager webSocketManager,
       GoJsonRpcService jsonRpcSrv, AuthService.Factory authServiceFactory) {
-    JavalinJsonRpcService srv = new JavalinJsonRpcService(GoApplication.getDefaultJacksonMapper());
+
+    JsonRpcJavalinService srv = new JsonRpcJavalinService(GoApplication.getDefaultJacksonMapper());
     app.post("/app/json/GoJsonRpcService", ctx -> srv.handle(ctx, jsonRpcSrv));
     app.post("/app/json/AuthRpcService",
         ctx -> srv.handle(ctx, authServiceFactory.create(ctx.req())));

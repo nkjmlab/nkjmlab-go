@@ -20,7 +20,7 @@ public class DataSourceManager {
 
   private static final int DEFAULT_TIMEOUT_SECONDS = 30;
 
-  private H2LocalDataSourceFactory factory;
+  private final H2LocalDataSourceFactory factory;
 
   public DataSourceManager() {
     FileDatabaseConfigJson fileDbConf = getFileDbConfig();
@@ -30,6 +30,21 @@ public class DataSourceManager {
     this.factory = factory;
     factory.makeFileDatabaseIfNotExists();
     log.info("server jdbcUrl={}", factory.getServerModeJdbcUrl());
+  }
+
+  private static FileDatabaseConfigJson getFileDbConfig() {
+    try {
+      return JacksonMapper.getDefaultMapper()
+          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json"),
+              FileDatabaseConfigJson.Builder.class)
+          .build();
+    } catch (Exception e) {
+      log.warn("Try to load h2.json.default");
+      return JacksonMapper.getDefaultMapper()
+          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json.default"),
+              FileDatabaseConfigJson.Builder.class)
+          .build();
+    }
   }
 
   public DataSource createHikariInMemoryDataSource() {
@@ -76,20 +91,6 @@ public class DataSourceManager {
     return ds;
   }
 
-  private static FileDatabaseConfigJson getFileDbConfig() {
-    try {
-      return JacksonMapper.getDefaultMapper()
-          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json"),
-              FileDatabaseConfigJson.Builder.class)
-          .build();
-    } catch (Exception e) {
-      log.warn("Try to load h2.json.default");
-      return JacksonMapper.getDefaultMapper()
-          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json.default"),
-              FileDatabaseConfigJson.Builder.class)
-          .build();
-    }
-  }
 
   public H2LocalDataSourceFactory getFactory() {
     return factory;

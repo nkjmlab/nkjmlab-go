@@ -1,7 +1,7 @@
 package org.nkjmlab.go.javalin;
 
 import java.util.Set;
-import org.nkjmlab.go.javalin.auth.GoAuthService;
+import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import io.javalin.http.Context;
@@ -11,11 +11,11 @@ import io.javalin.security.RouteRole;
 
 public class GoAccessManager implements AccessManager {
 
-  public enum UserRole implements RouteRole {
+  public enum AccessRole implements RouteRole {
 
     BEFORE_LOGIN, GUEST, STUDENT, ADMIN;
 
-    static final UserRole[] LOGIN_ROLES = new UserRole[] {GUEST, STUDENT, ADMIN};
+    static final AccessRole[] LOGIN_ROLES = new AccessRole[] {GUEST, STUDENT, ADMIN};
 
   }
 
@@ -27,26 +27,26 @@ public class GoAccessManager implements AccessManager {
     this.authService = authService;
   }
 
-  UserRole toUserRole(UsersTable usersTable, String sessionId) {
+  AccessRole toUserRole(UsersTable usersTable, String sessionId) {
     if (!authService.isSignin(sessionId)) {
-      return UserRole.BEFORE_LOGIN;
+      return AccessRole.BEFORE_LOGIN;
     }
 
     User u = authService.toSigninSession(sessionId)
         .map(login -> usersTable.selectByPrimaryKey(login.userId())).orElse(null);
     if (u == null) {
-      return UserRole.BEFORE_LOGIN;
+      return AccessRole.BEFORE_LOGIN;
     }
     if (u.isAdmin()) {
-      return UserRole.ADMIN;
+      return AccessRole.ADMIN;
     }
     if (u.isStudent()) {
-      return UserRole.STUDENT;
+      return AccessRole.STUDENT;
     }
     if (u.isGuest()) {
-      return UserRole.GUEST;
+      return AccessRole.GUEST;
     }
-    return UserRole.BEFORE_LOGIN;
+    return AccessRole.BEFORE_LOGIN;
   }
 
 

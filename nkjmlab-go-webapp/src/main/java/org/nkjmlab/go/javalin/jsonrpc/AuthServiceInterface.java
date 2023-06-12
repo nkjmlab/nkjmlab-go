@@ -1,4 +1,4 @@
-package org.nkjmlab.go.javalin.auth;
+package org.nkjmlab.go.javalin.jsonrpc;
 
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 
