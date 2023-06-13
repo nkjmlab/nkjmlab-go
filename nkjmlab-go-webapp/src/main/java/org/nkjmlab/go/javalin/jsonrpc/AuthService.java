@@ -2,6 +2,7 @@ package org.nkjmlab.go.javalin.jsonrpc;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import org.nkjmlab.go.javalin.GoAccessManager.AccessRole;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService.SigninSession;
 import org.nkjmlab.go.javalin.model.relation.GoTables;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
@@ -89,8 +90,8 @@ public class AuthService implements AuthServiceInterface {
       log.error("Try guest signinup but userId [{}] conflict with a regular user", userId);
       return false;
     }
-    goTables.usersTable.merge(new User(userId, userId + "-guest@example.com", username, User.GUEST,
-        seatId, 30, LocalDateTime.now()));
+    goTables.usersTable.merge(new User(userId, userId + "-guest@example.com", username,
+        AccessRole.GUEST.name(), seatId, 30, LocalDateTime.now()));
 
     registerAttendance(userId, seatId);
     goTables.icons.createIcon(userId);
