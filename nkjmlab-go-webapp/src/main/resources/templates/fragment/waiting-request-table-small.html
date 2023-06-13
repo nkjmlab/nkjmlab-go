@@ -8,9 +8,9 @@
     </button>
   </div>
   <div th:if='${req.isUnpaired}'>
-    <span class="badge bg-primary">募集中</span><span
-      class="spinner-grow spinner-grow-sm text-primary" role="status"></span> <span
-      class="small text-muted ms-2"><span th:text="${reqNum}"></span>
-      人が対局相手を募集しています．同じ日に同じ相手とはマッチングされません． </span>
+    <span class="badge bg-primary">募集中</span> <span class="spinner-grow spinner-grow-sm text-primary"
+      role="status"></span><span class="small text-muted ms-2">対局相手を探しています．しばらくお待ちください．同じ日に同じ相手とはマッチングされません． (<span
+        th:text="${reqNum}"></span>
+      人が募集中)</span>
   </div>
 </div>
