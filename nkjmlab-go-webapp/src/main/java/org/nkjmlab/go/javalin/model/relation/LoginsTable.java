@@ -1,6 +1,8 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.orderBy;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.where;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;

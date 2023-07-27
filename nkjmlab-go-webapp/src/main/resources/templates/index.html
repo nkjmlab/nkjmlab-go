@@ -11,6 +11,7 @@
   <script th:src="|/js/firebase-login.js?${MODIFIED_DATES.js_firebase_login_js}|"></script>
   <script th:src="|/js/index.js?${MODIFIED_DATES.js_index_js}|"></script>
   <title>ようこそ | 囲碁の演習と対局</title>
+  <script th:utext="|const SIGN_IN_FLOW = '${ios ? 'popup':'redirect'}';|"></script>
 </head>
 
 <body>

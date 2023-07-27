@@ -90,6 +90,8 @@ $(function () {
                     setSeatId(seatId);
                     setLoginDate(getCurrentDate());
                     location = "play.html";
+                }, e => {
+                    swalAlert("ログイン失敗", e.responseJSON.error.message, "error");
                 })).rpc();
         });
 

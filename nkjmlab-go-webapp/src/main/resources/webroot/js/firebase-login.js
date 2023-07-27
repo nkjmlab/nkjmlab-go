@@ -10,6 +10,7 @@ $(function () {
         return false;
       }
     },
+    signInFlow: SIGN_IN_FLOW,
     signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID, {
       provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
       forceSameDevice: false

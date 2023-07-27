@@ -5,7 +5,6 @@ import java.util.Optional;
 import org.nkjmlab.go.javalin.GoAccessManager.AccessRole;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService.SigninSession;
 import org.nkjmlab.go.javalin.model.relation.GoTables;
-import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.sorm4j.result.RowMap;
@@ -52,8 +51,8 @@ public class AuthService implements AuthServiceInterface {
   public boolean registerAttendance(String userId, String seatId) {
     User u = goTables.usersTable.selectByPrimaryKey(userId);
     goTables.usersTable.updateByPrimaryKey(RowMap.of("seat_id", seatId), u.userId());
-    goTables.loginsTable.insert(new Login(-1, userId, seatId, u.userName(), LocalDateTime.now(),
-        HttpRequestUtils.getXForwardedFor(request).orElseGet(() -> request.getRemoteAddr())));
+    goTables.loginsTable.login(u,
+        HttpRequestUtils.getXForwardedFor(request).orElseGet(() -> request.getRemoteAddr()));
     return true;
   }
 
@@ -101,15 +100,9 @@ public class AuthService implements AuthServiceInterface {
 
   @Override
   public UserJson signinWithoutFirebase(String userId, String password, String seatId) {
-    if (authService.isSignin(request.getSession().getId())) {
-      log.error("Already logined Firebase. userId=[{}]", userId);
-      return null;
-    }
-
     if (!goTables.passwordsTable.isValid(userId, password)) {
-      return null;
+      throw new RuntimeException("無効なユーザID/パスワードです");
     }
-
     User u = goTables.usersTable.selectByPrimaryKey(userId);
     registerAttendance(userId, seatId);
     goTables.icons.createIcon(userId);
