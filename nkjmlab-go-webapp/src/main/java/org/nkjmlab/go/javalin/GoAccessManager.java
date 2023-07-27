@@ -13,9 +13,9 @@ public class GoAccessManager implements AccessManager {
 
   public enum AccessRole implements RouteRole {
 
-    BEFORE_LOGIN, GUEST, STUDENT, ADMIN;
+    BEFORE_LOGIN, GUEST, STUDENT, TA, ADMIN;
 
-    static final AccessRole[] LOGIN_ROLES = new AccessRole[] {GUEST, STUDENT, ADMIN};
+    static final AccessRole[] LOGIN_ROLES = new AccessRole[] {GUEST, STUDENT, TA, ADMIN};
 
   }
 
@@ -36,17 +36,17 @@ public class GoAccessManager implements AccessManager {
         .map(login -> usersTable.selectByPrimaryKey(login.userId())).orElse(null);
     if (u == null) {
       return AccessRole.BEFORE_LOGIN;
-    }
-    if (u.isAdmin()) {
+    } else if (u.isAdmin()) {
       return AccessRole.ADMIN;
-    }
-    if (u.isStudent()) {
+    } else if (u.isStudent()) {
       return AccessRole.STUDENT;
-    }
-    if (u.isGuest()) {
+    } else if (u.isGuest()) {
       return AccessRole.GUEST;
+    } else if (u.isTa()) {
+      return AccessRole.TA;
+    } else {
+      return AccessRole.BEFORE_LOGIN;
     }
-    return AccessRole.BEFORE_LOGIN;
   }
 
 

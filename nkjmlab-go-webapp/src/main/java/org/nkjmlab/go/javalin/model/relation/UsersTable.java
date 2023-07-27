@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.sql.DataSource;
+import org.nkjmlab.go.javalin.GoAccessManager.AccessRole;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
@@ -98,13 +99,15 @@ public class UsersTable extends BasicH2Table<User> {
 
   public List<String> getAdminUserIds() {
     return getOrm().readList(String.class,
-        "select " + USER_ID + " from " + getTableName() + " where " + ROLE + "=?", User.ADMIN);
+        "select " + USER_ID + " from " + getTableName() + " where " + ROLE + "=?",
+        AccessRole.ADMIN.name());
 
   }
 
   public List<String> getStudentUserIds() {
     return getOrm().readList(String.class,
-        "select " + USER_ID + " from " + getTableName() + " where " + ROLE + "=?", User.STUDENT);
+        "select " + USER_ID + " from " + getTableName() + " where " + ROLE + "=?",
+        AccessRole.STUDENT.name());
   }
 
   public boolean isAdmin(String userId) {
@@ -129,26 +132,27 @@ public class UsersTable extends BasicH2Table<User> {
   public static record User(@PrimaryKey String userId, @Unique @Index String email, String userName,
       @Index String role, String seatId, int rank, LocalDateTime createdAt) {
 
-    public static final String ADMIN = "ADMIN";
-    public static final String STUDENT = "STUDENT";
-    public static final String TA = "TA";
-    public static final String GUEST = "GUEST";
 
     public User() {
-      this("", "", "", STUDENT, "", 30, LocalDateTime.MIN);
+      this("", "", "", AccessRole.STUDENT.name(), "", 30, LocalDateTime.MIN);
     }
 
     public boolean isAdmin() {
-      return role != null && role.equalsIgnoreCase(ADMIN);
+      return role != null && role.equalsIgnoreCase(AccessRole.ADMIN.name());
     }
 
     public boolean isStudent() {
-      return role != null && role.equalsIgnoreCase(STUDENT);
+      return role != null && role.equalsIgnoreCase(AccessRole.STUDENT.name());
     }
 
     public boolean isGuest() {
-      return role != null && role.equalsIgnoreCase(GUEST);
+      return role != null && role.equalsIgnoreCase(AccessRole.GUEST.name());
     }
+
+    public boolean isTa() {
+      return role != null && role.equalsIgnoreCase(AccessRole.TA.name());
+    }
+
   }
 
 

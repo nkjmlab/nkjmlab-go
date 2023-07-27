@@ -57,6 +57,10 @@ public class GoGetHandlers {
         AccessRole.LOGIN_ROLES);
 
     app.get("/app", ctx -> ctx.redirect("/app/index.html"));
+    app.get("/app/index.html", createGoHandler(ctx -> filePath -> model -> {
+      model.put("ios", ctx.userAgent().toLowerCase().contains("ios"));
+      ctx.render(filePath, model.build());
+    }));
     app.get("/app/*", createGoHandler(ctx -> filePath -> model -> {
       ctx.render(filePath, model.build());
     }));

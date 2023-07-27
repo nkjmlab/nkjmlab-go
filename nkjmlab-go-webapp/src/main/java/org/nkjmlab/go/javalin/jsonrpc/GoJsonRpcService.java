@@ -371,7 +371,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
           wp.rank(), diff, ro, s1, s2};
 
       String msg = ParameterizedStringFormatter.DEFAULT.format(
-          (String) "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge badge-info'>はじめから</span> {}, <span class='badge badge-info'>棋譜並べから</span> {} <br>",
+          (String) "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge bg-info'>はじめから</span> {}, <span class='badge bg-info'>棋譜並べから</span> {} <br>",
           params);
       return msg;
     } catch (Exception e) {

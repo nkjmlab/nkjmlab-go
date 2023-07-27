@@ -790,7 +790,7 @@ function initView() {
       function (data) {
         let target = $("." + selector + "-player-id-label");
 
-        if (isAdminUid(uid)) {
+        if (isTeacher()) {
           target.html(uid
             + " ("
             + (data.result.seatId ? '<i class="fas fa-chair"></i> ' + data.result.seatId + ". " : "")

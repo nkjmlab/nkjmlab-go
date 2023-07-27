@@ -20,7 +20,7 @@ import org.nkjmlab.util.java.lang.ResourceUtils;
 import org.nkjmlab.util.java.lang.SystemPropertyUtils;
 import org.nkjmlab.util.java.web.WebApplicationConfig;
 import org.nkjmlab.util.javalin.JsonRpcJavalinService;
-import org.nkjmlab.util.thymeleaf.ThymeleafTemplateEnginBuilder;
+import org.nkjmlab.util.thymeleaf.ThymeleafTemplateEngineBuilder;
 import org.thymeleaf.TemplateEngine;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
@@ -61,7 +61,7 @@ public class GoApplication {
     log.info("log4j2.configurationFile={}, Logger level={}",
         System.getProperty("log4j2.configurationFile"), log.getLevel());
 
-    TemplateEngine engine = ThymeleafTemplateEnginBuilder.builder()
+    TemplateEngine engine = ThymeleafTemplateEngineBuilder.builder()
         .setTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND).build();
     JavalinThymeleaf.init(engine);
 
@@ -89,8 +89,6 @@ public class GoApplication {
       config.plugins.enableCors(cors -> cors.add(corsConfig -> corsConfig.anyHost()));
       config.accessManager(new GoAccessManager(goTables.usersTable, authService));
     });
-
-
 
     prepareWebSocket(app, webSocketManager);
     prepareJsonRpc(app, webSocketManager, new GoJsonRpcService(webSocketManager, goTables),
