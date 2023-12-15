@@ -1,9 +1,15 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.util.h2.sql.H2CsvFunctions.*;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.cond;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.from;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.func;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.limit;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.orderBy;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.orderByDesc;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.select;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
+import static org.nkjmlab.sorm4j.util.sql.SelectSql.where;
 import java.io.File;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +24,7 @@ import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.functions.system.CsvWrite;
 import org.nkjmlab.sorm4j.util.jackson.JacksonSormContext;
 import org.nkjmlab.sorm4j.util.table_def.annotation.AutoIncrement;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
@@ -84,7 +91,7 @@ public class GameStatesTable extends BasicH2Table<GameState> {
     String selectSql =
         selectStarFrom(getTableName()) + where(cond(ROWNUM, "<=", deleteRowNum)) + orderBy(ID);
 
-    String st = getCallCsvWriteSql(outputFile, selectSql, StandardCharsets.UTF_8, ',', null);
+    String st = CsvWrite.builder(outputFile).query(selectSql).build().getSql();
     log.info("{}", st);
     getOrm().executeUpdate(st);
 

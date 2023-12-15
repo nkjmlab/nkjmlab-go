@@ -25,8 +25,8 @@
     <tag>HEAD</tag>
   </scm>
   <properties>
-    <nkjmlab-utils-version>0.10.0</nkjmlab-utils-version>
-    <sorm4j-version>2.0.0</sorm4j-version>
+    <nkjmlab-utils-version>0.10.3</nkjmlab-utils-version>
+    <sorm4j-version>2.1.0</sorm4j-version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <downloadSources>true</downloadSources>
     <downloadJavadocs>true</downloadJavadocs>
@@ -55,19 +55,19 @@
     <dependency>
       <groupId>io.javalin</groupId>
       <artifactId>javalin</artifactId>
-      <version>5.6.1</version>
+      <version>5.6.3</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/io.javalin/javalin-rendering -->
     <dependency>
       <groupId>io.javalin</groupId>
       <artifactId>javalin-rendering</artifactId>
-      <version>5.6.0</version>
+      <version>5.6.3</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.eclipse.jetty.websocket/websocket-jetty-client -->
     <dependency>
       <groupId>org.eclipse.jetty.websocket</groupId>
       <artifactId>websocket-jetty-client</artifactId>
-      <version>11.0.15</version>
+      <version>11.0.18</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.google.firebase/firebase-admin -->
     <dependency>
@@ -79,60 +79,60 @@
     <dependency>
       <groupId>com.h2database</groupId>
       <artifactId>h2</artifactId>
-      <version>2.2.220</version>
+      <version>2.2.224</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.zaxxer/HikariCP -->
     <dependency>
       <groupId>com.zaxxer</groupId>
       <artifactId>HikariCP</artifactId>
-      <version>5.0.1</version>
+      <version>5.1.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.thymeleaf/thymeleaf -->
     <dependency>
       <groupId>org.thymeleaf</groupId>
       <artifactId>thymeleaf</artifactId>
-      <version>3.1.1.RELEASE</version>
+      <version>3.1.2.RELEASE</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.13.0</version>
+      <version>2.15.1</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.12.0</version>
+      <version>3.14.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.core/jackson-databind -->
     <dependency>
       <groupId>com.fasterxml.jackson.core</groupId>
       <artifactId>jackson-databind</artifactId>
-      <version>2.15.2</version>
+      <version>2.16.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
       <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>2.15.2</version>
+      <version>2.16.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-slf4j2-impl -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-slf4j2-impl</artifactId>
-      <version>2.20.0</version>
+      <version>2.22.0</version>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.apache.logging.log4j/log4j-core -->
     <dependency>
       <groupId>org.apache.logging.log4j</groupId>
       <artifactId>log4j-core</artifactId>
-      <version>2.20.0</version>
+      <version>2.22.0</version>
     </dependency>
     <dependency>
       <groupId>org.webjars.npm</groupId>
       <artifactId>jquery</artifactId>
-      <version>3.7.0</version>
+      <version>3.7.1</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -143,7 +143,7 @@
     <dependency>
       <groupId>org.webjars.npm</groupId>
       <artifactId>bootstrap</artifactId>
-      <version>5.3.0</version>
+      <version>5.3.2</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -165,7 +165,7 @@
     <dependency>
       <groupId>org.webjars.npm</groupId>
       <artifactId>sweetalert2</artifactId>
-      <version>11.7.12</version>
+      <version>11.10.1</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -176,7 +176,7 @@
     <dependency>
       <groupId>org.webjars.npm</groupId>
       <artifactId>fortawesome__fontawesome-free</artifactId>
-      <version>6.4.0</version>
+      <version>6.5.1</version>
       <exclusions>
         <exclusion>
           <groupId>*</groupId>
@@ -277,7 +277,7 @@
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-engine</artifactId>
-      <version>5.10.0</version>
+      <version>5.10.1</version>
       <scope>test</scope>
     </dependency>
     <!-- https://mvnrepository.com/artifact/org.assertj/assertj-core -->

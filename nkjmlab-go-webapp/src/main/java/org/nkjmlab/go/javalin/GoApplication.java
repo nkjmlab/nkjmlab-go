@@ -15,9 +15,9 @@ import org.nkjmlab.util.firebase.auth.BasicFirebaseAuthHandler;
 import org.nkjmlab.util.firebase.auth.FirebaseAuthHandler;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.function.Try;
+import org.nkjmlab.util.java.lang.JavaSystemProperties;
 import org.nkjmlab.util.java.lang.ProcessUtils;
 import org.nkjmlab.util.java.lang.ResourceUtils;
-import org.nkjmlab.util.java.lang.SystemPropertyUtils;
 import org.nkjmlab.util.java.web.WebApplicationConfig;
 import org.nkjmlab.util.javalin.JsonRpcJavalinService;
 import org.nkjmlab.util.thymeleaf.ThymeleafTemplateEngineBuilder;
@@ -42,7 +42,7 @@ public class GoApplication {
   public static void main(String[] args) {
 
     int port = 4567;
-    log.info("start (port:{}) => {}", port, SystemPropertyUtils.getJavaProperties());
+    log.info("start (port:{}) => {}", port, JavaSystemProperties.create());
 
     ProcessUtils.stopProcessBindingPortIfExists(port);
     new H2TcpServerProcess(H2TcpServerProperties.builder().build()).awaitStart();
@@ -67,8 +67,8 @@ public class GoApplication {
 
     DataSourceManager basicDataSource = new DataSourceManager();
 
-    GoTables goTables = GoTables.prepareTables(WEB_APP_CONFIG.getWebRootDirectory(),
-        WEB_APP_CONFIG.getAppRootDirectory(), basicDataSource);
+    GoTables goTables = GoTables.prepareTables(WEB_APP_CONFIG.getWebRootDirectory().toFile(),
+        WEB_APP_CONFIG.getAppRootDirectory().toFile(), basicDataSource);
 
     WebsocketSessionsManager webSocketManager =
         new WebsocketSessionsManager(goTables, basicDataSource.createHikariInMemoryDataSource());
@@ -83,7 +83,8 @@ public class GoApplication {
 
 
     this.app = Javalin.create(config -> {
-      config.staticFiles.add(WEB_APP_CONFIG.getWebRootDirectory().getName(), Location.CLASSPATH);
+      config.staticFiles.add(WEB_APP_CONFIG.getWebRootDirectory().toFile().getPath(),
+          Location.EXTERNAL);
       config.staticFiles.enableWebjars();
       config.http.generateEtags = true;
       config.plugins.enableCors(cors -> cors.add(corsConfig -> corsConfig.anyHost()));

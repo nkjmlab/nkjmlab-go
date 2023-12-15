@@ -8,6 +8,7 @@ import org.nkjmlab.go.javalin.model.relation.PasswordsTable.Password;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.functions.table.CsvRead;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 
 /***
@@ -26,8 +27,9 @@ public class PasswordsTable extends BasicH2Table<Password> {
         .orElse(false);
   }
 
-  public void readFromFileAndMerge(File usersCsvFile) {
-    List<Password> password = readCsvWithHeader(usersCsvFile);
+  public void readFromFileAndMerge(File csvFile) {
+    List<Password> password =
+        readList("select * from " + CsvRead.builderForCsvWithHeader(csvFile).build().getSql());
     merge(password);
   }
 

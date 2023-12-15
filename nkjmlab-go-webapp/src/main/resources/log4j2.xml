@@ -44,13 +44,11 @@
     <Root level="${root_log_level}">
       <AppenderRef ref="stdout" />
       <AppenderRef ref="stderr" />
-      <AppenderRef ref="applog"/>
     </Root>
     <Logger name="org.nkjmlab" level="${log_level}"
       additivity="false">
       <AppenderRef ref="stdout" />
       <AppenderRef ref="stderr" />
-      <AppenderRef ref="applog"/>
     </Logger>
   </Loggers>
 </configuration>
