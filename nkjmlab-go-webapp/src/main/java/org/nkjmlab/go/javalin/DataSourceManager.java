@@ -2,7 +2,7 @@ package org.nkjmlab.go.javalin;
 
 import javax.sql.DataSource;
 import org.h2.jdbcx.JdbcConnectionPool;
-import org.nkjmlab.sorm4j.util.h2.datasource.H2LocalDataSourceFactory;
+import org.nkjmlab.sorm4j.util.h2.datasource.H2DataSourceFactory;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
 import org.nkjmlab.util.java.json.FileDatabaseConfigJson;
@@ -20,13 +20,12 @@ public class DataSourceManager {
 
   private static final int DEFAULT_TIMEOUT_SECONDS = 30;
 
-  private final H2LocalDataSourceFactory factory;
+  private final H2DataSourceFactory factory;
 
   public DataSourceManager() {
     FileDatabaseConfigJson fileDbConf = getFileDbConfig();
-    H2LocalDataSourceFactory factory =
-        H2LocalDataSourceFactory.builder(fileDbConf.databaseDirectory, fileDbConf.databaseName,
-            fileDbConf.username, fileDbConf.password).build();
+    H2DataSourceFactory factory = H2DataSourceFactory.builder(fileDbConf.databaseDirectory,
+        fileDbConf.databaseName, fileDbConf.username, fileDbConf.password).build();
     this.factory = factory;
     factory.makeFileDatabaseIfNotExists();
     log.info("server jdbcUrl={}", factory.getServerModeJdbcUrl());
@@ -92,7 +91,7 @@ public class DataSourceManager {
   }
 
 
-  public H2LocalDataSourceFactory getFactory() {
+  public H2DataSourceFactory getFactory() {
     return factory;
   }
 

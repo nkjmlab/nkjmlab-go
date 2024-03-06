@@ -9,11 +9,11 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.result.RowMap;
-import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
 import org.nkjmlab.sorm4j.util.table_def.annotation.AutoIncrement;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 
-public class GameRecordsTable extends BasicH2Table<GameRecord> {
+public class GameRecordsTable extends H2BasicTable<GameRecord> {
   private static final String CREATED_AT = "created_at";
   private static final String USER_ID = "user_id";
   private static final String RANK = "rank";

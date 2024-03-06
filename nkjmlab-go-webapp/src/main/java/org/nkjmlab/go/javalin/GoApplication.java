@@ -21,7 +21,6 @@ import org.nkjmlab.util.java.lang.ResourceUtils;
 import org.nkjmlab.util.java.web.WebApplicationConfig;
 import org.nkjmlab.util.javalin.JsonRpcJavalinService;
 import org.nkjmlab.util.thymeleaf.ThymeleafTemplateEngineBuilder;
-import org.thymeleaf.TemplateEngine;
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
 import io.javalin.rendering.template.JavalinThymeleaf;
@@ -61,9 +60,6 @@ public class GoApplication {
     log.info("log4j2.configurationFile={}, Logger level={}",
         System.getProperty("log4j2.configurationFile"), log.getLevel());
 
-    TemplateEngine engine = ThymeleafTemplateEngineBuilder.builder()
-        .setTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND).build();
-    JavalinThymeleaf.init(engine);
 
     DataSourceManager basicDataSource = new DataSourceManager();
 
@@ -87,9 +83,13 @@ public class GoApplication {
           Location.EXTERNAL);
       config.staticFiles.enableWebjars();
       config.http.generateEtags = true;
-      config.plugins.enableCors(cors -> cors.add(corsConfig -> corsConfig.anyHost()));
-      config.accessManager(new GoAccessManager(goTables.usersTable, authService));
+      config.fileRenderer(new JavalinThymeleaf(ThymeleafTemplateEngineBuilder.builder()
+          .setTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND).build()));
+      config.bundledPlugins.enableCors(cors -> cors.addRule(it -> it.anyHost()));
+
     });
+    GoAccessManager accessManager = new GoAccessManager(goTables.usersTable, authService);
+    app.beforeMatched(ctx -> accessManager.manage(ctx));
 
     prepareWebSocket(app, webSocketManager);
     prepareJsonRpc(app, webSocketManager, new GoJsonRpcService(webSocketManager, goTables),
@@ -148,5 +148,4 @@ public class GoApplication {
   public static JacksonMapper getDefaultJacksonMapper() {
     return JacksonMapper.getIgnoreUnknownPropertiesMapper();
   }
-
 }

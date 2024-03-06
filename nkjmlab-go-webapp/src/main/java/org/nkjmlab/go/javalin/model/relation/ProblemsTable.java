@@ -18,14 +18,14 @@ import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 import org.nkjmlab.util.java.json.JsonMapper;
 import org.threeten.bp.Instant;
 import com.google.firebase.database.annotations.NotNull;
 
-public class ProblemsTable extends BasicH2Table<Problem> {
+public class ProblemsTable extends H2BasicTable<Problem> {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 

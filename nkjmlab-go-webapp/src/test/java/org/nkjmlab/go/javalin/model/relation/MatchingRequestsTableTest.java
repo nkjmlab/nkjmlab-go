@@ -1,6 +1,6 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest.*;
+import static org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest.UNPAIRED;
 import java.time.LocalDateTime;
 import java.util.Set;
 import org.junit.jupiter.api.Test;

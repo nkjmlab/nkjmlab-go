@@ -18,7 +18,7 @@ import org.nkjmlab.sorm4j.common.Tuple.Tuple2;
 import org.nkjmlab.sorm4j.sql.OrderedParameterSqlParser;
 import org.nkjmlab.sorm4j.sql.ParameterizedSql;
 import org.nkjmlab.sorm4j.sql.ParameterizedSqlParser;
-import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
 import org.nkjmlab.sorm4j.util.h2.functions.table.CsvRead;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
@@ -30,7 +30,7 @@ import org.nkjmlab.sorm4j.util.table_def.annotation.Unique;
  * @author nkjm
  *
  */
-public class UsersTable extends BasicH2Table<User> {
+public class UsersTable extends H2BasicTable<User> {
   static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
@@ -69,7 +69,7 @@ public class UsersTable extends BasicH2Table<User> {
 
 
   public void readFromFileAndMerge(File usersCsvFile) {
-    BasicH2Table<UserCsv> table = new BasicH2Table<>(getOrm(), UserCsv.class);
+    H2BasicTable<UserCsv> table = new H2BasicTable<>(getOrm(), UserCsv.class);
     List<UserCsv> csvRows = table.readList(
         "select * from " + CsvRead.builderForCsvWithHeader(usersCsvFile).build().getSql());
 

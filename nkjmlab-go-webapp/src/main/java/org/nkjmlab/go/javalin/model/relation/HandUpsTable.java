@@ -8,10 +8,10 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 
-public class HandUpsTable extends BasicH2Table<HandUp> {
+public class HandUpsTable extends H2BasicTable<HandUp> {
 
 
   private static final String GAME_ID = "game_id";

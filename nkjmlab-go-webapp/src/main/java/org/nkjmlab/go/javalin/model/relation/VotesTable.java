@@ -7,11 +7,11 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
 import org.nkjmlab.sorm4j.util.sql.SelectSql;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKeyColumns;
 
-public class VotesTable extends BasicH2Table<Vote> {
+public class VotesTable extends H2BasicTable<Vote> {
 
 
   private static final String PROBLEM_ID = "problem_id";

@@ -5,17 +5,15 @@ import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import io.javalin.http.Context;
-import io.javalin.http.Handler;
-import io.javalin.security.AccessManager;
 import io.javalin.security.RouteRole;
 
-public class GoAccessManager implements AccessManager {
+public class GoAccessManager {
 
   public enum AccessRole implements RouteRole {
 
     BEFORE_LOGIN, GUEST, STUDENT, TA, ADMIN;
 
-    static final AccessRole[] LOGIN_ROLES = new AccessRole[] {GUEST, STUDENT, TA, ADMIN};
+    static final GoAccessManager.AccessRole[] LOGIN_ROLES = new GoAccessManager.AccessRole[] {GUEST, STUDENT, TA, ADMIN};
 
   }
 
@@ -27,7 +25,7 @@ public class GoAccessManager implements AccessManager {
     this.authService = authService;
   }
 
-  AccessRole toUserRole(UsersTable usersTable, String sessionId) {
+  GoAccessManager.AccessRole toUserRole(UsersTable usersTable, String sessionId) {
     if (!authService.isSignin(sessionId)) {
       return AccessRole.BEFORE_LOGIN;
     }
@@ -50,19 +48,14 @@ public class GoAccessManager implements AccessManager {
   }
 
 
-  @Override
-  public void manage(Handler handler, Context ctx, Set<? extends RouteRole> routeRoles)
-      throws Exception {
+  public void manage(Context ctx) throws Exception {
+    Set<RouteRole> routeRoles = ctx.routeRoles();
     if (routeRoles.size() == 0) {
-      handler.handle(ctx);
+      return;
     } else if (routeRoles.contains(toUserRole(usersTable, ctx.req().getSession().getId()))) {
-      handler.handle(ctx);
+      return;
     } else {
       ctx.redirect("/app/index.html");
     }
-
-
   }
-
-
 }

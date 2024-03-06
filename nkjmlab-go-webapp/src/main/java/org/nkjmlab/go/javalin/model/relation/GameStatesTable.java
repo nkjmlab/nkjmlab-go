@@ -23,7 +23,7 @@ import org.nkjmlab.go.javalin.model.common.Hand;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
 import org.nkjmlab.sorm4j.util.h2.functions.system.CsvWrite;
 import org.nkjmlab.sorm4j.util.jackson.JacksonSormContext;
 import org.nkjmlab.sorm4j.util.table_def.annotation.AutoIncrement;
@@ -32,7 +32,7 @@ import org.nkjmlab.sorm4j.util.table_def.annotation.IndexColumns;
 import org.nkjmlab.sorm4j.util.table_def.annotation.NotNull;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 
-public class GameStatesTable extends BasicH2Table<GameState> {
+public class GameStatesTable extends H2BasicTable<GameState> {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 

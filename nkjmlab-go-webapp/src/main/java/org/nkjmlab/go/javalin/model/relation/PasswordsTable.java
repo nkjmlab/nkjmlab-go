@@ -7,7 +7,7 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.relation.PasswordsTable.Password;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
 import org.nkjmlab.sorm4j.util.h2.functions.table.CsvRead;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 
@@ -16,7 +16,7 @@ import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
  * @author nkjm
  *
  */
-public class PasswordsTable extends BasicH2Table<Password> {
+public class PasswordsTable extends H2BasicTable<Password> {
 
   public PasswordsTable(DataSource dataSource) {
     super(Sorm.create(dataSource), Password.class);

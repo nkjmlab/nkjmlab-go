@@ -39,7 +39,7 @@ import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.sql.OrderedParameterSqlParser;
 import org.nkjmlab.sorm4j.sql.ParameterizedSql;
 import org.nkjmlab.sorm4j.sql.ParameterizedSqlParser;
-import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 import org.nkjmlab.util.jackson.JacksonMapper;
@@ -329,7 +329,7 @@ public class WebsocketSessionsManager {
     }
   }
 
-  public static class WebsoketSessionsTable extends BasicH2Table<WebSocketSession> {
+  public static class WebsoketSessionsTable extends H2BasicTable<WebSocketSession> {
 
     private static final String USER_ID = "user_id";
     private static final String GAME_ID = "game_id";
