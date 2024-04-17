@@ -24,8 +24,13 @@ public class DataSourceManager {
 
   public DataSourceManager() {
     FileDatabaseConfigJson fileDbConf = getFileDbConfig();
-    H2DataSourceFactory factory = H2DataSourceFactory.builder(fileDbConf.databaseDirectory,
-        fileDbConf.databaseName, fileDbConf.username, fileDbConf.password).build();
+    H2DataSourceFactory factory =
+        H2DataSourceFactory.builder(
+                fileDbConf.databaseDirectory,
+                fileDbConf.databaseName,
+                fileDbConf.username,
+                fileDbConf.password)
+            .build();
     this.factory = factory;
     factory.makeFileDatabaseIfNotExists();
     log.info("server jdbcUrl={}", factory.getServerModeJdbcUrl());
@@ -34,38 +39,39 @@ public class DataSourceManager {
   private static FileDatabaseConfigJson getFileDbConfig() {
     try {
       return JacksonMapper.getDefaultMapper()
-          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json"),
+          .toObject(
+              ResourceUtils.getResourceAsFile("/conf/h2.json"),
               FileDatabaseConfigJson.Builder.class)
           .build();
     } catch (Exception e) {
       log.warn("Try to load h2.json.default");
       return JacksonMapper.getDefaultMapper()
-          .toObject(ResourceUtils.getResourceAsFile("/conf/h2.json.default"),
+          .toObject(
+              ResourceUtils.getResourceAsFile("/conf/h2.json.default"),
               FileDatabaseConfigJson.Builder.class)
           .build();
     }
   }
 
   public DataSource createHikariInMemoryDataSource() {
-    return createHikariDataSource(factory.getInMemoryModeJdbcUrl(), factory.getUsername(),
-        factory.getPassword());
+    return createHikariDataSource(
+        factory.getInMemoryModeJdbcUrl(), factory.getUsername(), factory.getPassword());
   }
 
   public DataSource createHikariServerModeDataSource() {
-    return createHikariDataSource(factory.getServerModeJdbcUrl(), factory.getUsername(),
-        factory.getPassword());
+    return createHikariDataSource(
+        factory.getServerModeJdbcUrl(), factory.getUsername(), factory.getPassword());
   }
 
   public JdbcConnectionPool createH2InMemoryDataSource() {
-    return createH2DataSource(factory.getInMemoryModeJdbcUrl(), factory.getUsername(),
-        factory.getPassword());
+    return createH2DataSource(
+        factory.getInMemoryModeJdbcUrl(), factory.getUsername(), factory.getPassword());
   }
 
   public JdbcConnectionPool createH2ServerModeDataSource() {
-    return createH2DataSource(factory.getServerModeJdbcUrl(), factory.getUsername(),
-        factory.getPassword());
+    return createH2DataSource(
+        factory.getServerModeJdbcUrl(), factory.getUsername(), factory.getPassword());
   }
-
 
   private static HikariDataSource createHikariDataSource(String url, String user, String password) {
     HikariConfig config = new HikariConfig();
@@ -82,7 +88,6 @@ public class DataSourceManager {
     return new HikariDataSource(config);
   }
 
-
   private static JdbcConnectionPool createH2DataSource(String url, String user, String password) {
     JdbcConnectionPool ds = JdbcConnectionPool.create(url, user, password);
     ds.setMaxConnections(DEFAULT_MAX_CONNECTIONS);
@@ -90,11 +95,7 @@ public class DataSourceManager {
     return ds;
   }
 
-
   public H2DataSourceFactory getFactory() {
     return factory;
   }
-
-
-
 }

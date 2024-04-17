@@ -1,6 +1,5 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -17,7 +16,5 @@ class ProblemsTableTest {
 
     assertThat(
         ret.stream().filter(json -> json.problemId() == 1560902401944L).findAny().isPresent());
-
   }
-
 }

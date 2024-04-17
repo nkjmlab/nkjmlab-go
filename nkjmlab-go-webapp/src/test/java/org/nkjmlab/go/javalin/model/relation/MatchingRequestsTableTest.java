@@ -9,7 +9,6 @@ import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingReque
 
 class MatchingRequestsTableTest {
 
-
   @Test
   void testCreatePairOfUsers() {
     MatchingRequestsTable table =
@@ -28,7 +27,5 @@ class MatchingRequestsTableTest {
     Set<String> ret = table.createPairOfUsers(new GameStatesTables(gTable, gTable));
 
     System.out.println(ret);
-
   }
-
 }

@@ -10,11 +10,14 @@ import io.javalin.security.RouteRole;
 public class GoAccessManager {
 
   public enum AccessRole implements RouteRole {
+    BEFORE_LOGIN,
+    GUEST,
+    STUDENT,
+    TA,
+    ADMIN;
 
-    BEFORE_LOGIN, GUEST, STUDENT, TA, ADMIN;
-
-    static final GoAccessManager.AccessRole[] LOGIN_ROLES = new GoAccessManager.AccessRole[] {GUEST, STUDENT, TA, ADMIN};
-
+    static final GoAccessManager.AccessRole[] LOGIN_ROLES =
+        new GoAccessManager.AccessRole[] {GUEST, STUDENT, TA, ADMIN};
   }
 
   private final UsersTable usersTable;
@@ -30,8 +33,11 @@ public class GoAccessManager {
       return AccessRole.BEFORE_LOGIN;
     }
 
-    User u = authService.toSigninSession(sessionId)
-        .map(login -> usersTable.selectByPrimaryKey(login.userId())).orElse(null);
+    User u =
+        authService
+            .toSigninSession(sessionId)
+            .map(login -> usersTable.selectByPrimaryKey(login.userId()))
+            .orElse(null);
     if (u == null) {
       return AccessRole.BEFORE_LOGIN;
     } else if (u.isAdmin()) {
@@ -46,7 +52,6 @@ public class GoAccessManager {
       return AccessRole.BEFORE_LOGIN;
     }
   }
-
 
   public void manage(Context ctx) throws Exception {
     Set<RouteRole> routeRoles = ctx.routeRoles();

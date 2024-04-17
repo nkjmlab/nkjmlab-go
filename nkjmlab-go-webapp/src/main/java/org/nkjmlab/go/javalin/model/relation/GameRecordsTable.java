@@ -23,28 +23,41 @@ public class GameRecordsTable extends H2BasicTable<GameRecord> {
   }
 
   public void recalculateAndUpdateRank(UsersTable usersTable) {
-    getOrm().readList(RowMap.class,
-        "SELECT USER_ID, MIN(RANK) AS RANK FROM GAME_RECORDS GROUP BY USER_ID").forEach(m -> {
-          String userId = m.get(USER_ID.toLowerCase()).toString();
-          Integer rank = Integer.valueOf(m.get(RANK.toLowerCase()).toString());
-          User u = usersTable.selectByPrimaryKey(userId);
-          if (u == null) {
-            return;
-          }
-          usersTable.updateByPrimaryKey(RowMap.of("rank", rank), u.userId());
-        });
-
+    getOrm()
+        .readList(
+            RowMap.class, "SELECT USER_ID, MIN(RANK) AS RANK FROM GAME_RECORDS GROUP BY USER_ID")
+        .forEach(
+            m -> {
+              String userId = m.get(USER_ID.toLowerCase()).toString();
+              Integer rank = Integer.valueOf(m.get(RANK.toLowerCase()).toString());
+              User u = usersTable.selectByPrimaryKey(userId);
+              if (u == null) {
+                return;
+              }
+              usersTable.updateByPrimaryKey(RowMap.of("rank", rank), u.userId());
+            });
   }
 
-  public int registerRecordAndGetRank(UsersTable usersTable, String userId, String opponentUserId,
-      String jadge, String memo) {
-    GameRecord lastRecords = readFirst("select * from " + getTableName() + " where " + USER_ID
-        + "=?" + " order by " + CREATED_AT + " desc limit 1", userId);
+  public int registerRecordAndGetRank(
+      UsersTable usersTable, String userId, String opponentUserId, String jadge, String memo) {
+    GameRecord lastRecords =
+        readFirst(
+            "select * from "
+                + getTableName()
+                + " where "
+                + USER_ID
+                + "=?"
+                + " order by "
+                + CREATED_AT
+                + " desc limit 1",
+            userId);
 
-
-    int rank = lastRecords == null
-        ? Optional.ofNullable(usersTable.selectByPrimaryKey(userId)).map(u -> u.rank()).orElse(30)
-        : lastRecords.rank();
+    int rank =
+        lastRecords == null
+            ? Optional.ofNullable(usersTable.selectByPrimaryKey(userId))
+                .map(u -> u.rank())
+                .orElse(30)
+            : lastRecords.rank();
     int point = lastRecords == null ? 0 : lastRecords.point();
     String message = "";
 
@@ -56,8 +69,9 @@ public class GameRecordsTable extends H2BasicTable<GameRecord> {
       message = rank + "級に昇級 <i class='fas fa-trophy'></i>";
     }
 
-    insert(new GameRecord(-1, LocalDateTime.now(), userId, opponentUserId, jadge, memo, rank, point,
-        message));
+    insert(
+        new GameRecord(
+            -1, LocalDateTime.now(), userId, opponentUserId, jadge, memo, rank, point, message));
     return rank;
   }
 
@@ -85,16 +99,26 @@ public class GameRecordsTable extends H2BasicTable<GameRecord> {
   }
 
   public List<GameRecord> readByUserId(String userId) {
-    return readList("select * from " + getTableName() + " where " + USER_ID + "=? order by "
-        + CREATED_AT + " DESC", userId);
+    return readList(
+        "select * from "
+            + getTableName()
+            + " where "
+            + USER_ID
+            + "=? order by "
+            + CREATED_AT
+            + " DESC",
+        userId);
   }
-
 
   @OrmRecord
-  public static record GameRecord(@PrimaryKey @AutoIncrement int id, LocalDateTime createdAt,
-      String userId, String opponentUserId, String jadge, String memo, int rank, int point,
-      String message) {
-
-  }
-
+  public static record GameRecord(
+      @PrimaryKey @AutoIncrement int id,
+      LocalDateTime createdAt,
+      String userId,
+      String opponentUserId,
+      String jadge,
+      String memo,
+      int rank,
+      int point,
+      String message) {}
 }

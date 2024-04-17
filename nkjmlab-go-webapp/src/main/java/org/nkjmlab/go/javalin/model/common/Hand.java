@@ -7,7 +7,6 @@ import org.nkjmlab.sorm4j.util.datatype.OrmJsonColumnContainer;
  * stone<br>
  * 1桁目 0:ブランク， 1:黒， 2:白, 3:A, 4:B, 5:C<br>
  * 2桁目 0：ブランク， 1:□， 2：△, 3:x
- *
  */
 @OrmJsonColumnContainer
 public record Hand(String type, int number, int x, int y, int stone, String options) {
@@ -20,12 +19,18 @@ public record Hand(String type, int number, int x, int y, int stone, String opti
    * ProblemFactoryが使っているだけなので，fromAgehamaやvoteは不要かも
    *
    * @author nkjm
-   *
    */
   public enum HandType {
-    ON_BOARD("onBoard"), PUT_ON_BOARD("putOnBoard"), REMOVE_FROM_BOARD("removeFromBoard"), AGEHAMA(
-        "agehama"), FROM_AGEHAMA("fromAgehama"), FROM_POD(
-            "fromPod"), PASS("pass"), GIVE_UP("giveUp"), VOTE("vote"), DUMMY("dummy");
+    ON_BOARD("onBoard"),
+    PUT_ON_BOARD("putOnBoard"),
+    REMOVE_FROM_BOARD("removeFromBoard"),
+    AGEHAMA("agehama"),
+    FROM_AGEHAMA("fromAgehama"),
+    FROM_POD("fromPod"),
+    PASS("pass"),
+    GIVE_UP("giveUp"),
+    VOTE("vote"),
+    DUMMY("dummy");
 
     private final String typeName;
 
@@ -41,5 +46,4 @@ public record Hand(String type, int number, int x, int y, int stone, String opti
       return Stream.of(values()).filter(e -> e.getTypeName().equals(type)).findAny().get();
     }
   }
-
 }

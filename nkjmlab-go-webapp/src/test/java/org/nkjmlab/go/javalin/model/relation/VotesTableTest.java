@@ -18,9 +18,7 @@ class VotesTableTest {
     table.insert(new Vote("nkjm2", problemId, "A", "40", "5588999", LocalDateTime.now()));
     table.insert(new Vote("nkjm3", problemId, "B", "50", "5588999", LocalDateTime.now()));
 
-    assertThat(table.readVoteResults(problemId, null)).contains(new VoteResult("40", 2),
-        new VoteResult("50", 1));
-
+    assertThat(table.readVoteResults(problemId, null))
+        .contains(new VoteResult("40", 2), new VoteResult("50", 1));
   }
-
 }

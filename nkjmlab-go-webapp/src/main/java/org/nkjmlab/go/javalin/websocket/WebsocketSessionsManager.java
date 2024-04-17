@@ -62,7 +62,6 @@ public class WebsocketSessionsManager {
 
   private final GoTables goTables;
 
-
   public WebsocketSessionsManager(GoTables goTables, DataSource memDbDataSource) {
     this.goTables = goTables;
     this.websoketSessionsTable = new WebsoketSessionsTable(memDbDataSource);
@@ -78,17 +77,18 @@ public class WebsocketSessionsManager {
     session.close();
     log.info("@{} is closed. status code={}, reason={}", session.hashCode(), statusCode, reason);
 
-    websoketSessionsTable.removeSession(session).ifPresent(gameId -> {
-      sendLatestGameStateToSessions(gameId);
-      sendEntriesToSessions(gameId);
-    });
-
+    websoketSessionsTable
+        .removeSession(session)
+        .ifPresent(
+            gameId -> {
+              sendLatestGameStateToSessions(gameId);
+              sendEntriesToSessions(gameId);
+            });
   }
 
   public void updateSession(int sessionId, String gameId, String userId) {
     websoketSessionsTable.updateSession(sessionId, gameId, userId);
   }
-
 
   public void onConnect(Session session, String userId, String gameId) {
 
@@ -99,12 +99,14 @@ public class WebsocketSessionsManager {
     }
     websoketSessionsTable.registerSession(gameId, userId, session);
 
-    jsonSenderService.submitInitSession(session, session.hashCode(),
-        goTables.usersTable.selectByPrimaryKey(userId));
+    jsonSenderService.submitInitSession(
+        session, session.hashCode(), goTables.usersTable.selectByPrimaryKey(userId));
 
     Optional.ofNullable(goTables.handsUpTable.selectByPrimaryKey(gameId))
-        .ifPresent(h -> jsonSenderService.submitHandUpOrDown(List.of(session), true,
-            goTables.handsUpTable.readOrder(gameId)));
+        .ifPresent(
+            h ->
+                jsonSenderService.submitHandUpOrDown(
+                    List.of(session), true, goTables.handsUpTable.readOrder(gameId)));
 
     Optional.ofNullable(goTables.matchingRequestsTable.selectByPrimaryKey(userId))
         .ifPresent(h -> jsonSenderService.submitUpdateWaitingRequestStatus(List.of(session)));
@@ -114,12 +116,10 @@ public class WebsocketSessionsManager {
     sendLatestGameStateToSessions(gameId);
   }
 
-
   public void goBack(String gameId) {
     goTables.gameStatesTables.deleteLatestGameState(gameId);
     sendLatestGameStateToSessions(gameId);
   }
-
 
   public ProblemJson loadProblem(String gameId, long problemId) {
     Problem p = goTables.problemsTable.selectByPrimaryKey(problemId);
@@ -127,28 +127,38 @@ public class WebsocketSessionsManager {
     Hand lastHand =
         handHistory.length != 0 ? handHistory[handHistory.length - 1] : Hand.createDummyHand();
 
-    GameState json = new GameState(-1, LocalDateTime.now(), gameId, "", "", lastHand,
-        mapper.toObject(p.agehama(), Agehama.class), mapper.toObject(p.cells(), Integer[][].class),
-        mapper.toObject(p.symbols(), new TypeReference<Map<String, Integer>>() {}), handHistory,
-        p.id(), new HashMap<>());
+    GameState json =
+        new GameState(
+            -1,
+            LocalDateTime.now(),
+            gameId,
+            "",
+            "",
+            lastHand,
+            mapper.toObject(p.agehama(), Agehama.class),
+            mapper.toObject(p.cells(), Integer[][].class),
+            mapper.toObject(p.symbols(), new TypeReference<Map<String, Integer>>() {}),
+            handHistory,
+            p.id(),
+            new HashMap<>());
     sendGameState(gameId, json);
     return ProblemJson.createFrom(goTables.problemsTable.selectByPrimaryKey(problemId));
   }
 
-
-
   public void newGame(String gameId, GameState json) {
-    GameState newGameJson = goTables.gameStatesTables.createNewGameState(gameId,
-        json.blackPlayerId(), json.whitePlayerId(), json.cells().length);
+    GameState newGameJson =
+        goTables.gameStatesTables.createNewGameState(
+            gameId, json.blackPlayerId(), json.whitePlayerId(), json.cells().length);
     sendGameState(gameId, newGameJson);
   }
 
   private void sendEntriesToSessions(String gameId) {
-    List<UserJson> users = websoketSessionsTable.readUsers(goTables.usersTable, gameId).stream()
-        .map(u -> new UserJson(u, true)).collect(Collectors.toList());
+    List<UserJson> users =
+        websoketSessionsTable.readUsers(goTables.usersTable, gameId).stream()
+            .map(u -> new UserJson(u, true))
+            .collect(Collectors.toList());
 
     jsonSenderService.submitEntries(websoketSessionsTable.getSessionsByGameId(gameId), users);
-
   }
 
   public void sendGameState(String gameId, GameState json) {
@@ -166,9 +176,11 @@ public class WebsocketSessionsManager {
     Hand last = history.get(history.size() - 1);
     Hand second = history.get(history.size() - 2);
     Hand third = history.get(history.size() - 3);
-    if (last.stone() == second.stone() && second.stone() == third.stone()
+    if (last.stone() == second.stone()
+        && second.stone() == third.stone()
         && third.type().equals(HandType.PUT_ON_BOARD.getTypeName())
-        && second.type().equals(HandType.REMOVE_FROM_BOARD.getTypeName()) && third.x() == second.x()
+        && second.type().equals(HandType.REMOVE_FROM_BOARD.getTypeName())
+        && third.x() == second.x()
         && third.y() == second.y()) {
       List<Hand> modify = new ArrayList<>(history.subList(0, history.size() - 3));
       modify.add(last);
@@ -176,7 +188,6 @@ public class WebsocketSessionsManager {
     }
     return json;
   }
-
 
   private void sendGameStateToSessions(String gameId, GameState json) {
     jsonSenderService.submitGameState(websoketSessionsTable.getSessionsByGameId(gameId), json);
@@ -199,19 +210,16 @@ public class WebsocketSessionsManager {
     jsonSenderService.submitHandUpOrder(websoketSessionsTable.getSessionsByGameId(gameId), order);
   }
 
-
   private void sendHandUpToSessions(String gameId, boolean handUp, int order) {
-    jsonSenderService.submitHandUpOrDown(websoketSessionsTable.getSessionsByGameId(gameId), handUp,
-        order);
-    jsonSenderService
-        .submitUpdateHandUpTable(websoketSessionsTable.getAdminSessions(goTables.usersTable));
+    jsonSenderService.submitHandUpOrDown(
+        websoketSessionsTable.getSessionsByGameId(gameId), handUp, order);
+    jsonSenderService.submitUpdateHandUpTable(
+        websoketSessionsTable.getAdminSessions(goTables.usersTable));
   }
 
   public void sendLatestGameStateToSessions(String gameId) {
     sendGameStateToSessions(gameId, goTables.gameStatesTables.readLatestGameState(gameId));
   }
-
-
 
   public void sendUpdateWaitingRequestStatus(Set<String> userIds) {
     if (userIds.size() == 0) {
@@ -225,7 +233,6 @@ public class WebsocketSessionsManager {
     log.error(cause);
   }
 
-
   private static class WebSocketJsonSenderService {
     private static final org.apache.logging.log4j.Logger log =
         org.apache.logging.log4j.LogManager.getLogger();
@@ -235,7 +242,15 @@ public class WebsocketSessionsManager {
     private static final JsonMapper mapper = GoApplication.getDefaultJacksonMapper();
 
     private enum MethodName {
-      GAME_STATE, INIT_SESSION, GLOBAL_MESSAGE, HAND_UP, HAND_UP_ORDER, ENTRIES, UPDATE_HAND_UP_TABLE, UPDATE_WAITING_REQUEST_STATUS, REQUEST_TO_LOGIN
+      GAME_STATE,
+      INIT_SESSION,
+      GLOBAL_MESSAGE,
+      HAND_UP,
+      HAND_UP_ORDER,
+      ENTRIES,
+      UPDATE_HAND_UP_TABLE,
+      UPDATE_WAITING_REQUEST_STATUS,
+      REQUEST_TO_LOGIN
     }
 
     public WebSocketJsonSenderService() {}
@@ -297,19 +312,21 @@ public class WebsocketSessionsManager {
     private void sendText(Session session, String text) {
       RemoteEndpoint b = session.getRemote();
       synchronized (b) {
-        b.sendString(text, new WriteCallback() {
-          @Override
-          public void writeFailed(Throwable x) {
-            try {
-              b.sendString(text);
-            } catch (IOException e) {
-              log.error(e.getMessage());
-            }
-          }
+        b.sendString(
+            text,
+            new WriteCallback() {
+              @Override
+              public void writeFailed(Throwable x) {
+                try {
+                  b.sendString(text);
+                } catch (IOException e) {
+                  log.error(e.getMessage());
+                }
+              }
 
-          @Override
-          public void writeSuccess() {}
-        });
+              @Override
+              public void writeSuccess() {}
+            });
       }
     }
 
@@ -340,8 +357,6 @@ public class WebsocketSessionsManager {
       super(Sorm.create(dataSource), WebSocketSession.class);
     }
 
-
-
     List<WebSocketSession> readSessionsByGameId(String gameId) {
       return readList(SELECT_STAR + FROM + getTableName() + WHERE + GAME_ID + "=?", gameId);
     }
@@ -352,15 +367,19 @@ public class WebsocketSessionsManager {
 
     List<Session> getSessionsByGameId(String gameId) {
       List<Session> result =
-          readSessionsByGameId(gameId).stream().map(session -> sessions.get(session.sessionId()))
-              .filter(Objects::nonNull).collect(Collectors.toList());
+          readSessionsByGameId(gameId).stream()
+              .map(session -> sessions.get(session.sessionId()))
+              .filter(Objects::nonNull)
+              .collect(Collectors.toList());
       return result;
     }
 
     List<Session> getSessionsByUserId(String userId) {
       List<Session> result =
-          readSessionsByUserId(userId).stream().map(session -> sessions.get(session.sessionId()))
-              .filter(s -> Objects.nonNull(s)).collect(Collectors.toList());
+          readSessionsByUserId(userId).stream()
+              .map(session -> sessions.get(session.sessionId()))
+              .filter(s -> Objects.nonNull(s))
+              .collect(Collectors.toList());
       return result;
     }
 
@@ -368,21 +387,23 @@ public class WebsocketSessionsManager {
       if (userIds.size() == 0) {
         return Collections.emptyList();
       }
-      ParameterizedSql psql = ParameterizedSqlParser
-          .parse("select * from " + getTableName() + " where " + USER_ID + " IN(<?>) ", userIds);
+      ParameterizedSql psql =
+          ParameterizedSqlParser.parse(
+              "select * from " + getTableName() + " where " + USER_ID + " IN(<?>) ", userIds);
       return readList(psql.getSql(), psql.getParameters()).stream()
-          .map(session -> sessions.get(session.sessionId())).filter(s -> Objects.nonNull(s))
+          .map(session -> sessions.get(session.sessionId()))
+          .filter(s -> Objects.nonNull(s))
           .collect(Collectors.toList());
     }
 
-
-
     List<Session> getAllSessions() {
-      List<Session> result = selectAll().stream().map(session -> sessions.get(session.sessionId()))
-          .filter(s -> Objects.nonNull(s)).collect(Collectors.toList());
+      List<Session> result =
+          selectAll().stream()
+              .map(session -> sessions.get(session.sessionId()))
+              .filter(s -> Objects.nonNull(s))
+              .collect(Collectors.toList());
       return result;
     }
-
 
     void registerSession(String gameId, String userId, Session session) {
       int sessionId = session.hashCode();
@@ -398,7 +419,6 @@ public class WebsocketSessionsManager {
 
     void updateSession(int sessionId, String gameId, String userId) {
       update(new WebSocketSession(sessionId, userId, gameId, LocalDateTime.now()));
-
     }
 
     Optional<String> removeSession(Session session) {
@@ -408,34 +428,41 @@ public class WebsocketSessionsManager {
         return Optional.of(gs.gameId());
       }
       return Optional.empty();
-
     }
 
     public List<User> readUsers(UsersTable usersTable, String gameId) {
       Set<String> uids =
-          readSessionsByGameId(gameId).stream().map(u -> u == null ? null : u.userId())
-              .filter(Objects::nonNull).collect(Collectors.toSet());
+          readSessionsByGameId(gameId).stream()
+              .map(u -> u == null ? null : u.userId())
+              .filter(Objects::nonNull)
+              .collect(Collectors.toSet());
       return usersTable.readListByUids(uids);
-
     }
 
     public List<User> readStudents(UsersTable usersTable, String gameId) {
-      return readUsers(usersTable, gameId).stream().filter(u -> u.isStudent())
+      return readUsers(usersTable, gameId).stream()
+          .filter(u -> u.isStudent())
           .collect(Collectors.toList());
     }
 
     public List<String> readActiveGameIdsOrderByGameId(UsersTable usersTable) {
-      ParameterizedSql psql = ParameterizedSqlParser.parse(
-          SELECT + DISTINCT + GAME_ID + FROM + getTableName() + WHERE + GAME_ID + LIKE + "?",
-          "%-vs-%");
+      ParameterizedSql psql =
+          ParameterizedSqlParser.parse(
+              SELECT + DISTINCT + GAME_ID + FROM + getTableName() + WHERE + GAME_ID + LIKE + "?",
+              "%-vs-%");
       return getOrm().readList(String.class, psql).stream()
-          .filter(gid -> readUsers(usersTable, gid).size() > 0).sorted()
+          .filter(gid -> readUsers(usersTable, gid).size() > 0)
+          .sorted()
           .collect(Collectors.toList());
     }
 
     public int getWatchingUniqueStudentsNum(UsersTable usersTable, String gameId) {
-      return (int) readStudents(usersTable, gameId).stream().map(uj -> uj.userId())
-          .collect(Collectors.toSet()).stream().count();
+      return (int)
+          readStudents(usersTable, gameId).stream()
+              .map(uj -> uj.userId())
+              .collect(Collectors.toSet())
+              .stream()
+              .count();
     }
 
     public List<Session> getAdminSessions(UsersTable usersTable) {
@@ -443,29 +470,25 @@ public class WebsocketSessionsManager {
       if (ids.size() == 0) {
         return Collections.emptyList();
       }
-      ParameterizedSql st = OrderedParameterSqlParser
-          .parse("select * from " + getTableName() + " where " + USER_ID + " IN (<?>)", ids);
+      ParameterizedSql st =
+          OrderedParameterSqlParser.parse(
+              "select * from " + getTableName() + " where " + USER_ID + " IN (<?>)", ids);
       return readList(st.getSql(), st.getParameters()).stream()
-          .map(ws -> sessions.get(ws.sessionId())).filter(Objects::nonNull)
+          .map(ws -> sessions.get(ws.sessionId()))
+          .filter(Objects::nonNull)
           .collect(Collectors.toList());
     }
 
-
     @OrmRecord
-    public static record WebSocketSession(@PrimaryKey int sessionId, String userId,
-        @Index String gameId, LocalDateTime createdAt) {
-
-    }
-
+    public static record WebSocketSession(
+        @PrimaryKey int sessionId, String userId, @Index String gameId, LocalDateTime createdAt) {}
   }
 
   public int getWatchingUniqueStudentsNum(String gameId) {
     return websoketSessionsTable.getWatchingUniqueStudentsNum(goTables.usersTable, gameId);
   }
 
-
   public List<String> readActiveGameIdsOrderByGameId() {
     return websoketSessionsTable.readActiveGameIdsOrderByGameId(goTables.usersTable);
   }
-
 }

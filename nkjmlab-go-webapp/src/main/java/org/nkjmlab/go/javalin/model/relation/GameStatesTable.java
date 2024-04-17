@@ -49,27 +49,32 @@ public class GameStatesTable extends H2BasicTable<GameState> {
   public static final String PROBLEM_ID = "problem_id";
   public static final String OPTIONS = "options";
 
-
   public GameStatesTable(DataSource dataSource) {
     super(
-        Sorm.create(dataSource, JacksonSormContext
-            .builder(GoApplication.getDefaultJacksonMapper().getObjectMapper()).build()),
+        Sorm.create(
+            dataSource,
+            JacksonSormContext.builder(GoApplication.getDefaultJacksonMapper().getObjectMapper())
+                .build()),
         GameState.class);
   }
 
-
   Optional<GameState> getLatestGameStateFromDb(String gameId) {
-    GameState gameState = readFirst(
-        selectStarFrom(getTableName()) + where(GAME_ID + "=?") + orderByDesc(ID) + limit(1),
-        gameId);
+    GameState gameState =
+        readFirst(
+            selectStarFrom(getTableName()) + where(GAME_ID + "=?") + orderByDesc(ID) + limit(1),
+            gameId);
     return gameState == null ? Optional.empty() : Optional.of(gameState);
   }
 
-
   public Set<String> readPastOpponentsUserIds(String userId) {
-    Set<String> set = new HashSet<>(getOrm().readList(String.class,
-        "SELECT DISTINCT * FROM (SELECT BLACK_PLAYER_ID FROM GAME_STATES WHERE WHITE_PLAYER_ID =? AND CAST(CREATED_AT AS DATE) = CURRENT_DATE UNION SELECT WHITE_PLAYER_ID FROM GAME_STATES WHERE BLACK_PLAYER_ID = ? AND CAST(CREATED_AT AS DATE) = CURRENT_DATE)",
-        userId, userId));
+    Set<String> set =
+        new HashSet<>(
+            getOrm()
+                .readList(
+                    String.class,
+                    "SELECT DISTINCT * FROM (SELECT BLACK_PLAYER_ID FROM GAME_STATES WHERE WHITE_PLAYER_ID =? AND CAST(CREATED_AT AS DATE) = CURRENT_DATE UNION SELECT WHITE_PLAYER_ID FROM GAME_STATES WHERE BLACK_PLAYER_ID = ? AND CAST(CREATED_AT AS DATE) = CURRENT_DATE)",
+                    userId,
+                    userId));
     set.remove(userId);
     return set;
   }
@@ -99,7 +104,6 @@ public class GameStatesTable extends H2BasicTable<GameState> {
     delete(dels.toArray(GameState[]::new));
 
     log.info("trim and backup to {}.", outputFile);
-
   }
 
   public void delete(String gameId) {
@@ -107,28 +111,45 @@ public class GameStatesTable extends H2BasicTable<GameState> {
   }
 
   public List<String> readTodayGameIds() {
-    return getOrm().readList(String.class,
-        "SELECT DISTINCT GAME_ID FROM GAME_STATES  WHERE GAME_ID LIKE '%-vs-%' AND CAST(CREATED_AT AS DATE) = CURRENT_DATE");
+    return getOrm()
+        .readList(
+            String.class,
+            "SELECT DISTINCT GAME_ID FROM GAME_STATES  WHERE GAME_ID LIKE '%-vs-%' AND CAST(CREATED_AT AS DATE) = CURRENT_DATE");
   }
-
 
   @OrmRecord
   @IndexColumns({BLACK_PLAYER_ID, WHITE_PLAYER_ID})
-  public record GameState(@PrimaryKey @AutoIncrement long id, LocalDateTime createdAt,
-      @Index @NotNull String gameId, @NotNull String blackPlayerId, @NotNull String whitePlayerId,
-      @NotNull Hand lastHand, @NotNull Agehama agehama, @NotNull Integer[][] cells,
-      @NotNull Map<String, Integer> symbols, @NotNull Hand[] handHistory, @NotNull long problemId,
+  public record GameState(
+      @PrimaryKey @AutoIncrement long id,
+      LocalDateTime createdAt,
+      @Index @NotNull String gameId,
+      @NotNull String blackPlayerId,
+      @NotNull String whitePlayerId,
+      @NotNull Hand lastHand,
+      @NotNull Agehama agehama,
+      @NotNull Integer[][] cells,
+      @NotNull Map<String, Integer> symbols,
+      @NotNull Hand[] handHistory,
+      @NotNull long problemId,
       @NotNull Map<String, Object> options) {
 
     public static final String DEFAULT_PLAYER_ID = "-1";
     public static final int DEFAULT_RO = 9;
 
     public GameState updateHandHistory(List<Hand> modifiedHistory) {
-      return new GameState(id, createdAt, gameId, blackPlayerId, whitePlayerId, lastHand, agehama,
-          cells, symbols, modifiedHistory.toArray(Hand[]::new), problemId, options);
+      return new GameState(
+          id,
+          createdAt,
+          gameId,
+          blackPlayerId,
+          whitePlayerId,
+          lastHand,
+          agehama,
+          cells,
+          symbols,
+          modifiedHistory.toArray(Hand[]::new),
+          problemId,
+          options);
     }
-
   }
-
-
 }

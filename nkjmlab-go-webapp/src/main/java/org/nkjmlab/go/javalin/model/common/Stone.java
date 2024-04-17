@@ -9,7 +9,6 @@ import org.nkjmlab.go.javalin.model.common.Stone.Symbol;
  * id<br>
  * 1桁目 0:ブランク， 1:黒， 2:白, 3:A, 4:B, 5:C<br>
  * 2桁目 0：ブランク， 1:□， 2：△, 3:x
- *
  */
 public record Stone(int id, Color color, Symbol symbol) {
 
@@ -17,9 +16,10 @@ public record Stone(int id, Color color, Symbol symbol) {
     this(id, Color.of(id), Symbol.of(id));
   }
 
-
   public static enum Color {
-    BLANK(0), BLACK(1), WHITE(2);
+    BLANK(0),
+    BLACK(1),
+    WHITE(2);
 
     private final int id;
 
@@ -43,8 +43,14 @@ public record Stone(int id, Color color, Symbol symbol) {
   }
 
   public static enum Symbol {
-
-    BLANK(0), A(40), B(50), C(60), RECTANGLE(10), TRIANGLE(20), X(30), CIRCLE(70);
+    BLANK(0),
+    A(40),
+    B(50),
+    C(60),
+    RECTANGLE(10),
+    TRIANGLE(20),
+    X(30),
+    CIRCLE(70);
 
     // TSUKADA BLANK(0), A(10), B(20), C(30), RECTANGLE(40), TRIANGLE(50), X(70);
     private final int id;
@@ -66,8 +72,5 @@ public record Stone(int id, Color color, Symbol symbol) {
       }
       throw new IllegalArgumentException(id + " is invalid.");
     }
-
   }
-
-
 }

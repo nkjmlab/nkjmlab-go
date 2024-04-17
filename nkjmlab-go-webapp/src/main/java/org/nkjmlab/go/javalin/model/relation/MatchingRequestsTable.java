@@ -26,16 +26,13 @@ public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
-
   private static final String USER_ID = "user_id";
   private static final String GAME_ID = "game_id";
   private static final String CREATED_AT = "created_at";
 
-
   public MatchingRequestsTable(DataSource dataSource) {
     super(Sorm.create(dataSource), MatchingRequest.class);
   }
-
 
   public List<MatchingRequest> readRequests() {
     List<MatchingRequest> result = selectAll().stream().collect(Collectors.toList());
@@ -43,15 +40,21 @@ public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
   }
 
   private List<String> readUserIdsOfUnpairedRequestOrdereByCreatedAt() {
-    return getOrm().readList(String.class, select(USER_ID) + from(getTableName())
-        + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
+    return getOrm()
+        .readList(
+            String.class,
+            select(USER_ID)
+                + from(getTableName())
+                + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED)))
+                + orderByAsc(CREATED_AT));
   }
 
   private List<MatchingRequest> readUnpairedRequestsOrderByCreatedAt() {
-    return readList(selectStarFrom(getTableName())
-        + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
+    return readList(
+        selectStarFrom(getTableName())
+            + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED)))
+            + orderByAsc(CREATED_AT));
   }
-
 
   /**
    * マッチングをする u1:30級，u2:27級,u3:26級の順でwaitingRoomに入って来たとする．u2とu3がペアになってu1が待って欲しいが，そうならない．
@@ -59,10 +62,11 @@ public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
    */
   public Set<String> createPairOfUsers(GameStatesTables gameStatesTables) {
 
-
     List<String> reqs = readUserIdsOfUnpairedRequestOrdereByCreatedAt();
 
-    log.trace("[{}] unpaired matching requests in [{}] matching requests", reqs.size(),
+    log.trace(
+        "[{}] unpaired matching requests in [{}] matching requests",
+        reqs.size(),
         getOrm().readFirst(Integer.class, SELECT + COUNT + "(*)" + FROM + getTableName()));
 
     Set<String> ret = new HashSet<>();
@@ -96,8 +100,6 @@ public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
     return ret;
   }
 
-
-
   private MatchingRequest selectNextOponent(MatchingRequest target, Set<String> pastOpponents) {
 
     List<MatchingRequest> unpairedRequestWithoutPastOpponennts =
@@ -112,19 +114,23 @@ public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
     MatchingRequest nextOpponent = unpairedRequestWithoutPastOpponennts.get(0);
 
     for (MatchingRequest r : unpairedRequestWithoutPastOpponennts) {
-      if (Integer.compare(Math.abs(r.rank() - target.rank()),
-          Math.abs(nextOpponent.rank() - target.rank())) < 0) {
+      if (Integer.compare(
+              Math.abs(r.rank() - target.rank()), Math.abs(nextOpponent.rank() - target.rank()))
+          < 0) {
         nextOpponent = r;
       }
     }
     return nextOpponent;
   }
 
-
-
   @OrmRecord
-  public static record MatchingRequest(@PrimaryKey String userId, String seatId, String userName,
-      int rank, @Index String gameId, LocalDateTime createdAt) {
+  public static record MatchingRequest(
+      @PrimaryKey String userId,
+      String seatId,
+      String userName,
+      int rank,
+      @Index String gameId,
+      LocalDateTime createdAt) {
 
     static final String UNPAIRED = "UNPAIRED";
 
@@ -133,17 +139,13 @@ public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
     }
 
     public static MatchingRequest createUnpaired(User u) {
-      return new MatchingRequest(u.userId(), u.seatId(), u.userName(), u.rank(), UNPAIRED,
-          LocalDateTime.now());
+      return new MatchingRequest(
+          u.userId(), u.seatId(), u.userName(), u.rank(), UNPAIRED, LocalDateTime.now());
     }
 
     // Thymeleaf templateからよばれるのでpublicのままにする必要がある．
     public boolean isUnpaired() {
       return UNPAIRED.equals(gameId);
     }
-
   }
-
-
-
 }

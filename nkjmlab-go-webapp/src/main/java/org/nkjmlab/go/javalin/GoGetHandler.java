@@ -20,8 +20,11 @@ class GoGetHandler implements Handler {
   private final GoAuthService authService;
   private final WebApplicationConfig webAppConfig;
 
-  public GoGetHandler(WebApplicationConfig webAppConfig, GoTables goTables,
-      GoAuthService authService, GoViewHandler handler) {
+  public GoGetHandler(
+      WebApplicationConfig webAppConfig,
+      GoTables goTables,
+      GoAuthService authService,
+      GoViewHandler handler) {
     this.handler = handler;
     this.goTables = goTables;
     this.authService = authService;
@@ -36,18 +39,21 @@ class GoGetHandler implements Handler {
   }
 
   private ViewModel.Builder createDefaultViewModelBuilder(HttpServletRequest request) {
-    User u = authService.toSigninSession(request.getSession().getId())
-        .map(uid -> goTables.usersTable.selectByPrimaryKey(uid.userId())).orElse(new User());
+    User u =
+        authService
+            .toSigninSession(request.getSession().getId())
+            .map(uid -> goTables.usersTable.selectByPrimaryKey(uid.userId()))
+            .orElse(new User());
 
     Map<String, Object> map =
-        ViewModel.builder().setFileModifiedDate(webAppConfig.getWebRootDirectory(), 10, "js", "css")
-            .put("webjars", webAppConfig.getWebJars()).put("currentUser", u).build();
+        ViewModel.builder()
+            .setFileModifiedDate(webAppConfig.getWebRootDirectory(), 10, "js", "css")
+            .put("webjars", webAppConfig.getWebJars())
+            .put("currentUser", u)
+            .build();
     return ViewModel.builder(map);
   }
 
   static interface GoViewHandler
-      extends Function<Context, Function<String, Consumer<ViewModel.Builder>>> {
-  }
-
-
+      extends Function<Context, Function<String, Consumer<ViewModel.Builder>>> {}
 }

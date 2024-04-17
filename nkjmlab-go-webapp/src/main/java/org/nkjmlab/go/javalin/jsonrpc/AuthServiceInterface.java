@@ -15,6 +15,4 @@ public interface AuthServiceInterface {
   UserJson signinWithoutFirebase(String userId, String passsword, String seatId);
 
   boolean registerAttendance(String userId, String seatId);
-
-
 }

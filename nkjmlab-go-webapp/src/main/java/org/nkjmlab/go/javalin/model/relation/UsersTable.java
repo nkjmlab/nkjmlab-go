@@ -59,82 +59,92 @@ public class UsersTable extends H2BasicTable<User> {
 
   private List<User> readAllOrderedUsers() {
     return readList(selectStarFrom(getTableName()) + " ORDER BY " + USER_ID);
-
   }
 
   public User readByEmail(String email) {
     return readOne(selectStarFrom(getTableName()) + WHERE + EMAIL + "=?", email);
   }
 
-
-
   public void readFromFileAndMerge(File usersCsvFile) {
     H2BasicTable<UserCsv> table = new H2BasicTable<>(getOrm(), UserCsv.class);
-    List<UserCsv> csvRows = table.readList(
-        "select * from " + CsvRead.builderForCsvWithHeader(usersCsvFile).build().getSql());
+    List<UserCsv> csvRows =
+        table.readList(
+            "select * from " + CsvRead.builderForCsvWithHeader(usersCsvFile).build().getSql());
 
     transformToUser(csvRows).forEach(user -> insert(user));
   }
 
-
-
   @OrmRecord
-  public static record UserCsv(String userId, String email, String username, String role) {
-
-  }
-
-
+  public static record UserCsv(String userId, String email, String username, String role) {}
 
   private List<User> transformToUser(List<UserCsv> users) {
-    return users.stream().map(row -> new User(row.userId(), row.email(), row.username(), row.role(),
-        "-1", 30, LocalDateTime.now())).collect(Collectors.toList());
+    return users.stream()
+        .map(
+            row ->
+                new User(
+                    row.userId(),
+                    row.email(),
+                    row.username(),
+                    row.role(),
+                    "-1",
+                    30,
+                    LocalDateTime.now()))
+        .collect(Collectors.toList());
   }
 
   public List<User> readListByUids(Collection<String> uids) {
     if (uids.size() == 0) {
       return Collections.emptyList();
     }
-    ParameterizedSql st = OrderedParameterSqlParser
-        .of("SELECT * from " + getTableName() + " where " + USER_ID + " IN (<?>)")
-        .addParameter(uids).parse();
+    ParameterizedSql st =
+        OrderedParameterSqlParser.of(
+                "SELECT * from " + getTableName() + " where " + USER_ID + " IN (<?>)")
+            .addParameter(uids)
+            .parse();
     return readList(st.getSql(), st.getParameters());
   }
 
   public List<String> getAdminUserIds() {
-    return getOrm().readList(String.class,
-        "select " + USER_ID + " from " + getTableName() + " where " + ROLE + "=?",
-        AccessRole.ADMIN.name());
-
+    return getOrm()
+        .readList(
+            String.class,
+            "select " + USER_ID + " from " + getTableName() + " where " + ROLE + "=?",
+            AccessRole.ADMIN.name());
   }
 
   public List<String> getStudentUserIds() {
-    return getOrm().readList(String.class,
-        "select " + USER_ID + " from " + getTableName() + " where " + ROLE + "=?",
-        AccessRole.STUDENT.name());
+    return getOrm()
+        .readList(
+            String.class,
+            "select " + USER_ID + " from " + getTableName() + " where " + ROLE + "=?",
+            AccessRole.STUDENT.name());
   }
 
   public boolean isAdmin(String userId) {
     return selectByPrimaryKey(userId).isAdmin();
   }
 
-
-
   public List<User> readAll() {
     return selectAll();
   }
 
   public List<Tuple2<User, Login>> readAllWithLastLogin() {
-    ParameterizedSql stmt = ParameterizedSqlParser.parse(
-        "SELECT * except(r.USER_NAME) FROM PLAYERS  LEFT JOIN (SELECT * FROM LOGINS  WHERE ID IN (SELECT MAX(ID) FROM LOGINS GROUP BY USER_ID)) r USING(USER_ID) ORDER BY USER_ID");
+    ParameterizedSql stmt =
+        ParameterizedSqlParser.parse(
+            "SELECT * except(r.USER_NAME) FROM PLAYERS  LEFT JOIN (SELECT * FROM LOGINS  WHERE ID IN (SELECT MAX(ID) FROM LOGINS GROUP BY USER_ID)) r USING(USER_ID) ORDER BY USER_ID");
     return getOrm().readTupleList(User.class, Login.class, stmt);
   }
 
-
   @OrmRecord
   @OrmTable("PLAYERS")
-  public static record User(@PrimaryKey String userId, @Unique @Index String email, String userName,
-      @Index String role, String seatId, int rank, LocalDateTime createdAt) {
-
+  public static record User(
+      @PrimaryKey String userId,
+      @Unique @Index String email,
+      String userName,
+      @Index String role,
+      String seatId,
+      int rank,
+      LocalDateTime createdAt) {
 
     public User() {
       this("", "", "", AccessRole.STUDENT.name(), "", 30, LocalDateTime.MIN);
@@ -155,24 +165,23 @@ public class UsersTable extends H2BasicTable<User> {
     public boolean isTa() {
       return role != null && role.equalsIgnoreCase(AccessRole.TA.name());
     }
-
   }
 
-
-  public record UserJson(String userId, String userName, String seatId, int rank,
-      LocalDateTime createdAt, boolean attendance) {
-
+  public record UserJson(
+      String userId,
+      String userName,
+      String seatId,
+      int rank,
+      LocalDateTime createdAt,
+      boolean attendance) {
 
     public UserJson(User user, boolean attendance) {
-      this(user.userId(), user.userName(), user.seatId(), user.rank(), user.createdAt(),
-          attendance);
+      this(
+          user.userId(), user.userName(), user.seatId(), user.rank(), user.createdAt(), attendance);
     }
 
     public UserJson(String userId) {
       this(userId, "", "", 30, LocalDateTime.now(), false);
     }
-
   }
-
-
 }

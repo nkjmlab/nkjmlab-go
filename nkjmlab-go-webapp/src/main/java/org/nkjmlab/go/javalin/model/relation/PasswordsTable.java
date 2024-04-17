@@ -23,7 +23,8 @@ public class PasswordsTable extends H2BasicTable<Password> {
   }
 
   public boolean isValid(String userId, String password) {
-    return Optional.ofNullable(selectByPrimaryKey(userId)).map(p -> password.equals(p.password))
+    return Optional.ofNullable(selectByPrimaryKey(userId))
+        .map(p -> password.equals(p.password))
         .orElse(false);
   }
 
@@ -34,7 +35,5 @@ public class PasswordsTable extends H2BasicTable<Password> {
   }
 
   @OrmRecord
-  public static record Password(@PrimaryKey String userId, String password) {
-  }
-
+  public static record Password(@PrimaryKey String userId, String password) {}
 }

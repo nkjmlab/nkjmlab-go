@@ -24,9 +24,16 @@ public class GoTables {
   public final PasswordsTable passwordsTable;
   public final Icons icons;
 
-  private GoTables(File webrootDir, GameStatesTables gameStatesTables, ProblemsTable problemsTable,
-      UsersTable usersTable, PasswordsTable passwordsTable, LoginsTable loginsTable,
-      MatchingRequestsTable matchingRequestsTable, VotesTable votesTable, HandUpsTable handsUpTable,
+  private GoTables(
+      File webrootDir,
+      GameStatesTables gameStatesTables,
+      ProblemsTable problemsTable,
+      UsersTable usersTable,
+      PasswordsTable passwordsTable,
+      LoginsTable loginsTable,
+      MatchingRequestsTable matchingRequestsTable,
+      VotesTable votesTable,
+      HandUpsTable handsUpTable,
       GameRecordsTable gameRecordsTable) {
     this.gameStatesTables = gameStatesTables;
     this.problemsTable = problemsTable;
@@ -40,12 +47,11 @@ public class GoTables {
     this.icons = new Icons(webrootDir);
   }
 
-  public static GoTables prepareTables(File webrootDir, File appRootDir,
-      DataSourceManager basicDataSource) {
+  public static GoTables prepareTables(
+      File webrootDir, File appRootDir, DataSourceManager basicDataSource) {
 
     DataSource memDbDataSource = basicDataSource.createHikariInMemoryDataSource();
     DataSource fileDbDataSource = basicDataSource.createHikariServerModeDataSource();
-
 
     final ProblemsTable problemsTable = prepareProblemTables(appRootDir, memDbDataSource);
     final HandUpsTable handsUpTable = new HandUpsTable(memDbDataSource);
@@ -61,20 +67,30 @@ public class GoTables {
     final GameRecordsTable gameRecordsTable = prepareGameRecordsTable(fileDbDataSource, usersTable);
     final LoginsTable loginsTable = prepareLoginsTable(fileDbDataSource);
 
-
     GoTables goTables =
-        new GoTables(webrootDir, gameStatesTables, problemsTable, usersTable, passwordsTable,
-            loginsTable, matchingRequestsTable, votesTable, handsUpTable, gameRecordsTable);
+        new GoTables(
+            webrootDir,
+            gameStatesTables,
+            problemsTable,
+            usersTable,
+            passwordsTable,
+            loginsTable,
+            matchingRequestsTable,
+            votesTable,
+            handsUpTable,
+            gameRecordsTable);
 
     return goTables;
   }
 
-  private static GameRecordsTable prepareGameRecordsTable(DataSource fileDbDataSource,
-      UsersTable usersTable) {
+  private static GameRecordsTable prepareGameRecordsTable(
+      DataSource fileDbDataSource, UsersTable usersTable) {
     GameRecordsTable gameRecordsTable = new GameRecordsTable(fileDbDataSource);
     gameRecordsTable.createTableIfNotExists().createIndexesIfNotExists();
-    gameRecordsTable.writeCsv(new File(new File(SystemFileUtils.getUserHomeDirectory(), "go-bkup/"),
-        "game-record" + System.currentTimeMillis() + ".csv"));
+    gameRecordsTable.writeCsv(
+        new File(
+            new File(SystemFileUtils.getUserHomeDirectory(), "go-bkup/"),
+            "game-record" + System.currentTimeMillis() + ".csv"));
     gameRecordsTable.recalculateAndUpdateRank(usersTable);
     return gameRecordsTable;
   }
@@ -91,14 +107,14 @@ public class GoTables {
     return matchingRequestsTable;
   }
 
-  private static GameStatesTables prepareGameStateTables(DataSourceManager basicDataSource,
-      DataSource fileDbDataSource, DataSource memDbDataSource) {
+  private static GameStatesTables prepareGameStateTables(
+      DataSourceManager basicDataSource, DataSource fileDbDataSource, DataSource memDbDataSource) {
     final int TRIM_THRESHOLD_OF_GAME_STATE_TABLE = 30000;
 
     GameStatesTable gameStatesTable = new GameStatesTable(fileDbDataSource);
     gameStatesTable.createTableIfNotExists().createIndexesIfNotExists();
-    gameStatesTable.trimAndBackupToFile(basicDataSource.getFactory().getDatabaseDirectory(),
-        TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
+    gameStatesTable.trimAndBackupToFile(
+        basicDataSource.getFactory().getDatabaseDirectory(), TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
 
     GameStatesTable gameStatesTableInMem = new GameStatesTable(memDbDataSource);
     gameStatesTableInMem.createTableIfNotExists().createIndexesIfNotExists();
@@ -125,8 +141,10 @@ public class GoTables {
   private static LoginsTable prepareLoginsTable(DataSource fileDbDataSource) {
     LoginsTable loginsTable = new LoginsTable(fileDbDataSource);
     loginsTable.createTableIfNotExists().createIndexesIfNotExists();
-    loginsTable.writeCsv(new File(new File(SystemFileUtils.getUserHomeDirectory(), "go-bkup/"),
-        "logins-" + System.currentTimeMillis() + ".csv"));
+    loginsTable.writeCsv(
+        new File(
+            new File(SystemFileUtils.getUserHomeDirectory(), "go-bkup/"),
+            "logins-" + System.currentTimeMillis() + ".csv"));
     return loginsTable;
   }
 
@@ -152,5 +170,4 @@ public class GoTables {
     problemsTable.dropAndInsertInitialProblemsToTable();
     return problemsTable;
   }
-
 }

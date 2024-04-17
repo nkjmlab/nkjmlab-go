@@ -38,7 +38,6 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   private static final JsonMapper mapper = GoApplication.getDefaultJacksonMapper();
 
-
   public GoJsonRpcService(WebsocketSessionsManager webSocketManager, GoTables goTables) {
     this.webSocketManager = webSocketManager;
     this.goTables = goTables;
@@ -49,12 +48,10 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     webSocketManager.sendGameState(gameId, json);
   }
 
-
   @Override
   public void sendGlobalMessage(String userId, String message) {
     webSocketManager.sendGlobalMessage(message);
   }
-
 
   @Override
   public void syncGameState(int sessionId, String gameId, String userId) {
@@ -84,8 +81,8 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   }
 
   @Override
-  public ProblemJson saveProblem(String gameId, long problemId, String groupId, String name,
-      String message) {
+  public ProblemJson saveProblem(
+      String gameId, long problemId, String groupId, String name, String message) {
     Problem newP = createNewProblem(gameId, problemId, groupId, name, message);
     goTables.problemsTable.merge(newP);
     goTables.problemsTable.clearProblemsJson();
@@ -96,8 +93,8 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   private final CurrentTimeMillisIdGenerator problemIdGenerator =
       new CurrentTimeMillisIdGenerator();
 
-  private Problem createNewProblem(String gameId, long problemId, String groupId, String name,
-      String message) {
+  private Problem createNewProblem(
+      String gameId, long problemId, String groupId, String name, String message) {
     Problem prevP = goTables.problemsTable.selectByPrimaryKey(problemId);
     GameState currentState = goTables.gameStatesTables.readLatestGameState(gameId);
     if (prevP != null) {
@@ -105,11 +102,15 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     }
     return new Problem(
         prevP != null ? prevP.id() : (problemId == -1 ? problemIdGenerator.getNewId() : problemId),
-        LocalDateTime.now(), groupId, name, mapper.toJson(currentState.cells()),
-        mapper.toJson(currentState.symbols()), mapper.toJson(currentState.agehama()),
-        mapper.toJson(currentState.handHistory()), message == null ? "" : message);
+        LocalDateTime.now(),
+        groupId,
+        name,
+        mapper.toJson(currentState.cells()),
+        mapper.toJson(currentState.symbols()),
+        mapper.toJson(currentState.agehama()),
+        mapper.toJson(currentState.handHistory()),
+        message == null ? "" : message);
   }
-
 
   @Override
   public void deleteProblem(long problemId) {
@@ -132,7 +133,6 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     return new ProblemJson(-1);
   }
 
-
   @Override
   public String getNextUser(String currentGameId) {
     String nextUserId = goTables.loginsTable.getNextLoginUserId(goTables.usersTable, currentGameId);
@@ -145,13 +145,11 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     return nextUserId;
   }
 
-
   @Override
   public String getNextQuestion(String currentGameId) {
     String nextQuestionGameId = goTables.handsUpTable.getNextQuestion(currentGameId);
     return nextQuestionGameId;
   }
-
 
   @Override
   public UserJson getUser(String userId) {
@@ -162,7 +160,6 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     }
     UserJson uj = new UserJson(u, goTables.loginsTable.isAttendance(userId));
     return uj;
-
   }
 
   @Override
@@ -170,7 +167,6 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     List<String> ids = webSocketManager.readActiveGameIdsOrderByGameId();
     return getNextId(ids, currentGameId);
   }
-
 
   private String getNextId(List<String> ids, String currentGameId) {
     int index = ids.indexOf(currentGameId);
@@ -181,14 +177,12 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     }
   }
 
-
   @Override
   public String getPrevGame(String currentGameId) {
     List<String> ids = webSocketManager.readActiveGameIdsOrderByGameId();
     Collections.reverse(ids);
     return getNextId(ids, currentGameId);
   }
-
 
   @Override
   public void enterWaitingRoom(String userId) {
@@ -213,7 +207,6 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       log.error(e, e);
     }
   }
-
 
   @Override
   public void exitWaitingRoom(String userId) {
@@ -273,22 +266,23 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
       File srcFile = initialIcon.exists() ? initialIcon : getRandomIcon();
       try {
-        org.apache.commons.io.FileUtils.copyFile(srcFile,
-            new File(currentIconDIr, userId + ".png"));
+        org.apache.commons.io.FileUtils.copyFile(
+            srcFile, new File(currentIconDIr, userId + ".png"));
       } catch (IOException e) {
         log.warn(e, e);
       }
     }
 
     private File getRandomIcon() {
-      return CollectionUtils.getRandom(Stream.of(randomIconDir.listFiles())
-          .filter(f -> f.getName().toLowerCase().endsWith(".png")
-              || f.getName().toLowerCase().endsWith(".jpg"))
-          .toList()).orElseThrow();
+      return CollectionUtils.getRandom(
+              Stream.of(randomIconDir.listFiles())
+                  .filter(
+                      f ->
+                          f.getName().toLowerCase().endsWith(".png")
+                              || f.getName().toLowerCase().endsWith(".jpg"))
+                  .toList())
+          .orElseThrow();
     }
-
-
-
   }
 
   @Override
@@ -299,8 +293,8 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public void vote(String gameId, String userId, long problemId, String vote, String voteId) {
-    goTables.votesTable
-        .merge(new Vote(userId, problemId, vote, voteId, gameId, LocalDateTime.now()));
+    goTables.votesTable.merge(
+        new Vote(userId, problemId, vote, voteId, gameId, LocalDateTime.now()));
   }
 
   @Override
@@ -317,8 +311,8 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
         if (h == null) {
           goTables.handsUpTable.insert(new HandUp(gameId, LocalDateTime.now(), message));
         } else {
-          goTables.handsUpTable
-              .update(new HandUp(h.gameId(), h.createdAt(), h.message() + "<br>" + message));
+          goTables.handsUpTable.update(
+              new HandUp(h.gameId(), h.createdAt(), h.message() + "<br>" + message));
         }
       }
       webSocketManager.sendHandUp(gameId, handUp, goTables.handsUpTable.readOrder(gameId));
@@ -326,16 +320,19 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       goTables.handsUpTable.deleteByPrimaryKey(gameId);
       webSocketManager.sendHandDown(gameId);
 
-      goTables.handsUpTable.readAllGameIds().stream().forEach(handupGameId -> webSocketManager
-          .sendHandUpOrder(handupGameId, goTables.handsUpTable.readOrder(handupGameId)));
+      goTables.handsUpTable.readAllGameIds().stream()
+          .forEach(
+              handupGameId ->
+                  webSocketManager.sendHandUpOrder(
+                      handupGameId, goTables.handsUpTable.readOrder(handupGameId)));
     }
-
   }
 
   @Override
   public int registerRecord(String userId, String opponentUserId, String jadge, String memo) {
-    int rank = goTables.gameRecordsTable.registerRecordAndGetRank(goTables.usersTable, userId,
-        opponentUserId, jadge, memo);
+    int rank =
+        goTables.gameRecordsTable.registerRecordAndGetRank(
+            goTables.usersTable, userId, opponentUserId, jadge, memo);
 
     User u = goTables.usersTable.selectByPrimaryKey(userId);
     if (u.rank() != rank) {
@@ -345,14 +342,26 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     return -1;
   }
 
-  private static final Map<String, List<String>> start = Map.of("sm",
-      List.of("互先 黒6目コミ出し", "互先 黒3目コミ出し", "先", "先 白3目コミ出し", "2子", "2子  白3目コミ出し または 3子  黒3目コミ出し"),
-      "lg",
-      List.of("互先 黒6目コミ出し", "互先 黒3目コミ出し", "先", "先 白3目コミ出し", "2子", "2子  白3目コミ出し または 3子  黒3目コミ出し"));
+  private static final Map<String, List<String>> start =
+      Map.of(
+          "sm",
+          List.of(
+              "互先 黒6目コミ出し", "互先 黒3目コミ出し", "先", "先 白3目コミ出し", "2子", "2子  白3目コミ出し または 3子  黒3目コミ出し"),
+          "lg",
+          List.of(
+              "互先 黒6目コミ出し", "互先 黒3目コミ出し", "先", "先 白3目コミ出し", "2子", "2子  白3目コミ出し または 3子  黒3目コミ出し"));
 
   private static final Map<String, List<String>> midFlow =
-      Map.of("sm", List.of("互先 黒6目コミ出し", "互先 黒3目コミ出し", "先", "先 白3目コミ出し", "先 白6目コミ出し", "先 白9目コミ出し"),
-          "lg", List.of("互先 黒6目半コミ出し", "先 コミなし", "先 白6目半コミ出し", "先 白13目コミ出し", "先 白19目半コミ出し",
+      Map.of(
+          "sm",
+          List.of("互先 黒6目コミ出し", "互先 黒3目コミ出し", "先", "先 白3目コミ出し", "先 白6目コミ出し", "先 白9目コミ出し"),
+          "lg",
+          List.of(
+              "互先 黒6目半コミ出し",
+              "先 コミなし",
+              "先 白6目半コミ出し",
+              "先 白13目コミ出し",
+              "先 白19目半コミ出し",
               "先 白26目コミ出し 以下，1級差増えるごとに白のコミ出しを6目半増やす"));
 
   @Override
@@ -367,17 +376,28 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
       String s1 = start.get(roCol).get(Math.min(diff, 5));
       String s2 = midFlow.get(roCol).get(Math.min(diff, 5));
-      Object[] params = {bp.userId(), bp.userName(), bp.rank(), wp.userId(), wp.userName(),
-          wp.rank(), diff, ro, s1, s2};
+      Object[] params = {
+        bp.userId(),
+        bp.userName(),
+        bp.rank(),
+        wp.userId(),
+        wp.userName(),
+        wp.rank(),
+        diff,
+        ro,
+        s1,
+        s2
+      };
 
-      String msg = ParameterizedStringFormatter.DEFAULT.format(
-          (String) "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge bg-info'>はじめから</span> {}, <span class='badge bg-info'>棋譜並べから</span> {} <br>",
-          params);
+      String msg =
+          ParameterizedStringFormatter.DEFAULT.format(
+              (String)
+                  "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge bg-info'>はじめから</span> {}, <span class='badge bg-info'>棋譜並べから</span> {} <br>",
+              params);
       return msg;
     } catch (Exception e) {
       log.error(e);
       return "";
     }
   }
-
 }

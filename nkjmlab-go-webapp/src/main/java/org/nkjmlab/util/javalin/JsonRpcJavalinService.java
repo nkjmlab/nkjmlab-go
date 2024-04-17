@@ -23,5 +23,4 @@ public class JsonRpcJavalinService extends BasicJsonRpcServletService {
     ctx.result(jsres.getJson());
     return jsres;
   }
-
 }
