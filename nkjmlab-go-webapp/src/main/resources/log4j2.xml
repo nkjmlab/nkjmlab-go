@@ -18,15 +18,6 @@
     </property>
   </Properties>
   <Appenders>
-    <RollingFile name="applog"
-        fileName="${log_dir}/${app_name}.log"
-        filePattern="${log_dir}/${app_name}.%d{yyyy-MM-dd}-%i.log">
-      <PatternLayout pattern="${log_pattern}" />
-      <Policies>
-        <SizeBasedTriggeringPolicy size="1 MB" />
-      </Policies>
-      <DefaultRolloverStrategy max="30" />
-    </RollingFile>
     <Console name="stdout" target="SYSTEM_OUT">
       <PatternLayout pattern="${log_pattern}" />
       <Filters>

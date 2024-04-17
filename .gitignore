@@ -1,3 +1,4 @@
 .metadata/
 copy-go-contrib.bat
 /nkjmlab-go-webapp/pom.xml.versionsBackup
+/build/tools
