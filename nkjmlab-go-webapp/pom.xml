@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.nkjmlab</groupId>
 	<artifactId>nkjmlab-go-webapp</artifactId>
-	<version>0.11.0</version>
+	<version>1.0.0</version>
 	<description>Go Web Application</description>
 	<url>https://github.com/nkjmlab/nkjmlab-go-webapp</url>
 	<licenses>

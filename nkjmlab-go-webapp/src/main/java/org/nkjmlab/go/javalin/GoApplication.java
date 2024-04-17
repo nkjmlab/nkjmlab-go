@@ -10,8 +10,6 @@ import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService;
 import org.nkjmlab.go.javalin.model.relation.GoTables;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
-import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProcess;
-import org.nkjmlab.sorm4j.util.h2.server.H2TcpServerProperties;
 import org.nkjmlab.util.firebase.auth.BasicFirebaseAuthHandler;
 import org.nkjmlab.util.firebase.auth.FirebaseAuthHandler;
 import org.nkjmlab.util.jackson.JacksonMapper;
@@ -59,7 +57,7 @@ public class GoApplication {
     log.info("start (port:{}) => {}", port, JavaSystemProperties.create());
 
     ProcessUtils.stopProcessBindingPortIfExists(port);
-    new H2TcpServerProcess(H2TcpServerProperties.builder().build()).awaitStart();
+    //    new H2TcpServerProcess(H2TcpServerProperties.builder().build()).awaitStart();
 
     new GoApplication().start(port);
   }
@@ -100,7 +98,7 @@ public class GoApplication {
         Javalin.create(
             config -> {
               config.staticFiles.add(
-                  WEB_APP_CONFIG.getWebRootDirectory().toFile().getPath(), Location.EXTERNAL);
+                  WEB_APP_CONFIG.getWebRootDirectory().toFile().getName(), Location.CLASSPATH);
               config.staticFiles.enableWebjars();
               config.http.generateEtags = true;
               config.fileRenderer(

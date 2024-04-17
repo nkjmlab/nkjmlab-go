@@ -1,12 +1,14 @@
 package org.nkjmlab.go.javalin;
 
 import javax.sql.DataSource;
+
 import org.h2.jdbcx.JdbcConnectionPool;
 import org.nkjmlab.sorm4j.util.h2.datasource.H2DataSourceFactory;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
 import org.nkjmlab.util.java.json.FileDatabaseConfigJson;
 import org.nkjmlab.util.java.lang.ResourceUtils;
+
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
@@ -58,9 +60,9 @@ public class DataSourceManager {
         factory.getInMemoryModeJdbcUrl(), factory.getUsername(), factory.getPassword());
   }
 
-  public DataSource createHikariServerModeDataSource() {
+  public DataSource createHikariMixedModeDataSource() {
     return createHikariDataSource(
-        factory.getServerModeJdbcUrl(), factory.getUsername(), factory.getPassword());
+        factory.getMixedModeJdbcUrl(), factory.getUsername(), factory.getPassword());
   }
 
   public JdbcConnectionPool createH2InMemoryDataSource() {
@@ -70,7 +72,7 @@ public class DataSourceManager {
 
   public JdbcConnectionPool createH2ServerModeDataSource() {
     return createH2DataSource(
-        factory.getServerModeJdbcUrl(), factory.getUsername(), factory.getPassword());
+        factory.getMixedModeJdbcUrl(), factory.getUsername(), factory.getPassword());
   }
 
   private static HikariDataSource createHikariDataSource(String url, String user, String password) {

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
+
 import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
@@ -23,6 +24,7 @@ import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
 import org.nkjmlab.go.javalin.util.CollectionUtils;
 import org.nkjmlab.go.javalin.util.CurrentTimeMillisIdGenerator;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
+import org.nkjmlab.sorm4j.internal.util.Try;
 import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.util.java.json.JsonMapper;
 import org.nkjmlab.util.java.lang.ParameterizedStringFormatter;
@@ -224,6 +226,8 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     }
   }
 
+  public static void main(String[] args) {}
+
   public static class Icons {
 
     private final File currentIconDIr;
@@ -239,6 +243,13 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       this.initialIconDir = new File(baseDir, "img/icon-initial");
       this.randomIconDir = new File(baseDir, "img/icon-random");
       this.uploadedIconDir = new File(baseDir, "img/icon-uploaded");
+      if (!currentIconDIr.exists()) {
+        try {
+          org.apache.commons.io.FileUtils.copyDirectory(initialIconDir, currentIconDIr);
+        } catch (IOException e) {
+          Try.rethrow(e);
+        }
+      }
     }
 
     public File updateIcon(String userId, String base64EncodedImage) {

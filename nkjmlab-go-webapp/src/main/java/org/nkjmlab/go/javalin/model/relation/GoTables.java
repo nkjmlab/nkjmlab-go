@@ -51,7 +51,7 @@ public class GoTables {
       File webrootDir, File appRootDir, DataSourceManager basicDataSource) {
 
     DataSource memDbDataSource = basicDataSource.createHikariInMemoryDataSource();
-    DataSource fileDbDataSource = basicDataSource.createHikariServerModeDataSource();
+    DataSource fileDbDataSource = basicDataSource.createHikariMixedModeDataSource();
 
     final ProblemsTable problemsTable = prepareProblemTables(appRootDir, memDbDataSource);
     final HandUpsTable handsUpTable = new HandUpsTable(memDbDataSource);
