@@ -17,9 +17,9 @@ import org.nkjmlab.util.java.function.Try;
 import org.nkjmlab.util.java.lang.JavaSystemProperties;
 import org.nkjmlab.util.java.lang.ProcessUtils;
 import org.nkjmlab.util.java.lang.ResourceUtils;
-import org.nkjmlab.util.java.web.WebApplicationConfig;
+import org.nkjmlab.util.java.web.WebApplicationFileLocation;
 import org.nkjmlab.util.javalin.JsonRpcJavalinService;
-import org.nkjmlab.util.thymeleaf.ThymeleafTemplateEngineBuilder;
+import org.nkjmlab.util.thymeleaf.TemplateEngineBuilder;
 
 import io.javalin.Javalin;
 import io.javalin.http.staticfiles.Location;
@@ -32,24 +32,8 @@ public class GoApplication {
 
   private final Javalin app;
 
-  private static final WebApplicationConfig WEB_APP_CONFIG =
-      WebApplicationConfig.builder()
-          .addWebJar(
-              "jquery",
-              "sweetalert2",
-              "bootstrap",
-              "bootstrap-treeview",
-              "clipboard",
-              "fortawesome__fontawesome-free",
-              "stacktrace-js",
-              "datatables.net",
-              "datatables.net-bs5",
-              "firebase",
-              "firebaseui",
-              "ua-parser-js",
-              "blueimp-load-image",
-              "emojionearea")
-          .build();
+  private static final WebApplicationFileLocation WEB_APP_CONFIG =
+      WebApplicationFileLocation.builder().build();
 
   public static void main(String[] args) {
 
@@ -79,8 +63,8 @@ public class GoApplication {
 
     GoTables goTables =
         GoTables.prepareTables(
-            WEB_APP_CONFIG.getWebRootDirectory().toFile(),
-            WEB_APP_CONFIG.getAppRootDirectory().toFile(),
+            WEB_APP_CONFIG.webRootDirectory().toFile(),
+            WEB_APP_CONFIG.appRootDirectory().toFile(),
             basicDataSource);
 
     WebsocketSessionsManager webSocketManager =
@@ -98,18 +82,18 @@ public class GoApplication {
         Javalin.create(
             config -> {
               config.staticFiles.add(
-                  WEB_APP_CONFIG.getWebRootDirectory().toFile().getName(), Location.CLASSPATH);
+                  WEB_APP_CONFIG.webRootDirectory().toString(), Location.EXTERNAL);
               config.staticFiles.enableWebjars();
               config.http.generateEtags = true;
               config.fileRenderer(
                   new JavalinThymeleaf(
-                      ThymeleafTemplateEngineBuilder.builder()
-                          .setTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND)
+                      TemplateEngineBuilder.builder()
+                          .setCacheTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND)
                           .build()));
               config.bundledPlugins.enableCors(cors -> cors.addRule(it -> it.anyHost()));
             });
     GoAccessManager accessManager = new GoAccessManager(goTables.usersTable, authService);
-    app.beforeMatched(ctx -> accessManager.manage(ctx));
+    app.before(ctx -> accessManager.manage(ctx));
 
     prepareWebSocket(app, webSocketManager);
     prepareJsonRpc(

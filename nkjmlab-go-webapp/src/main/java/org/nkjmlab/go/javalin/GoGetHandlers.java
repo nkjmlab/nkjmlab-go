@@ -3,6 +3,7 @@ package org.nkjmlab.go.javalin;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import org.nkjmlab.go.javalin.GoAccessManager.AccessRole;
 import org.nkjmlab.go.javalin.GoGetHandler.GoViewHandler;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
@@ -17,7 +18,8 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.common.Tuple.Tuple2;
 import org.nkjmlab.util.java.web.ViewModel.Builder;
-import org.nkjmlab.util.java.web.WebApplicationConfig;
+import org.nkjmlab.util.java.web.WebApplicationFileLocation;
+
 import io.javalin.Javalin;
 import io.javalin.http.Handler;
 
@@ -25,19 +27,19 @@ public class GoGetHandlers {
 
   private final Javalin app;
   private final WebsocketSessionsManager websocketManager;
-  private final WebApplicationConfig webAppConfig;
+  private final WebApplicationFileLocation webAppFileLocation;
   private final GoTables goTables;
   private final GoAuthService authService;
 
   public GoGetHandlers(
       Javalin app,
       WebsocketSessionsManager websocketManager,
-      WebApplicationConfig webAppConfig,
+      WebApplicationFileLocation webAppConfig,
       GoTables goTables,
       GoAuthService authService) {
     this.app = app;
     this.websocketManager = websocketManager;
-    this.webAppConfig = webAppConfig;
+    this.webAppFileLocation = webAppConfig;
     this.goTables = goTables;
     this.authService = authService;
   }
@@ -46,6 +48,8 @@ public class GoGetHandlers {
 
     app.get("/app/play.html", createPlayHandler(), AccessRole.LOGIN_ROLES);
     app.get("/app/players-all.html", createPlayersAllHandler(), AccessRole.ADMIN);
+
+    app.get("/app/admin.html", createGoHandler(new AdminViewHandler()), AccessRole.ADMIN);
     app.get("/app/players.html", createPlayersHandler(), AccessRole.ADMIN);
     app.get("/app/games-all.html", createGamesAllHandler(), AccessRole.ADMIN);
     app.get("/app/games.html", createGamesHandler(), AccessRole.ADMIN);
@@ -86,7 +90,7 @@ public class GoGetHandlers {
   }
 
   Handler createGoHandler(GoViewHandler handler) {
-    return new GoGetHandler(webAppConfig, goTables, authService, handler);
+    return new GoGetHandler(webAppFileLocation.webRootDirectory(), goTables, authService, handler);
   }
 
   private Handler createPlayHandler() {
