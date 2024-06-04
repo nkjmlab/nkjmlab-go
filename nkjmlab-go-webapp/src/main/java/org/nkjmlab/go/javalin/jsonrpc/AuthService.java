@@ -2,13 +2,14 @@ package org.nkjmlab.go.javalin.jsonrpc;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+
 import org.nkjmlab.go.javalin.GoAccessManager.AccessRole;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService.SigninSession;
 import org.nkjmlab.go.javalin.model.relation.GoTables;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.sorm4j.result.RowMap;
-import org.nkjmlab.util.jakarta.servlet.HttpRequestUtils;
+
 import jakarta.servlet.http.HttpServletRequest;
 
 public class AuthService implements AuthServiceInterface {
@@ -51,8 +52,12 @@ public class AuthService implements AuthServiceInterface {
     User u = goTables.usersTable.selectByPrimaryKey(userId);
     goTables.usersTable.updateByPrimaryKey(RowMap.of("seat_id", seatId), u.userId());
     goTables.loginsTable.login(
-        u, HttpRequestUtils.getXForwardedFor(request).orElseGet(() -> request.getRemoteAddr()));
+        u, getXForwardedFor(request).orElseGet(() -> request.getRemoteAddr()));
     return true;
+  }
+
+  private static Optional<String> getXForwardedFor(HttpServletRequest request) {
+    return Optional.ofNullable(request.getHeader("X-Forwarded-For"));
   }
 
   @Override
