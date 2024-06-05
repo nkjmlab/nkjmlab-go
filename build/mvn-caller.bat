@@ -1,12 +1,12 @@
+@echo off
 setlocal
 chcp 65001
-@echo off
-set CURRENT_DIR=%~dp0
-set PATH=%PATH%;%CURRENT_DIR%\tools
+set _B=%~dp0
+set BAT_DIR=%_B:~0,-1%
 
-cd /d %CURRENT_DIR%/../nkjmlab-go-webapp
+powershell -ExecutionPolicy Bypass -File %BAT_DIR%\kill-process.ps1 java org.nkjmlab.nursing.pics.webapp.
 
-jps -lm|grep org.nkjmlab.go | gawk "{print $1}" | xargs -r -n1 taskkill /F /T /PID
+cd /d %BAT_DIR%/../nkjmlab-go-webapp
 
 :loop
 if "%~1"=="" goto end

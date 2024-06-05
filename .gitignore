@@ -2,3 +2,5 @@
 copy-go-contrib.bat
 /nkjmlab-go-webapp/pom.xml.versionsBackup
 /build/tools
+/build/go-zip-to-contrib.bat
+/build/go-coveralls.bat
