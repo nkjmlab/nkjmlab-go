@@ -33,8 +33,11 @@ public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
   private static final String GAME_ID = "game_id";
   private static final String CREATED_AT = "created_at";
 
-  public MatchingRequestsTable(DataSource dataSource) {
+  private final GameStatesTables gameStatesTables;
+
+  public MatchingRequestsTable(DataSource dataSource, GameStatesTables gameStatesTables) {
     super(Sorm.create(dataSource), MatchingRequest.class);
+    this.gameStatesTables = gameStatesTables;
   }
 
   public List<MatchingRequest> readRequests() {
@@ -65,7 +68,7 @@ public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
    *
    * @return マッチしたユーザ名
    */
-  public Set<String> createPairOfUsers(GameStatesTables gameStatesTables) {
+  public Set<String> createPairOfUsers() {
 
     List<String> reqs = readUserIdsOfUnpairedRequestOrdereByCreatedAt();
 

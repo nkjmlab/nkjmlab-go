@@ -119,8 +119,7 @@ public class GoApplication {
     srv.scheduleWithFixedDelay(
         Try.createRunnable(
             () -> {
-              Set<String> uids =
-                  goTables.matchingRequestsTable.createPairOfUsers(goTables.gameStatesTables);
+              Set<String> uids = goTables.matchingRequestsTable.createPairOfUsers();
               webSocketManager.sendUpdateWaitingRequestStatus(uids);
             },
             e -> log.error(e)),

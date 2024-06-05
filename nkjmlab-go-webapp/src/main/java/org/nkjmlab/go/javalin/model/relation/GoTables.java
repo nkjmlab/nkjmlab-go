@@ -1,7 +1,9 @@
 package org.nkjmlab.go.javalin.model.relation;
 
 import java.io.File;
+
 import javax.sql.DataSource;
+
 import org.nkjmlab.go.javalin.DataSourceManager;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService.Icons;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
@@ -55,13 +57,15 @@ public class GoTables {
 
     final ProblemsTable problemsTable = prepareProblemTables(appRootDir, memDbDataSource);
     final HandUpsTable handsUpTable = new HandUpsTable(memDbDataSource);
-    final MatchingRequestsTable matchingRequestsTable =
-        prepareMatchingRequestsTable(memDbDataSource);
+
     final PasswordsTable passwordsTable = preparePasswordsTable(memDbDataSource);
     final VotesTable votesTable = prepareVotesTable(memDbDataSource);
 
     final GameStatesTables gameStatesTables =
         prepareGameStateTables(basicDataSource, fileDbDataSource, memDbDataSource);
+
+    final MatchingRequestsTable matchingRequestsTable =
+        prepareMatchingRequestsTable(memDbDataSource, gameStatesTables);
 
     final UsersTable usersTable = prepareUsersTable(fileDbDataSource);
     final GameRecordsTable gameRecordsTable = prepareGameRecordsTable(fileDbDataSource, usersTable);
@@ -101,8 +105,10 @@ public class GoTables {
     return votesTable;
   }
 
-  private static MatchingRequestsTable prepareMatchingRequestsTable(DataSource memDbDataSource) {
-    MatchingRequestsTable matchingRequestsTable = new MatchingRequestsTable(memDbDataSource);
+  private static MatchingRequestsTable prepareMatchingRequestsTable(
+      DataSource memDbDataSource, GameStatesTables gameStatesTables) {
+    MatchingRequestsTable matchingRequestsTable =
+        new MatchingRequestsTable(memDbDataSource, gameStatesTables);
     matchingRequestsTable.createTableIfNotExists().createIndexesIfNotExists();
     return matchingRequestsTable;
   }
