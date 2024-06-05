@@ -7,12 +7,15 @@ import static org.nkjmlab.sorm4j.util.sql.SelectSql.orderByAsc;
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.select;
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.where;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.sql.DataSource;
+
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
@@ -59,6 +62,8 @@ public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
   /**
    * マッチングをする u1:30級，u2:27級,u3:26級の順でwaitingRoomに入って来たとする．u2とu3がペアになってu1が待って欲しいが，そうならない．
    * なぜならば，最初にu1がtargetとなって検索が始まる.u1と級位差が小さいu2がペアになってu3が待たされるということ．
+   *
+   * @return マッチしたユーザ名
    */
   public Set<String> createPairOfUsers(GameStatesTables gameStatesTables) {
 
@@ -69,7 +74,7 @@ public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
         reqs.size(),
         getOrm().readFirst(Integer.class, SELECT + COUNT + "(*)" + FROM + getTableName()));
 
-    Set<String> ret = new HashSet<>();
+    Set<String> matchedUsers = new HashSet<>();
     for (String uid : reqs) {
       MatchingRequest target = selectByPrimaryKey(uid);
 
@@ -94,10 +99,10 @@ public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
       updateByPrimaryKey(RowMap.of("game_id", gameId), target.userId);
       updateByPrimaryKey(RowMap.of("game_id", gameId), nextOpponent.userId);
 
-      ret.add(target.userId());
-      ret.add(nextOpponent.userId());
+      matchedUsers.add(target.userId());
+      matchedUsers.add(nextOpponent.userId());
     }
-    return ret;
+    return matchedUsers;
   }
 
   private MatchingRequest selectNextOponent(MatchingRequest target, Set<String> pastOpponents) {

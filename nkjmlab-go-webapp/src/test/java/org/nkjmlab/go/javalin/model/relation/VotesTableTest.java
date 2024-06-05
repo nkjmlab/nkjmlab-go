@@ -1,9 +1,11 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.time.LocalDateTime;
+
 import org.junit.jupiter.api.Test;
-import org.nkjmlab.go.javalin.GoApplicationTestUtils;
+import org.nkjmlab.go.javalin.GoApp;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
 
@@ -11,7 +13,7 @@ class VotesTableTest {
 
   @Test
   void testReadVoteResults() {
-    VotesTable table = new VotesTable(GoApplicationTestUtils.getInMemoryDataSource());
+    VotesTable table = new VotesTable(GoApp.getInMemoryDataSource());
     table.createTableIfNotExists();
     long problemId = 1594221942280L;
     table.insert(new Vote("nkjm", problemId, "A", "40", "5588999", LocalDateTime.now()));

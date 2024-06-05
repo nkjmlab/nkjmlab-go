@@ -4,10 +4,14 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Stream;
 
 import org.nkjmlab.go.javalin.GoApplication;
@@ -21,8 +25,6 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
-import org.nkjmlab.go.javalin.util.CollectionUtils;
-import org.nkjmlab.go.javalin.util.CurrentTimeMillisIdGenerator;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.internal.util.Try;
 import org.nkjmlab.sorm4j.result.RowMap;
@@ -112,6 +114,26 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
         mapper.toJson(currentState.agehama()),
         mapper.toJson(currentState.handHistory()),
         message == null ? "" : message);
+  }
+
+  private static class CurrentTimeMillisIdGenerator {
+
+    private volatile long prev = -1;
+
+    public synchronized long getNewId() {
+      while (true) {
+        long id = System.currentTimeMillis();
+        if (prev == id) {
+          try {
+            TimeUnit.MILLISECONDS.sleep(1);
+          } catch (InterruptedException e) {
+          }
+          continue;
+        }
+        prev = id;
+        return id;
+      }
+    }
   }
 
   @Override
@@ -285,7 +307,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
     }
 
     private File getRandomIcon() {
-      return CollectionUtils.getRandom(
+      return getRandom(
               Stream.of(randomIconDir.listFiles())
                   .filter(
                       f ->
@@ -294,6 +316,13 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
                   .toList())
           .orElseThrow();
     }
+  }
+
+  private static <E> Optional<E> getRandom(Collection<E> e) {
+    if (e == null || e.size() == 0) {
+      return Optional.empty();
+    }
+    return e.stream().skip((ThreadLocalRandom.current().nextInt(e.size()))).findFirst();
   }
 
   @Override

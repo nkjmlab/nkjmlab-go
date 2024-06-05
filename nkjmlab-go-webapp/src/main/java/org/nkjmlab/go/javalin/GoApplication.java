@@ -41,16 +41,15 @@ public class GoApplication {
     log.info("start (port:{}) => {}", port, JavaSystemProperties.create());
 
     ProcessUtils.stopProcessBindingPortIfExists(port);
-    //    new H2TcpServerProcess(H2TcpServerProperties.builder().build()).awaitStart();
 
-    new GoApplication().start(port);
+    new GoApplication(new DataSourceManager()).start(port);
   }
 
   private void start(int port) {
     app.start(port);
   }
 
-  public GoApplication() {
+  public GoApplication(DataSourceManager basicDataSource) {
 
     final long THYMELEAF_EXPIRE_TIME_MILLI_SECOND = 1 * 1000;
 
@@ -58,8 +57,6 @@ public class GoApplication {
         "log4j2.configurationFile={}, Logger level={}",
         System.getProperty("log4j2.configurationFile"),
         log.getLevel());
-
-    DataSourceManager basicDataSource = new DataSourceManager();
 
     GoTables goTables =
         GoTables.prepareTables(
