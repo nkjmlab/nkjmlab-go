@@ -1,5 +1,7 @@
 package org.nkjmlab.go.javalin;
 
+import java.io.File;
+
 import javax.sql.DataSource;
 
 import org.h2.jdbcx.JdbcConnectionPool;
@@ -17,15 +19,10 @@ public class DataSourceManager {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
-  private static final int DEFAULT_MAX_CONNECTIONS =
-      Math.min(ForkJoinPoolUtils.availableProcessors() * 2 * 2, 10);
-
-  private static final int DEFAULT_TIMEOUT_SECONDS = 30;
-
   private final H2DataSourceFactory factory;
 
-  public DataSourceManager() {
-    FileDatabaseConfigJson fileDbConf = getFileDbConfig();
+  public DataSourceManager(File h2Json) {
+    FileDatabaseConfigJson fileDbConf = getFileDbConfig(h2Json);
     H2DataSourceFactory factory =
         H2DataSourceFactory.builder(
                 fileDbConf.databaseDirectory,
@@ -38,12 +35,10 @@ public class DataSourceManager {
     log.info("server jdbcUrl={}", factory.getServerModeJdbcUrl());
   }
 
-  private static FileDatabaseConfigJson getFileDbConfig() {
+  private static FileDatabaseConfigJson getFileDbConfig(File h2Json) {
     try {
       return JacksonMapper.getDefaultMapper()
-          .toObject(
-              ResourceUtils.getResourceAsFile("/conf/h2.json"),
-              FileDatabaseConfigJson.Builder.class)
+          .toObject(h2Json, FileDatabaseConfigJson.Builder.class)
           .build();
     } catch (Exception e) {
       log.warn("Try to load h2.json.default");
@@ -74,6 +69,11 @@ public class DataSourceManager {
     return createH2DataSource(
         factory.getMixedModeJdbcUrl(), factory.getUsername(), factory.getPassword());
   }
+
+  private static final int DEFAULT_MAX_CONNECTIONS =
+      Math.min(ForkJoinPoolUtils.availableProcessors() * 2 * 2, 10);
+
+  private static final int DEFAULT_TIMEOUT_SECONDS = 30;
 
   private static HikariDataSource createHikariDataSource(String url, String user, String password) {
     HikariConfig config = new HikariConfig();

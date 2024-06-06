@@ -31,6 +31,7 @@ public class GoApplication {
       org.apache.logging.log4j.LogManager.getLogger();
 
   private final Javalin app;
+  private final int port;
 
   private static final WebApplicationFileLocation WEB_APP_CONFIG =
       WebApplicationFileLocation.builder().build();
@@ -42,15 +43,16 @@ public class GoApplication {
 
     ProcessUtils.stopProcessBindingPortIfExists(port);
 
-    new GoApplication(new DataSourceManager()).start(port);
+    new GoApplication(new DataSourceManager(ResourceUtils.getResourceAsFile("/conf/h2.json")), port)
+        .start();
   }
 
-  private void start(int port) {
+  void start() {
     app.start(port);
   }
 
-  public GoApplication(DataSourceManager basicDataSource) {
-
+  public GoApplication(DataSourceManager basicDataSource, int port) {
+    this.port = port;
     final long THYMELEAF_EXPIRE_TIME_MILLI_SECOND = 1 * 1000;
 
     log.info(
@@ -90,7 +92,7 @@ public class GoApplication {
               config.bundledPlugins.enableCors(cors -> cors.addRule(it -> it.anyHost()));
             });
     GoAccessManager accessManager = new GoAccessManager(goTables.usersTable, authService);
-    app.before(ctx -> accessManager.manage(ctx));
+    app.beforeMatched(ctx -> accessManager.manage(ctx));
 
     prepareWebSocket(app, webSocketManager);
     prepareJsonRpc(
