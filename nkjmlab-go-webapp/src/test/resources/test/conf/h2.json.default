@@ -1,0 +1,6 @@
+{
+	"username":"sa",
+	"password":"yourpassword",
+	"databaseDirectory":"~/h2db/nkjmlab-go",
+	"databaseName":"go-default"
+}
