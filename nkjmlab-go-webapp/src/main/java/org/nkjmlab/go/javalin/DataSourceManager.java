@@ -32,7 +32,7 @@ public class DataSourceManager {
             .build();
     this.factory = factory;
     factory.makeFileDatabaseIfNotExists();
-    log.info("server jdbcUrl={}", factory.getServerModeJdbcUrl());
+    log.info("H2factory", factory);
   }
 
   private static FileDatabaseConfigJson getFileDbConfig(File h2Json) {
@@ -51,23 +51,21 @@ public class DataSourceManager {
   }
 
   public DataSource createHikariInMemoryDataSource() {
-    return createHikariDataSource(
-        factory.getInMemoryModeJdbcUrl(), factory.getUsername(), factory.getPassword());
-  }
-
-  public DataSource createHikariMixedModeDataSource() {
-    return createHikariDataSource(
-        factory.getMixedModeJdbcUrl(), factory.getUsername(), factory.getPassword());
+    String url = factory.getInMemoryModeJdbcUrl();
+    log.info(url);
+    return createHikariDataSource(url, factory.getUsername(), factory.getPassword());
   }
 
   public JdbcConnectionPool createH2InMemoryDataSource() {
-    return createH2DataSource(
-        factory.getInMemoryModeJdbcUrl(), factory.getUsername(), factory.getPassword());
+    String url = factory.getInMemoryModeJdbcUrl();
+    log.info(url);
+    return createH2DataSource(url, factory.getUsername(), factory.getPassword());
   }
 
-  public JdbcConnectionPool createH2ServerModeDataSource() {
-    return createH2DataSource(
-        factory.getMixedModeJdbcUrl(), factory.getUsername(), factory.getPassword());
+  public JdbcConnectionPool createH2MixedModeDataSource() {
+    String url = factory.getMixedModeJdbcUrl();
+    log.info(url);
+    return createH2DataSource(url, factory.getUsername(), factory.getPassword());
   }
 
   private static final int DEFAULT_MAX_CONNECTIONS =
