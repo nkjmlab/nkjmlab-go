@@ -10,6 +10,7 @@ import org.nkjmlab.go.javalin.jsonrpc.AuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService;
 import org.nkjmlab.go.javalin.model.relation.GoTables;
+import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.util.firebase.auth.BasicFirebaseAuthHandler;
 import org.nkjmlab.util.firebase.auth.FirebaseAuthHandler;
@@ -61,23 +62,6 @@ public class GoApplication {
 
     WebApplicationFileLocation webAppConfig = WebApplicationFileLocation.builder().build();
 
-    GoTables goTables =
-        GoTables.prepareTables(
-            webAppConfig.webRootDirectory().toFile(),
-            webAppConfig.appRootDirectory().toFile(),
-            basicDataSource);
-
-    WebsocketSessionsManager webSocketManager =
-        new WebsocketSessionsManager(goTables, basicDataSource.createHikariInMemoryDataSource());
-
-    scheduleCheckMatchingRequest(webSocketManager, goTables);
-
-    FirebaseAuthHandler firebaseService =
-        BasicFirebaseAuthHandler.create(
-            goTables.usersTable.readAll().stream().map(u -> u.email()).toList(),
-            ResourceUtils.getResourceAsFile("/conf/firebase.json"));
-    GoAuthService authService = new GoAuthService(goTables.usersTable, firebaseService);
-
     this.app =
         Javalin.create(
             config -> {
@@ -91,10 +75,25 @@ public class GoApplication {
                           .build()));
               config.bundledPlugins.enableCors(cors -> cors.addRule(it -> it.anyHost()));
             });
-    GoAccessManager accessManager = new GoAccessManager(goTables.usersTable, authService);
-    app.beforeMatched(ctx -> accessManager.manage(ctx));
 
-    prepareWebSocket(app, webSocketManager);
+    GoTables goTables =
+        GoTables.prepareTables(
+            webAppConfig.webRootDirectory().toFile(),
+            webAppConfig.appRootDirectory().toFile(),
+            basicDataSource);
+
+    WebsocketSessionsManager webSocketManager =
+        new WebsocketSessionsManager(goTables, basicDataSource.createHikariInMemoryDataSource());
+
+    scheduleCheckMatchingRequest(webSocketManager, goTables, 30);
+
+    GoAuthService authService = createAuthService(goTables.usersTable);
+
+    {
+      GoAccessManager accessManager = new GoAccessManager(goTables.usersTable, authService);
+      app.beforeMatched(ctx -> accessManager.manage(ctx));
+    }
+    prepareWebSocket(app, webSocketManager, 27);
     prepareJsonRpc(
         app,
         webSocketManager,
@@ -105,10 +104,21 @@ public class GoApplication {
         .prepareGetHandlers();
   }
 
+  private static GoAuthService createAuthService(UsersTable usersTable) {
+    FirebaseAuthHandler firebaseService =
+        BasicFirebaseAuthHandler.create(
+            usersTable.readAll().stream().map(u -> u.email()).toList(),
+            ResourceUtils.getResourceAsFile("/conf/firebase.json"));
+    return new GoAuthService(usersTable, firebaseService);
+  }
+
+  /**
+   * @param webSocketManager
+   * @param goTables
+   * @param matchingIntervalSec このインターバルが小さいと待合室に十分に人数が入っていない状態でマッチングが始まる可能性が高くなってしまう．30秒程度が妥当か．
+   */
   private static void scheduleCheckMatchingRequest(
-      WebsocketSessionsManager webSocketManager, GoTables goTables) {
-    // このインターバルが小さいと待合室に十分に人数が入っていない状態でマッチングが始まる可能性が高くなってしまう．30秒が妥当か．
-    final int MATCHING_INTERVAL_SEC = 30;
+      WebsocketSessionsManager webSocketManager, GoTables goTables, int matchingIntervalSec) {
 
     ScheduledExecutorService srv =
         Executors.newSingleThreadScheduledExecutor(
@@ -126,12 +136,17 @@ public class GoApplication {
             },
             e -> log.error(e)),
         0,
-        MATCHING_INTERVAL_SEC,
+        matchingIntervalSec,
         TimeUnit.SECONDS);
   }
 
-  private static void prepareWebSocket(Javalin app, WebsocketSessionsManager webSocketManager) {
-    final int WS_PING_INTERVAL_SEC = 27;
+  /**
+   * @param app
+   * @param webSocketManager
+   * @param websocketPingIntervalSec WebSocketのpingを送信する間隔. 30秒程度が妥当か．
+   */
+  private static void prepareWebSocket(
+      Javalin app, WebsocketSessionsManager webSocketManager, int websocketPingIntervalSec) {
     app.ws(
         "/websocket/play/checkcon",
         ws ->
@@ -143,7 +158,7 @@ public class GoApplication {
               ctx -> {
                 webSocketManager.onConnect(
                     ctx.session, ctx.queryParam("userId"), ctx.queryParam("gameId"));
-                ctx.enableAutomaticPings(WS_PING_INTERVAL_SEC, TimeUnit.SECONDS);
+                ctx.enableAutomaticPings(websocketPingIntervalSec, TimeUnit.SECONDS);
               });
           ws.onClose(ctx -> webSocketManager.onClose(ctx.session, ctx.status(), ctx.reason()));
           ws.onError(ctx -> webSocketManager.onError(ctx.session, ctx.error()));
