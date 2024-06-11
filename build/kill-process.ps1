@@ -1,4 +1,4 @@
-# powershell -ExecutionPolicy Bypass -File %BAT_DIR%kill-process.ps1 java org.nkjmlab.nursing.pics.webapp.
+# powershell -ExecutionPolicy Bypass -File %BAT_DIR%kill-process.ps1 org.nkjmlab.
 
 Get-CimInstance Win32_Process -Filter "name like '%$($args[0])%'" |
     Select-Object ProcessId, CommandLine |
