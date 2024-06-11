@@ -4,7 +4,7 @@ import java.io.File;
 
 import javax.sql.DataSource;
 
-import org.nkjmlab.go.javalin.DataSourceManager;
+import org.nkjmlab.go.javalin.GoDataSourceManager;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService.Icons;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.util.java.io.SystemFileUtils;
@@ -50,7 +50,7 @@ public class GoTables {
   }
 
   public static GoTables prepareTables(
-      File webrootDir, File appRootDir, DataSourceManager basicDataSource) {
+      File webrootDir, File appRootDir, GoDataSourceManager basicDataSource) {
 
     DataSource memDbDataSource = basicDataSource.createHikariInMemoryDataSource();
     DataSource fileDbDataSource = basicDataSource.createH2MixedModeDataSource();
@@ -114,7 +114,7 @@ public class GoTables {
   }
 
   private static GameStatesTables prepareGameStateTables(
-      DataSourceManager basicDataSource, DataSource fileDbDataSource, DataSource memDbDataSource) {
+      GoDataSourceManager basicDataSource, DataSource fileDbDataSource, DataSource memDbDataSource) {
     final int TRIM_THRESHOLD_OF_GAME_STATE_TABLE = 30000;
 
     GameStatesTable gameStatesTable = new GameStatesTable(fileDbDataSource);

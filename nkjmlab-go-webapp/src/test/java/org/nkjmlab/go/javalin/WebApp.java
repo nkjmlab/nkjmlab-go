@@ -3,14 +3,14 @@ package org.nkjmlab.go.javalin;
 import org.nkjmlab.sorm4j.common.DriverManagerDataSource;
 import org.nkjmlab.util.java.lang.ResourceUtils;
 
-public class GoApp {
-  private final DataSourceManager dataSourceManager;
+public class WebApp {
+  private final GoDataSourceManager dataSourceManager;
   private final GoApplication app;
 
   public static void main(String[] args) {
-    DataSourceManager manager =
-        new DataSourceManager(ResourceUtils.getResourceAsFile("/test/conf/h2.json"));
-    GoApp app = new GoApp(manager);
+    GoDataSourceManager manager =
+        new GoDataSourceManager(ResourceUtils.getResourceAsFile("/test/conf/h2.json"));
+    WebApp app = new WebApp(manager);
     app.start();
   }
 
@@ -18,7 +18,7 @@ public class GoApp {
     app.start();
   }
 
-  private GoApp(DataSourceManager dataSourceManager) {
+  private WebApp(GoDataSourceManager dataSourceManager) {
     this.dataSourceManager = dataSourceManager;
     this.app = new GoApplication(dataSourceManager, 12345);
   }

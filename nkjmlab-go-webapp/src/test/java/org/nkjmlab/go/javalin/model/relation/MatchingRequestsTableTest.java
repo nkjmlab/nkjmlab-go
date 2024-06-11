@@ -6,19 +6,19 @@ import static org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.Matchi
 import java.time.LocalDateTime;
 
 import org.junit.jupiter.api.Test;
-import org.nkjmlab.go.javalin.GoApp;
+import org.nkjmlab.go.javalin.WebApp;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
 
 class MatchingRequestsTableTest {
 
   @Test
   void testCreatePairOfUsers() {
-    GameStatesTable gTable = new GameStatesTable(GoApp.getInMemoryDataSource());
+    GameStatesTable gTable = new GameStatesTable(WebApp.getInMemoryDataSource());
     gTable.createTableIfNotExists();
 
     MatchingRequestsTable table =
         new MatchingRequestsTable(
-            GoApp.getInMemoryDataSource(), new GameStatesTables(gTable, gTable));
+            WebApp.getInMemoryDataSource(), new GameStatesTables(gTable, gTable));
     table.createTableIfNotExists();
 
     table.insert(new MatchingRequest("nkjm0", "0", "nkjm", 28, UNPAIRED, LocalDateTime.now()));

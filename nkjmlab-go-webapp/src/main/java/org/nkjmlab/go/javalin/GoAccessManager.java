@@ -1,9 +1,11 @@
 package org.nkjmlab.go.javalin;
 
 import java.util.Set;
+
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
+
 import io.javalin.http.Context;
 import io.javalin.security.RouteRole;
 
@@ -16,7 +18,7 @@ public class GoAccessManager {
     TA,
     ADMIN;
 
-    static final GoAccessManager.AccessRole[] LOGIN_ROLES =
+    public static final GoAccessManager.AccessRole[] LOGIN_ROLES =
         new GoAccessManager.AccessRole[] {GUEST, STUDENT, TA, ADMIN};
   }
 

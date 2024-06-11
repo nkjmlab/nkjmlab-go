@@ -14,14 +14,14 @@ import org.nkjmlab.util.java.lang.ResourceUtils;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
-public class DataSourceManager {
+public class GoDataSourceManager {
 
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
   private final H2DataSourceFactory factory;
 
-  public DataSourceManager(File h2Json) {
+  public GoDataSourceManager(File h2Json) {
     FileDatabaseConfigJson fileDbConf = getFileDbConfig(h2Json);
     H2DataSourceFactory factory =
         H2DataSourceFactory.builder(

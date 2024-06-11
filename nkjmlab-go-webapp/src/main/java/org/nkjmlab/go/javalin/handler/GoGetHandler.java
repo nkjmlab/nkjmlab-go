@@ -1,4 +1,4 @@
-package org.nkjmlab.go.javalin;
+package org.nkjmlab.go.javalin.handler;
 
 import java.nio.file.Path;
 import java.util.Map;

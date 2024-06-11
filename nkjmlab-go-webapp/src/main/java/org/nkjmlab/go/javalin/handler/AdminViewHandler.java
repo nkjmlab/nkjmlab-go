@@ -1,4 +1,4 @@
-package org.nkjmlab.go.javalin;
+package org.nkjmlab.go.javalin.handler;
 
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import org.nkjmlab.go.javalin.GoGetHandler.GoViewHandler;
+import org.nkjmlab.go.javalin.handler.GoGetHandler.GoViewHandler;
 import org.nkjmlab.util.java.lang.JavaSystemProperties;
 import org.nkjmlab.util.java.lang.PropertiesUtils;
 import org.nkjmlab.util.java.web.ViewModel.Builder;

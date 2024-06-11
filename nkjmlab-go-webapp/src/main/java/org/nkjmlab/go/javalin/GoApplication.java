@@ -5,6 +5,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.nkjmlab.go.javalin.handler.GoGetHandlers;
 import org.nkjmlab.go.javalin.jsonrpc.AuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoJsonRpcService;
@@ -32,9 +33,7 @@ public class GoApplication {
 
   private final Javalin app;
   private final int port;
-
-  private static final WebApplicationFileLocation WEB_APP_CONFIG =
-      WebApplicationFileLocation.builder().build();
+  private final boolean useCache = true;
 
   public static void main(String[] args) {
 
@@ -43,7 +42,8 @@ public class GoApplication {
 
     ProcessUtils.stopProcessBindingPortIfExists(port);
 
-    new GoApplication(new DataSourceManager(ResourceUtils.getResourceAsFile("/conf/h2.json")), port)
+    new GoApplication(
+            new GoDataSourceManager(ResourceUtils.getResourceAsFile("/conf/h2.json")), port)
         .start();
   }
 
@@ -51,19 +51,20 @@ public class GoApplication {
     app.start(port);
   }
 
-  public GoApplication(DataSourceManager basicDataSource, int port) {
+  public GoApplication(GoDataSourceManager basicDataSource, int port) {
     this.port = port;
-    final long THYMELEAF_EXPIRE_TIME_MILLI_SECOND = 1 * 1000;
 
     log.info(
         "log4j2.configurationFile={}, Logger level={}",
         System.getProperty("log4j2.configurationFile"),
         log.getLevel());
 
+    WebApplicationFileLocation webAppConfig = WebApplicationFileLocation.builder().build();
+
     GoTables goTables =
         GoTables.prepareTables(
-            WEB_APP_CONFIG.webRootDirectory().toFile(),
-            WEB_APP_CONFIG.appRootDirectory().toFile(),
+            webAppConfig.webRootDirectory().toFile(),
+            webAppConfig.appRootDirectory().toFile(),
             basicDataSource);
 
     WebsocketSessionsManager webSocketManager =
@@ -80,14 +81,13 @@ public class GoApplication {
     this.app =
         Javalin.create(
             config -> {
-              config.staticFiles.add(
-                  WEB_APP_CONFIG.webRootDirectory().toString(), Location.EXTERNAL);
+              config.staticFiles.add(webAppConfig.webRootDirectory().toString(), Location.EXTERNAL);
               config.staticFiles.enableWebjars();
               config.http.generateEtags = true;
               config.fileRenderer(
                   new JavalinThymeleaf(
                       TemplateEngineBuilder.builder()
-                          .setCacheTtlMs(THYMELEAF_EXPIRE_TIME_MILLI_SECOND)
+                          .setCacheTtlMs(useCache ? 1000 * 10 : 0)
                           .build()));
               config.bundledPlugins.enableCors(cors -> cors.addRule(it -> it.anyHost()));
             });
@@ -101,7 +101,7 @@ public class GoApplication {
         new GoJsonRpcService(webSocketManager, goTables),
         new AuthService.Factory(goTables, authService));
 
-    new GoGetHandlers(app, webSocketManager, WEB_APP_CONFIG, goTables, authService)
+    new GoGetHandlers(app, webSocketManager, webAppConfig, goTables, authService)
         .prepareGetHandlers();
   }
 

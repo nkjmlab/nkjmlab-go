@@ -1,11 +1,11 @@
-package org.nkjmlab.go.javalin;
+package org.nkjmlab.go.javalin.handler;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.nkjmlab.go.javalin.GoAccessManager.AccessRole;
-import org.nkjmlab.go.javalin.GoGetHandler.GoViewHandler;
+import org.nkjmlab.go.javalin.handler.GoGetHandler.GoViewHandler;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService.SigninSession;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
