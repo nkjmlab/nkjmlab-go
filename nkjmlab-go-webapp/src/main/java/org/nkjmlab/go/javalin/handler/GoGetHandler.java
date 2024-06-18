@@ -24,11 +24,15 @@ class GoGetHandler implements Handler {
   private final ViewModelBuilderTemplate template;
 
   public GoGetHandler(
-      Path webRootDirectory, GoTables goTables, GoAuthService authService, GoViewHandler handler) {
+      Path webRootDirectory,
+      GoTables goTables,
+      GoAuthService authService,
+      FirebaseConfig firebaseConfig,
+      GoViewHandler handler) {
     this.handler = handler;
     this.goTables = goTables;
     this.authService = authService;
-    this.template = new ViewModelBuilderTemplate(webRootDirectory);
+    this.template = new ViewModelBuilderTemplate(webRootDirectory, firebaseConfig);
   }
 
   @Override
@@ -42,7 +46,7 @@ class GoGetHandler implements Handler {
 
     private final Map<String, Object> viewModelTemplate;
 
-    public ViewModelBuilderTemplate(Path webRootDir) {
+    public ViewModelBuilderTemplate(Path webRootDir, FirebaseConfig firebaseConfig) {
       Map<String, String> webjars =
           WebJarsUtils.findWebJarsVersionsFromClasspath(
               "jquery",
@@ -59,10 +63,12 @@ class GoGetHandler implements Handler {
               "ua-parser-js",
               "blueimp-load-image",
               "emojionearea");
+
       this.viewModelTemplate =
           ViewModel.builder()
               .setFileModifiedDate(webRootDir, 10, "js", "css")
               .put("webjars", webjars)
+              .put("firebaseConfig", firebaseConfig)
               .build();
     }
 

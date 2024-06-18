@@ -1,10 +1,12 @@
 package org.nkjmlab.go.javalin;
 
+import java.io.File;
 import java.util.Set;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import org.nkjmlab.go.javalin.handler.FirebaseConfig;
 import org.nkjmlab.go.javalin.handler.GoGetHandlers;
 import org.nkjmlab.go.javalin.jsonrpc.AuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
@@ -100,7 +102,13 @@ public class GoApplication {
         new GoJsonRpcService(webSocketManager, goTables),
         new AuthService.Factory(goTables, authService));
 
-    new GoGetHandlers(app, webSocketManager, webAppConfig, goTables, authService)
+    new GoGetHandlers(
+            app,
+            webSocketManager,
+            webAppConfig,
+            getFileFirebaseJson(ResourceUtils.getResourceAsFile("/conf/firebaseConfig.json")),
+            goTables,
+            authService)
         .prepareGetHandlers();
   }
 
@@ -108,7 +116,7 @@ public class GoApplication {
     FirebaseAuthHandler firebaseService =
         BasicFirebaseAuthHandler.create(
             usersTable.readAll().stream().map(u -> u.email()).toList(),
-            ResourceUtils.getResourceAsFile("/conf/firebase.json"));
+            ResourceUtils.getResourceAsFile("/conf/googleOAuth.json"));
     return new GoAuthService(usersTable, firebaseService);
   }
 
@@ -180,5 +188,14 @@ public class GoApplication {
 
   public static JacksonMapper getDefaultJacksonMapper() {
     return JacksonMapper.getIgnoreUnknownPropertiesMapper();
+  }
+
+  private static FirebaseConfig getFileFirebaseJson(File json) {
+    try {
+      return JacksonMapper.getDefaultMapper().toObject(json, FirebaseConfig.class);
+    } catch (Exception e) {
+      log.warn("Try to load h2.json.default");
+      return new FirebaseConfig(null, null, null, null, null, null, null, null);
+    }
   }
 }

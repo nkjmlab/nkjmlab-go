@@ -28,6 +28,7 @@ public class GoGetHandlers {
   private final Javalin app;
   private final WebsocketSessionsManager websocketManager;
   private final WebApplicationFileLocation webAppFileLocation;
+  private final FirebaseConfig firebaseConfig;
   private final GoTables goTables;
   private final GoAuthService authService;
 
@@ -35,11 +36,13 @@ public class GoGetHandlers {
       Javalin app,
       WebsocketSessionsManager websocketManager,
       WebApplicationFileLocation webAppConfig,
+      FirebaseConfig firebaseConfig,
       GoTables goTables,
       GoAuthService authService) {
     this.app = app;
     this.websocketManager = websocketManager;
     this.webAppFileLocation = webAppConfig;
+    this.firebaseConfig = firebaseConfig;
     this.goTables = goTables;
     this.authService = authService;
   }
@@ -90,7 +93,8 @@ public class GoGetHandlers {
   }
 
   Handler createGoHandler(GoViewHandler handler) {
-    return new GoGetHandler(webAppFileLocation.webRootDirectory(), goTables, authService, handler);
+    return new GoGetHandler(
+        webAppFileLocation.webRootDirectory(), goTables, authService, firebaseConfig, handler);
   }
 
   private Handler createPlayHandler() {
