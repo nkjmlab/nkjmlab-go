@@ -280,7 +280,7 @@ function swalConfirm(title, text, icon, callback) {
     html: text ? text : null,
     icon: icon ? icon : null,
     showCancelButton: true
-  }).then((e) => {
+  }).then(e => {
     if (e.dismiss) {
       return;
     }
@@ -302,8 +302,8 @@ function swalAlert(title, text, icon, callback, confirmButtonText) {
     html: text ? text : null,
     icon: icon ? icon : null,
     confirmButtonText: confirmButtonText ? confirmButtonText : "OK"
-  }).then((result) => {
-    if (!callback) {
+  }).then(result => {
+    if (result.isDismissed || !callback) {
       return;
     }
     callback(result);
@@ -321,7 +321,10 @@ function swalInput(title, text, inputValue, inputPlaceholder, callback) {
       autocapitalize: 'off'
     },
     showCancelButton: true,
-  }).then((result) => {
+  }).then(result => {
+    if (result.isDismissed) {
+      return;
+    }
     callback(result.value);
   })
 }
@@ -337,7 +340,10 @@ function swalTextArea(title, text, inputValue, inputPlaceholder, callback) {
       autocapitalize: 'off'
     },
     showCancelButton: true,
-  }).then((result) => {
+  }).then(result => {
+    if (result.isDismissed) {
+      return;
+    }
     callback(result.value);
   })
 }
