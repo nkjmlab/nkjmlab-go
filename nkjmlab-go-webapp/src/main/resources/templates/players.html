@@ -65,9 +65,9 @@
               <th>ユーザID</th>
               <th>ユーザ名</th>
               <th>級位</th>
+              <th>ポイント</th>
               <th>座席</th>
               <th>Login</th>
-              <th>IP Addr.</th>
             </tr>
           </thead>
           <tbody>
@@ -79,9 +79,9 @@
                   th:href="|play.html?game_id=${item.login.userId}|"></a></td>
               <td class="" th:text="${item.user.userName}"></td>
               <td class="" th:text="${item.user.rank}"></td>
+              <td class="" th:text="${item.user.point}"></td>
               <td class="" th:text="${item.login.seatId}"></td>
               <td class="small" th:text="${#temporals.format(item.login.loggedInAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
-              <td class="" th:text="${item.login.remoteAddr}"></td>
             </tr>
           </tbody>
         </table>

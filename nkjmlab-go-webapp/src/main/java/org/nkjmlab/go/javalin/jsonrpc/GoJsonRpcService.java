@@ -16,6 +16,7 @@ import java.util.stream.Stream;
 
 import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
+import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.go.javalin.model.relation.GoTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
@@ -370,16 +371,14 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public int registerRecord(String userId, String opponentUserId, String jadge, String memo) {
-    int rank =
+    GameRecord grec =
         goTables.gameRecordsTable.registerRecordAndGetRank(
             goTables.usersTable, userId, opponentUserId, jadge, memo);
 
-    User u = goTables.usersTable.selectByPrimaryKey(userId);
-    if (u.rank() != rank) {
-      goTables.usersTable.updateByPrimaryKey(RowMap.of("rank", rank), u.userId());
-      return rank;
-    }
-    return -1;
+    User before = goTables.usersTable.selectByPrimaryKey(userId);
+    goTables.usersTable.updateByPrimaryKey(
+        RowMap.of("rank", grec.rank(), "point", grec.point()), before.userId());
+    return before.rank() != grec.rank() ? grec.rank() : -1;
   }
 
   private static final Map<String, List<String>> start =

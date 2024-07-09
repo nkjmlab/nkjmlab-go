@@ -1,13 +1,16 @@
 package org.nkjmlab.go.javalin.model.relation;
 
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
+
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import javax.sql.DataSource;
+
 import org.nkjmlab.go.javalin.GoAccessManager.AccessRole;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
@@ -88,6 +91,7 @@ public class UsersTable extends H2BasicTable<User> {
                     row.role(),
                     "-1",
                     30,
+                    0,
                     LocalDateTime.now()))
         .collect(Collectors.toList());
   }
@@ -144,10 +148,11 @@ public class UsersTable extends H2BasicTable<User> {
       @Index String role,
       String seatId,
       int rank,
+      int point,
       LocalDateTime createdAt) {
 
     public User() {
-      this("", "", "", AccessRole.STUDENT.name(), "", 30, LocalDateTime.MIN);
+      this("", "", "", AccessRole.STUDENT.name(), "", 30, 0, LocalDateTime.MIN);
     }
 
     public boolean isAdmin() {
@@ -172,16 +177,23 @@ public class UsersTable extends H2BasicTable<User> {
       String userName,
       String seatId,
       int rank,
+      int point,
       LocalDateTime createdAt,
       boolean attendance) {
 
     public UserJson(User user, boolean attendance) {
       this(
-          user.userId(), user.userName(), user.seatId(), user.rank(), user.createdAt(), attendance);
+          user.userId(),
+          user.userName(),
+          user.seatId(),
+          user.rank(),
+          user.point(),
+          user.createdAt(),
+          attendance);
     }
 
     public UserJson(String userId) {
-      this(userId, "", "", 30, LocalDateTime.now(), false);
+      this(userId, "", "", 30, 0, LocalDateTime.now(), false);
     }
   }
 }

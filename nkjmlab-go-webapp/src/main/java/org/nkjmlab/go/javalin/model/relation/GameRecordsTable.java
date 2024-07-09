@@ -3,7 +3,9 @@ package org.nkjmlab.go.javalin.model.relation;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
 import javax.sql.DataSource;
+
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
@@ -38,7 +40,7 @@ public class GameRecordsTable extends H2BasicTable<GameRecord> {
             });
   }
 
-  public int registerRecordAndGetRank(
+  public GameRecord registerRecordAndGetRank(
       UsersTable usersTable, String userId, String opponentUserId, String jadge, String memo) {
     GameRecord lastRecords =
         readFirst(
@@ -69,10 +71,11 @@ public class GameRecordsTable extends H2BasicTable<GameRecord> {
       message = rank + "級に昇級 <i class='fas fa-trophy'></i>";
     }
 
-    insert(
+    GameRecord ret =
         new GameRecord(
-            -1, LocalDateTime.now(), userId, opponentUserId, jadge, memo, rank, point, message));
-    return rank;
+            -1, LocalDateTime.now(), userId, opponentUserId, jadge, memo, rank, point, message);
+    insert();
+    return ret;
   }
 
   private static int toScore(String jadge) {

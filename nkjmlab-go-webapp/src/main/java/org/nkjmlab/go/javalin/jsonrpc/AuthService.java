@@ -100,6 +100,7 @@ public class AuthService implements AuthServiceInterface {
             AccessRole.GUEST.name(),
             seatId,
             30,
+            0,
             LocalDateTime.now()));
 
     registerAttendance(userId, seatId);
