@@ -6,7 +6,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.nkjmlab.go.javalin.handler.FirebaseConfig;
+import org.nkjmlab.go.javalin.handler.FirebaseConfigs;
+import org.nkjmlab.go.javalin.handler.FirebaseConfigs.FirebaseConfig;
 import org.nkjmlab.go.javalin.handler.GoGetHandlers;
 import org.nkjmlab.go.javalin.jsonrpc.AuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
@@ -37,6 +38,7 @@ public class GoApplication {
   private final Javalin app;
   private final int port;
   private final boolean useCache = true;
+  private final boolean usePopupSignin = true;
 
   public static void main(String[] args) {
 
@@ -102,13 +104,15 @@ public class GoApplication {
         new GoJsonRpcService(webSocketManager, goTables),
         new AuthService.Factory(goTables, authService));
 
+    FirebaseConfig fbConf =
+        usePopupSignin
+            ? getFileFirebaseJson(ResourceUtils.getResourceAsFile("/conf/firebaseConfigs.json"))
+                .firebaseAppConfig()
+            : getFileFirebaseJson(ResourceUtils.getResourceAsFile("/conf/firebaseConfigs.json"))
+                .firebaseProxyConfig();
+
     new GoGetHandlers(
-            app,
-            webSocketManager,
-            webAppConfig,
-            getFileFirebaseJson(ResourceUtils.getResourceAsFile("/conf/firebaseConfig.json")),
-            goTables,
-            authService)
+            app, webSocketManager, webAppConfig, fbConf, goTables, authService, usePopupSignin)
         .prepareGetHandlers();
   }
 
@@ -190,12 +194,11 @@ public class GoApplication {
     return JacksonMapper.getIgnoreUnknownPropertiesMapper();
   }
 
-  private static FirebaseConfig getFileFirebaseJson(File json) {
+  private static FirebaseConfigs getFileFirebaseJson(File json) {
     try {
-      return JacksonMapper.getDefaultMapper().toObject(json, FirebaseConfig.class);
+      return JacksonMapper.getDefaultMapper().toObject(json, FirebaseConfigs.class);
     } catch (Exception e) {
-      log.warn("Try to load h2.json.default");
-      return new FirebaseConfig(null, null, null, null, null, null, null, null);
+      return null;
     }
   }
 }

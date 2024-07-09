@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import org.nkjmlab.go.javalin.handler.FirebaseConfigs.FirebaseConfig;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
 import org.nkjmlab.go.javalin.model.relation.GoTables;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;

@@ -57,7 +57,7 @@
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
 			<artifactId>jakarta.servlet-api</artifactId>
-			<version>6.0.0</version>
+			<version>6.1.0</version>
 			<scope>provided</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/io.javalin/javalin -->
@@ -224,7 +224,7 @@
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>datatables.net</artifactId>
-			<version>2.0.8</version>
+			<version>2.1.1</version>
 			<exclusions>
 				<exclusion>
 					<groupId>*</groupId>

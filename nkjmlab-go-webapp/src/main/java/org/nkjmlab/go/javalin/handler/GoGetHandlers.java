@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.nkjmlab.go.javalin.GoAccessManager.AccessRole;
+import org.nkjmlab.go.javalin.handler.FirebaseConfigs.FirebaseConfig;
 import org.nkjmlab.go.javalin.handler.GoGetHandler.GoViewHandler;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService;
 import org.nkjmlab.go.javalin.jsonrpc.GoAuthService.SigninSession;
@@ -31,6 +32,7 @@ public class GoGetHandlers {
   private final FirebaseConfig firebaseConfig;
   private final GoTables goTables;
   private final GoAuthService authService;
+  private final boolean usePopupSignin;
 
   public GoGetHandlers(
       Javalin app,
@@ -38,13 +40,15 @@ public class GoGetHandlers {
       WebApplicationFileLocation webAppConfig,
       FirebaseConfig firebaseConfig,
       GoTables goTables,
-      GoAuthService authService) {
+      GoAuthService authService,
+      boolean usePopupSignin) {
     this.app = app;
     this.websocketManager = websocketManager;
     this.webAppFileLocation = webAppConfig;
     this.firebaseConfig = firebaseConfig;
     this.goTables = goTables;
     this.authService = authService;
+    this.usePopupSignin = usePopupSignin;
   }
 
   public void prepareGetHandlers() {
@@ -79,7 +83,9 @@ public class GoGetHandlers {
             ctx ->
                 filePath ->
                     model -> {
-                      model.put("ios", ctx.userAgent().toLowerCase().contains("ios"));
+                      model.put(
+                          "popupSignin",
+                          ctx.userAgent().toLowerCase().contains("ios") || usePopupSignin);
                       ctx.render(filePath, model.build());
                     }));
     app.get(
