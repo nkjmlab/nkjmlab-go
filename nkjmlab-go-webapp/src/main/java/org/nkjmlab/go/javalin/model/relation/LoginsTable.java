@@ -14,31 +14,35 @@ import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
 import org.nkjmlab.sorm4j.util.table_def.annotation.AutoIncrement;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 
-public class LoginsTable extends BasicH2Table<Login> {
-
+public class LoginsTable extends H2BasicTable<Login> {
 
   private static final String USER_ID = "user_id";
-
 
   public LoginsTable(DataSource dataSource) {
     super(Sorm.create(dataSource), Login.class);
   }
 
   private List<Login> readAllLastLoginsOrderByUserId() {
-    return readList(selectStarFrom(getTableName())
-        + where("ID IN (SELECT MAX(ID) FROM LOGINS GROUP BY USER_ID)") + orderBy(USER_ID));
+    return readList(
+        selectStarFrom(getTableName())
+            + where("ID IN (SELECT MAX(ID) FROM LOGINS GROUP BY USER_ID)")
+            + orderBy(USER_ID));
   }
 
   public List<Login> readOrderedActiveStudentLogins(UsersTable usersTable) {
     LocalDate nowDate = LocalDate.now();
     return readAllLastLoginsOrderByUserId().stream()
-        .filter(l -> Optional.ofNullable(usersTable.selectByPrimaryKey(l.userId()))
-            .map(u -> u.isStudent()).orElse(false) && l.loggedInAt().toLocalDate().equals(nowDate))
+        .filter(
+            l ->
+                Optional.ofNullable(usersTable.selectByPrimaryKey(l.userId()))
+                        .map(u -> u.isStudent())
+                        .orElse(false)
+                    && l.loggedInAt().toLocalDate().equals(nowDate))
         .collect(Collectors.toList());
   }
 
@@ -71,26 +75,25 @@ public class LoginsTable extends BasicH2Table<Login> {
     insert(new Login(-1, u.userId(), u.seatId(), u.userName(), LocalDateTime.now(), remoteAddr));
   }
 
-
-
   public Optional<Login> readLastLogin(String userId) {
 
-    return Optional.ofNullable(readFirst(
-        "SELECT * FROM LOGINS WHERE USER_ID=? ORDER BY LOGGED_IN_AT DESC LIMIT 1", userId));
-
+    return Optional.ofNullable(
+        readFirst(
+            "SELECT * FROM LOGINS WHERE USER_ID=? ORDER BY LOGGED_IN_AT DESC LIMIT 1", userId));
   }
 
   public boolean isAttendance(String userId) {
-    return readLastLogin(userId).map(l -> l.loggedInAt().toLocalDate().equals(LocalDate.now()))
+    return readLastLogin(userId)
+        .map(l -> l.loggedInAt().toLocalDate().equals(LocalDate.now()))
         .orElse(false);
   }
 
-
   @OrmRecord
-  public static record Login(@PrimaryKey @AutoIncrement long id, @Index String userId,
-      String seatId, String userName, LocalDateTime loggedInAt, String remoteAddr) {
-
-  }
-
-
+  public static record Login(
+      @PrimaryKey @AutoIncrement long id,
+      @Index String userId,
+      String seatId,
+      String userName,
+      LocalDateTime loggedInAt,
+      String remoteAddr) {}
 }

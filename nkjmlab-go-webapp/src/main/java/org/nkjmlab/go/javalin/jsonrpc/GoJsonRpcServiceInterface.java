@@ -27,7 +27,6 @@ public interface GoJsonRpcServiceInterface {
 
   String getNextQuestion(String currentGameId);
 
-
   boolean sendLog(String logLevel, String location, String msg, String options);
 
   void newGame(String gameId, GameState json);
@@ -40,8 +39,8 @@ public interface GoJsonRpcServiceInterface {
 
   void sendGameState(String gameId, GameState json);
 
-  ProblemJson saveProblem(String gameId, long problemId, String groupId, String name,
-      String message);
+  ProblemJson saveProblem(
+      String gameId, long problemId, String groupId, String name, String message);
 
   void deleteProblem(long problemId);
 
@@ -60,6 +59,4 @@ public interface GoJsonRpcServiceInterface {
   int registerRecord(String userId, String opponentUserId, String jadge, String memo);
 
   String getKomi(String gameId);
-
-
 }

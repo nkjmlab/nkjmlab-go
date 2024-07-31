@@ -1,3 +1,10 @@
 .metadata/
 copy-go-contrib.bat
 /nkjmlab-go-webapp/pom.xml.versionsBackup
+/build/tools
+/build/go-zip-to-contrib.bat
+/build/go-coveralls.bat
+/nkjmlab-go-webapp/src/test/resources/test/conf/firebase.json
+/nkjmlab-go-webapp/src/test/resources/test/conf/h2.json
+/nkjmlab-go-webapp/src/test/resources/test/conf/passwords.csv
+/nkjmlab-go-webapp/src/test/resources/test/conf/users.csv

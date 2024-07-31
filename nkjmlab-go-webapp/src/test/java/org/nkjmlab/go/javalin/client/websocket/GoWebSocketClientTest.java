@@ -1,8 +1,8 @@
 package org.nkjmlab.go.javalin.client.websocket;
 
 import java.net.URI;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
@@ -11,42 +11,42 @@ import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
+import org.junit.jupiter.api.Test;
 
 class GoWebSocketClientTest {
 
-  void test() {
-    String url = "ws://localhost:4567/websocket/play";
-    new GoWebSocketClient(url).start();
+  private static final int num = 64;
+
+  @Test
+  void testLocal() {
+    String url = "ws://localhost:12345/websocket/play";
+    for (int i = 0; i < num; i++) {
+      int stdId = 5519000 + i;
+      new GoWebSocketClient(url).start(stdId);
+    }
   }
 
   public static class GoWebSocketClient {
     private static final org.apache.logging.log4j.Logger log =
         org.apache.logging.log4j.LogManager.getLogger();
-    private static final int num = 64;
 
-    private final String uri;
     private final WebSocketClient client = new WebSocketClient();
-    private final GoWebSocket webSocket = new GoWebSocket();
+    private final String uri;
 
     public GoWebSocketClient(String uri) {
       this.uri = uri;
     }
 
-    public void start() {
+    public void start(int stdId) {
       try {
         client.start();
-
-        for (int i = 0; i < num; i++) {
-          int stdId = 5519000 + i;
-          URI toUri = new URI(uri + "?userId=" + stdId + "&gameId=" + stdId);
-          client.connect(webSocket, toUri, new ClientUpgradeRequest());
-        }
+        URI toUri = new URI(uri + "?userId=" + stdId + "&gameId=" + stdId);
+        client.connect(new GoWebSocket(), toUri, new ClientUpgradeRequest()).get();
 
       } catch (Throwable t) {
         log.error(t, t);
       } finally {
         try {
-          TimeUnit.SECONDS.sleep(20);
           client.stop();
         } catch (Exception e) {
           log.error(e, e);
@@ -55,7 +55,7 @@ class GoWebSocketClientTest {
     }
 
     @WebSocket
-    public class GoWebSocket {
+    public static class GoWebSocket {
 
       private static final org.apache.logging.log4j.Logger log =
           org.apache.logging.log4j.LogManager.getLogger();
@@ -94,6 +94,5 @@ class GoWebSocketClientTest {
         }
       }
     }
-
   }
 }

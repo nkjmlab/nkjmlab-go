@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<head>
+<object th:insert="~{/fragment/head.html::meta-fragment}"
+	th:remove="tag"></object>
+<title>管理画面</title>
+</head>
+<body>
+	<div class="container-fluid">
+		<div class="row mt-2">
+			<div class="col-12">
+				<h5 class="text-white px-2 py-1 bg-primary">
+					<i class="fa-solid fa-screwdriver-wrench"></i> 管理画面
+				</h5>
+			</div>
+		</div>
+		<div class="row mt-2">
+			<div class="col-md-6">
+				<h5 class="px-2 py-1 bg-primary-subtle">Git情報</h5>
+				<div class="mb-3" th:utext="${gitInfo}"></div>
+			</div>
+			<div class="col-md-6">
+				<h5 class="px-2 py-1 bg-primary-subtle">Java情報</h5>
+				<div class="mb-3" th:utext="${javaInfo}"></div>
+			</div>
+		</div>
+	</div>
+</body>
+
+</html>

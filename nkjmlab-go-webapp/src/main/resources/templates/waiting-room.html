@@ -23,7 +23,7 @@
     function refreshPage() {
       const u = new URL(location);
       var path = u.searchParams.get("userId") ? "?userId="
-        + u.searchParams.("userId") : "";
+        + u.searchParams.get("userId") : "";
       $.get("./fragment/waiting-request-table.html" + path, function (data) {
         if ($.fn.DataTable.isDataTable('#tbl-requests')) {
           $("#tbl-requests").DataTable().destroy();

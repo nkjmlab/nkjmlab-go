@@ -1,6 +1,7 @@
 /.settings
 /bin
 /target
+/target-dist
 /student
 .classpath
 .project

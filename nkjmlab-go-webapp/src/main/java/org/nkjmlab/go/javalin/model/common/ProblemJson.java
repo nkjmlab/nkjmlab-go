@@ -7,8 +7,15 @@ import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 
-public record ProblemJson(long problemId, String groupId, String name, int[][] cells,
-    Map<String, Integer> symbols, String message, int ro, Hand[] handHistory,
+public record ProblemJson(
+    long problemId,
+    String groupId,
+    String name,
+    int[][] cells,
+    Map<String, Integer> symbols,
+    String message,
+    int ro,
+    Hand[] handHistory,
     Agehama agehama) {
 
   private static final JacksonMapper mapper = GoApplication.getDefaultJacksonMapper();
@@ -18,17 +25,29 @@ public record ProblemJson(long problemId, String groupId, String name, int[][] c
   }
 
   public Problem toProblem() {
-    return new Problem(problemId, LocalDateTime.now(), groupId, name, mapper.toJson(cells),
-        mapper.toJson(symbols), mapper.toJson(agehama), mapper.toJson(handHistory), message);
+    return new Problem(
+        problemId,
+        LocalDateTime.now(),
+        groupId,
+        name,
+        mapper.toJson(cells),
+        mapper.toJson(symbols),
+        mapper.toJson(agehama),
+        mapper.toJson(handHistory),
+        message);
   }
 
   public static ProblemJson createFrom(Problem problem) {
     int[][] cells = mapper.toObject(problem.cells(), int[][].class);
-    return new ProblemJson(problem.id(), problem.groupId(), problem.name(), cells,
+    return new ProblemJson(
+        problem.id(),
+        problem.groupId(),
+        problem.name(),
+        cells,
         mapper.toObject(problem.symbols(), new TypeReference<Map<String, Integer>>() {}),
-        problem.message(), cells.length, mapper.toObject(problem.handHistory(), Hand[].class),
+        problem.message(),
+        cells.length,
+        mapper.toObject(problem.handHistory(), Hand[].class),
         mapper.toObject(problem.agehama(), Agehama.class));
   }
-
-
 }

@@ -32,19 +32,27 @@ public class GameStatesTables {
 
   private static final Map<String, GameState> statesCache = new ConcurrentHashMap<>();
 
-
   public void saveGameState(GameState json) {
     statesCache.put(json.gameId(), json);
     gameStatesTableInMem.insert(json);
-    fileDbService.execute(Try.createRunnable(() -> gameStatesTableInFile.insert(json),
-        e -> log.error(e.getMessage())));
+    fileDbService.execute(
+        Try.createRunnable(
+            () -> gameStatesTableInFile.insert(json), e -> log.error(e.getMessage())));
   }
 
   public GameState readLatestGameState(String gameId) {
-    return statesCache.computeIfAbsent(gameId,
-        key -> gameStatesTableInMem.getLatestGameStateFromDb(gameId)
-            .orElseGet(() -> createNewGameState(gameId, GameState.DEFAULT_PLAYER_ID,
-                GameState.DEFAULT_PLAYER_ID, GameState.DEFAULT_RO)));
+    return statesCache.computeIfAbsent(
+        gameId,
+        key ->
+            gameStatesTableInMem
+                .getLatestGameStateFromDb(gameId)
+                .orElseGet(
+                    () ->
+                        createNewGameState(
+                            gameId,
+                            GameState.DEFAULT_PLAYER_ID,
+                            GameState.DEFAULT_PLAYER_ID,
+                            GameState.DEFAULT_RO)));
   }
 
   public List<GameState> readLatestBoardsJson(List<String> gids) {
@@ -55,19 +63,23 @@ public class GameStatesTables {
     return readLatestBoardsJson(gameStatesTableInMem.readTodayGameIds());
   }
 
-
   public void deleteLatestGameState(String gameId) {
     gameStatesTableInMem.delete(gameId);
-    statesCache.put(gameId,
-        gameStatesTableInMem.getLatestGameStateFromDb(gameId)
-            .orElseGet(() -> createNewGameState(gameId, GameState.DEFAULT_PLAYER_ID,
-                GameState.DEFAULT_PLAYER_ID, GameState.DEFAULT_RO)));
+    statesCache.put(
+        gameId,
+        gameStatesTableInMem
+            .getLatestGameStateFromDb(gameId)
+            .orElseGet(
+                () ->
+                    createNewGameState(
+                        gameId,
+                        GameState.DEFAULT_PLAYER_ID,
+                        GameState.DEFAULT_PLAYER_ID,
+                        GameState.DEFAULT_RO)));
   }
 
-
-
-  public GameState createNewGameState(String gameId, String blackPlayerId, String whitePlayerId,
-      int ro) {
+  public GameState createNewGameState(
+      String gameId, String blackPlayerId, String whitePlayerId, int ro) {
     String[] players = {blackPlayerId, whitePlayerId};
     if (gameId.split(VS_SEPARATOR).length == 2) {
       players = gameId.split(VS_SEPARATOR);
@@ -77,17 +89,22 @@ public class GameStatesTables {
       Arrays.fill(cells[i], 0);
     }
 
-    return new GameState(-1, LocalDateTime.now(), gameId, players[0], players[1],
-        Hand.createDummyHand(), new Agehama(0, 0), cells, new HashMap<>(), new Hand[0], -1,
+    return new GameState(
+        -1,
+        LocalDateTime.now(),
+        gameId,
+        players[0],
+        players[1],
+        Hand.createDummyHand(),
+        new Agehama(0, 0),
+        cells,
+        new HashMap<>(),
+        new Hand[0],
+        -1,
         new HashMap<>());
   }
-
-
 
   public Set<String> readPastOpponents(String userId) {
     return gameStatesTableInMem.readPastOpponentsUserIds(userId);
   }
-
-
-
 }

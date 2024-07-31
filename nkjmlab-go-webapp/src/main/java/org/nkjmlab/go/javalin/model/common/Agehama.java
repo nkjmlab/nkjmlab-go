@@ -14,5 +14,4 @@ public record Agehama(int black, int white) {
       throw new IllegalArgumentException(stone + " is invalid");
     }
   }
-
 }

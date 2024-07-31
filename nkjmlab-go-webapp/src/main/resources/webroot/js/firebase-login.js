@@ -58,8 +58,11 @@ $(function () {
   });
 });
 
-
 function signin(user) {
+  setTimeout(() => signinAux(user), 500);
+}
+
+function signinAux(user) {
   swalInput('座席番号 <i class="fas fa-chair"></i>', "座席番号を半角数字で入力して下さい．<br>座席番号がない場合は0を入力して下さい．",
     getSeatId() ? getSeatId() : 0, "", function (seatId) {
       if (!seatId || seatId === 'false') {
@@ -93,6 +96,4 @@ function signin(user) {
         console.error(error);
       });
     });
-
-
 }

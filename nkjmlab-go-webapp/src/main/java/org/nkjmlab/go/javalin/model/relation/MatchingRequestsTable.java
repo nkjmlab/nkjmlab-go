@@ -7,35 +7,38 @@ import static org.nkjmlab.sorm4j.util.sql.SelectSql.orderByAsc;
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.select;
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
 import static org.nkjmlab.sorm4j.util.sql.SelectSql.where;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+
 import javax.sql.DataSource;
+
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.result.RowMap;
-import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 
-public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
+public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
-
 
   private static final String USER_ID = "user_id";
   private static final String GAME_ID = "game_id";
   private static final String CREATED_AT = "created_at";
 
+  private final GameStatesTables gameStatesTables;
 
-  public MatchingRequestsTable(DataSource dataSource) {
+  public MatchingRequestsTable(DataSource dataSource, GameStatesTables gameStatesTables) {
     super(Sorm.create(dataSource), MatchingRequest.class);
+    this.gameStatesTables = gameStatesTables;
   }
-
 
   public List<MatchingRequest> readRequests() {
     List<MatchingRequest> result = selectAll().stream().collect(Collectors.toList());
@@ -43,29 +46,38 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
   }
 
   private List<String> readUserIdsOfUnpairedRequestOrdereByCreatedAt() {
-    return getOrm().readList(String.class, select(USER_ID) + from(getTableName())
-        + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
+    return getOrm()
+        .readList(
+            String.class,
+            select(USER_ID)
+                + from(getTableName())
+                + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED)))
+                + orderByAsc(CREATED_AT));
   }
 
   private List<MatchingRequest> readUnpairedRequestsOrderByCreatedAt() {
-    return readList(selectStarFrom(getTableName())
-        + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED))) + orderByAsc(CREATED_AT));
+    return readList(
+        selectStarFrom(getTableName())
+            + where(cond(GAME_ID, "=", literal(MatchingRequest.UNPAIRED)))
+            + orderByAsc(CREATED_AT));
   }
-
 
   /**
    * マッチングをする u1:30級，u2:27級,u3:26級の順でwaitingRoomに入って来たとする．u2とu3がペアになってu1が待って欲しいが，そうならない．
    * なぜならば，最初にu1がtargetとなって検索が始まる.u1と級位差が小さいu2がペアになってu3が待たされるということ．
+   *
+   * @return マッチしたユーザ名
    */
-  public Set<String> createPairOfUsers(GameStatesTables gameStatesTables) {
-
+  public Set<String> createPairOfUsers() {
 
     List<String> reqs = readUserIdsOfUnpairedRequestOrdereByCreatedAt();
 
-    log.trace("[{}] unpaired matching requests in [{}] matching requests", reqs.size(),
+    log.trace(
+        "[{}] unpaired matching requests in [{}] matching requests",
+        reqs.size(),
         getOrm().readFirst(Integer.class, SELECT + COUNT + "(*)" + FROM + getTableName()));
 
-    Set<String> ret = new HashSet<>();
+    Set<String> matchedUsers = new HashSet<>();
     for (String uid : reqs) {
       MatchingRequest target = selectByPrimaryKey(uid);
 
@@ -90,13 +102,11 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
       updateByPrimaryKey(RowMap.of("game_id", gameId), target.userId);
       updateByPrimaryKey(RowMap.of("game_id", gameId), nextOpponent.userId);
 
-      ret.add(target.userId());
-      ret.add(nextOpponent.userId());
+      matchedUsers.add(target.userId());
+      matchedUsers.add(nextOpponent.userId());
     }
-    return ret;
+    return matchedUsers;
   }
-
-
 
   private MatchingRequest selectNextOponent(MatchingRequest target, Set<String> pastOpponents) {
 
@@ -112,19 +122,23 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
     MatchingRequest nextOpponent = unpairedRequestWithoutPastOpponennts.get(0);
 
     for (MatchingRequest r : unpairedRequestWithoutPastOpponennts) {
-      if (Integer.compare(Math.abs(r.rank() - target.rank()),
-          Math.abs(nextOpponent.rank() - target.rank())) < 0) {
+      if (Integer.compare(
+              Math.abs(r.rank() - target.rank()), Math.abs(nextOpponent.rank() - target.rank()))
+          < 0) {
         nextOpponent = r;
       }
     }
     return nextOpponent;
   }
 
-
-
   @OrmRecord
-  public static record MatchingRequest(@PrimaryKey String userId, String seatId, String userName,
-      int rank, @Index String gameId, LocalDateTime createdAt) {
+  public static record MatchingRequest(
+      @PrimaryKey String userId,
+      String seatId,
+      String userName,
+      int rank,
+      @Index String gameId,
+      LocalDateTime createdAt) {
 
     static final String UNPAIRED = "UNPAIRED";
 
@@ -133,17 +147,13 @@ public class MatchingRequestsTable extends BasicH2Table<MatchingRequest> {
     }
 
     public static MatchingRequest createUnpaired(User u) {
-      return new MatchingRequest(u.userId(), u.seatId(), u.userName(), u.rank(), UNPAIRED,
-          LocalDateTime.now());
+      return new MatchingRequest(
+          u.userId(), u.seatId(), u.userName(), u.rank(), UNPAIRED, LocalDateTime.now());
     }
 
     // Thymeleaf templateからよばれるのでpublicのままにする必要がある．
     public boolean isUnpaired() {
       return UNPAIRED.equals(gameId);
     }
-
   }
-
-
-
 }

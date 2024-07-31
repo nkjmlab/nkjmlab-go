@@ -8,11 +8,10 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 
-public class HandUpsTable extends BasicH2Table<HandUp> {
-
+public class HandUpsTable extends H2BasicTable<HandUp> {
 
   private static final String GAME_ID = "game_id";
   private static final String CREATED_AT = "created_at";
@@ -22,14 +21,13 @@ public class HandUpsTable extends BasicH2Table<HandUp> {
     createTableIfNotExists().createIndexesIfNotExists();
   }
 
-
-
   public int readOrder(String gameId) {
     List<HandUp> list = readList(selectStarFrom(getTableName()) + orderBy(CREATED_AT));
 
-    return IntStream.range(0, list.size()).map(i -> list.get(i).gameId().equals(gameId) ? i : -1)
-        .max().orElse(-1);
-
+    return IntStream.range(0, list.size())
+        .map(i -> list.get(i).gameId().equals(gameId) ? i : -1)
+        .max()
+        .orElse(-1);
   }
 
   public String getNextQuestion(String currentGameId) {
@@ -46,11 +44,6 @@ public class HandUpsTable extends BasicH2Table<HandUp> {
     return getOrm().readList(String.class, SELECT + GAME_ID + FROM + getTableName());
   }
 
-
   @OrmRecord
-  public static record HandUp(@PrimaryKey String gameId, LocalDateTime createdAt, String message) {
-
-  }
-
-
+  public static record HandUp(@PrimaryKey String gameId, LocalDateTime createdAt, String message) {}
 }

@@ -18,14 +18,14 @@ import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
+import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
 import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 import org.nkjmlab.util.java.json.JsonMapper;
 import org.threeten.bp.Instant;
 import com.google.firebase.database.annotations.NotNull;
 
-public class ProblemsTable extends BasicH2Table<Problem> {
+public class ProblemsTable extends H2BasicTable<Problem> {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
@@ -41,9 +41,20 @@ public class ProblemsTable extends BasicH2Table<Problem> {
 
   private static final JsonMapper mapper = GoApplication.getDefaultJacksonMapper();
 
-  private static List<String> groupNames = List.of("投票", "第1回", "第2回", "第3回", "第4回", "問題集 Part 1",
-      "問題集 Part 2", "問題集 Part 3", "問題集 Part 4", "問題集 Part 5", "セキ", "模範碁");
-
+  private static List<String> groupNames =
+      List.of(
+          "投票",
+          "第1回",
+          "第2回",
+          "第3回",
+          "第4回",
+          "問題集 Part 1",
+          "問題集 Part 2",
+          "問題集 Part 3",
+          "問題集 Part 4",
+          "問題集 Part 5",
+          "セキ",
+          "模範碁");
 
   private final File problemDir;
 
@@ -54,14 +65,12 @@ public class ProblemsTable extends BasicH2Table<Problem> {
     this.problemDir = problemDir;
   }
 
-
   @Override
   public int merge(Problem p) {
     ProblemJson problemJson = ProblemJson.createFrom(p);
     saveProblemJsonToFile(problemJson);
     return super.merge(p);
   }
-
 
   public void autoBackupProblemJsonToFile(ProblemJson p) {
     File bkupDir = getProblemAutoBackupDir(p.groupId());
@@ -74,7 +83,6 @@ public class ProblemsTable extends BasicH2Table<Problem> {
     File o = new File(problemGroupDir, p.name() + ".json");
     mapper.toJsonAndWrite(p, o, true);
     log.info("Problem {} - {} is saved to {}", p.groupId(), p.name(), o);
-
   }
 
   private File getProblemDir(String groupId) {
@@ -88,18 +96,17 @@ public class ProblemsTable extends BasicH2Table<Problem> {
         new File(new File(problemDir.getAbsolutePath() + File.separator + "auto-bkup"), groupId);
     dir.mkdirs();
     return dir;
-
   }
 
   private List<String> getGroupsOrderByAsc() {
-    return getOrm().readList(String.class,
-        selectDistinct(GROUP_ID) + from(getTableName()) + orderByAsc(GROUP_ID));
+    return getOrm()
+        .readList(
+            String.class, selectDistinct(GROUP_ID) + from(getTableName()) + orderByAsc(GROUP_ID));
   }
 
   private List<Problem> readProblemsByGroupId(String groupId) {
-    return readList(selectStarFrom(getTableName()) + where(GROUP_ID + "=?") + orderByAsc(NAME),
-        groupId);
-
+    return readList(
+        selectStarFrom(getTableName()) + where(GROUP_ID + "=?") + orderByAsc(NAME), groupId);
   }
 
   public void dropAndInsertInitialProblemsToTable() {
@@ -107,61 +114,78 @@ public class ProblemsTable extends BasicH2Table<Problem> {
     deleteAll();
     List<ProblemJson> probs = readProblemJsons(problemDir.toPath());
     log.info("[{}] problems are loaded", probs.size());
-    probs.forEach(j -> {
-      try {
-        insert(j.toProblem());
-      } catch (Exception e) {
-        log.error("[{} - {}] in [{}] has error = {}", j.groupId(), j.name(), problemDir,
-            e.getMessage());
-        log.error(e, e);
-      }
-    });
+    probs.forEach(
+        j -> {
+          try {
+            insert(j.toProblem());
+          } catch (Exception e) {
+            log.error(
+                "[{} - {}] in [{}] has error = {}",
+                j.groupId(),
+                j.name(),
+                problemDir,
+                e.getMessage());
+            log.error(e, e);
+          }
+        });
   }
 
   private static List<File> readProblemJsonFiles(Path pathToProblemJsonDir) {
     List<File> result = new ArrayList<>();
-    getGroupDirectories(pathToProblemJsonDir).forEach(groupDir -> {
-      Arrays.asList(groupDir.listFiles()).forEach(file -> {
-        if (!file.getName().endsWith(".json")) {
-          return;
-        }
-        result.add(file);
-      });
-    });
+    getGroupDirectories(pathToProblemJsonDir)
+        .forEach(
+            groupDir -> {
+              Arrays.asList(groupDir.listFiles())
+                  .forEach(
+                      file -> {
+                        if (!file.getName().endsWith(".json")) {
+                          return;
+                        }
+                        result.add(file);
+                      });
+            });
     return result;
   }
 
   static List<ProblemJson> readProblemJsons(Path pathToProblemJsonDir) {
     List<File> files = readProblemJsonFiles(pathToProblemJsonDir);
     log.debug("detect [{}] problem files in [{}]", files.size(), pathToProblemJsonDir);
-    return files.stream().map(file -> {
-      try {
-        ProblemJson problem =
-            GoApplication.getDefaultJacksonMapper().toObject(file, ProblemJson.class);
-        return problem;
-      } catch (Exception e) {
-        log.error("file {}", file);
-        throw new RuntimeException(e);
-      }
-    }).collect(Collectors.toList());
+    return files.stream()
+        .map(
+            file -> {
+              try {
+                ProblemJson problem =
+                    GoApplication.getDefaultJacksonMapper().toObject(file, ProblemJson.class);
+                return problem;
+              } catch (Exception e) {
+                log.error("file {}", file);
+                throw new RuntimeException(e);
+              }
+            })
+        .collect(Collectors.toList());
   }
 
   private static List<File> getGroupDirectories(Path path) {
     File[] files = path.toFile().listFiles();
     if (files != null) {
-      return Arrays.asList(files).stream().filter(f -> f.isDirectory())
+      return Arrays.asList(files).stream()
+          .filter(f -> f.isDirectory())
           .collect(Collectors.toList());
     }
     return new ArrayList<>();
   }
 
   @OrmRecord
-  public static record Problem(@PrimaryKey long id, LocalDateTime createdAt,
-      @Index @NotNull String groupId, @NotNull String name, @NotNull String cells,
-      @NotNull String symbols, @NotNull String agehama, @NotNull String handHistory,
-      @NotNull String message) {
-  }
-
+  public static record Problem(
+      @PrimaryKey long id,
+      LocalDateTime createdAt,
+      @Index @NotNull String groupId,
+      @NotNull String name,
+      @NotNull String cells,
+      @NotNull String symbols,
+      @NotNull String agehama,
+      @NotNull String handHistory,
+      @NotNull String message) {}
 
   public String getProblemGroupsNode() {
     return problemGroupNodeFactory.getProblemGroupsNode();
@@ -204,20 +228,21 @@ public class ProblemsTable extends BasicH2Table<Problem> {
           }
         }
 
-
-        groupNames.forEach(groupId -> {
-          groupsNode.addProblemGroup(groupId);
-          problemsTable.readProblemsByGroupId(groupId).forEach(problem -> {
-            groupsNode.addProblem(groupId, problem.name(), problem.id());
-          });
-        });
+        groupNames.forEach(
+            groupId -> {
+              groupsNode.addProblemGroup(groupId);
+              problemsTable
+                  .readProblemsByGroupId(groupId)
+                  .forEach(
+                      problem -> {
+                        groupsNode.addProblem(groupId, problem.name(), problem.id());
+                      });
+            });
         this.problemGroupsNodeJson =
             GoApplication.getDefaultJacksonMapper().toJson(groupsNode.getNodes());
         return problemGroupsNodeJson;
       }
     }
-
-
 
     public static class ProblemGroupsNode {
       private List<ProblemGroupNode> nodes = new ArrayList<>();
@@ -280,14 +305,9 @@ public class ProblemsTable extends BasicH2Table<Problem> {
           this.tags.clear();
           this.tags.add(String.valueOf(nodes.size()));
         }
-
-      }
-      public static record ProblemNode(String text, long problemId) {
-
       }
 
+      public static record ProblemNode(String text, long problemId) {}
     }
   }
-
-
 }

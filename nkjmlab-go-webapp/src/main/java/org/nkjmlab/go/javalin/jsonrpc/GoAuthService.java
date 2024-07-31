@@ -5,8 +5,8 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.BasicH2Table;
-import org.nkjmlab.sorm4j.util.h2.datasource.H2LocalDataSourceFactory;
+import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
+import org.nkjmlab.sorm4j.util.h2.datasource.H2DataSourceFactory;
 import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
 import org.nkjmlab.util.firebase.auth.FirebaseAuthHandler;
 import com.google.firebase.auth.FirebaseToken;
@@ -44,7 +44,6 @@ public class GoAuthService {
     return s;
   }
 
-
   private SigninSession signin(SigninSession signinSession) {
     signinSessionsTable.merge(signinSession);
     return signinSession;
@@ -52,33 +51,26 @@ public class GoAuthService {
 
   public void signout(String sessionId) {
     signinSessionsTable.deleteByPrimaryKey(sessionId);
-
   }
 
   public boolean isSignin(String sessionId) {
     return signinSessionsTable.exists(sessionId);
   }
 
-
   public Optional<SigninSession> toSigninSession(String sessionId) {
-    return isSignin(sessionId) ? Optional.of(signinSessionsTable.selectByPrimaryKey(sessionId))
+    return isSignin(sessionId)
+        ? Optional.of(signinSessionsTable.selectByPrimaryKey(sessionId))
         : Optional.empty();
   }
 
   @OrmRecord
-  public record SigninSession(@PrimaryKey String sessionId, String userId) {
+  public record SigninSession(@PrimaryKey String sessionId, String userId) {}
 
-  }
-
-  private static class SigninSessionsTable extends BasicH2Table<SigninSession> {
+  private static class SigninSessionsTable extends H2BasicTable<SigninSession> {
 
     public SigninSessionsTable() {
-      super(Sorm.create(H2LocalDataSourceFactory.createTemporalInMemoryDataSource()),
-          SigninSession.class);
+      super(
+          Sorm.create(H2DataSourceFactory.createTemporalInMemoryDataSource()), SigninSession.class);
     }
-
   }
-
-
-
 }
