@@ -1,11 +1,14 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
 
-<div id="row-message" class="row selectable bg-light" th:fragment="fcontent">
-    <div class="col-12">
+<div id="row-message" class="row selectable" th:fragment="fcontent">
+    <div class="col-12 bg-light">
         <div id="btn-problem-title" class="p-1 font-weight-bold problem-info">
             <span id="div-problem-group"></span> <span id="div-problem-name"></span>
         </div>
         <div id="game-state-message" class="pt-2 problem-info"></div>
+    </div>
+    <div class="col-12">
+        <div id="hand-history-log-latest" class="text-center small"></div>
     </div>
 </div>

@@ -306,7 +306,9 @@ class PlayWebSocket {
 
     }
     $("#hand-history-log").append(area.reverse());
-
+    if (area) {
+      $("#hand-history-log-latest").text($(area[0]).text());
+    }
   }
 }
 
