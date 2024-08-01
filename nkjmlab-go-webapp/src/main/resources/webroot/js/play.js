@@ -124,23 +124,10 @@ $(function () {
   $("#span-current-user-icon").html(createImageTag(getUserId()));
 
   $('#modal-records').on('show.bs.modal', function () {
-    $("#current-komi-wrapper").hide();
     $.get("./fragment/game-record-table.html?userId=" + getUserId(),
       function (data) {
         $("#tbl-game-record-wrapper").html(data);
       });
-  });
-
-  $("#btn-calc-komi").on('click', function (e) {
-    if ($("#current-komi-wrapper").is(':visible')) {
-      $("#current-komi-wrapper").hide();
-    } else {
-      const client = new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
-        "getKomi", [getGameId()], function (data) {
-          $("#current-komi").html(data.result);
-          $("#current-komi-wrapper").show();
-        })).rpc();
-    }
   });
 
   $("#btn-attendance").on('click', function (e) {
@@ -160,9 +147,6 @@ $(function () {
     });
   });
 
-  $("#btn-close-komi").on('click', function (e) {
-    $("#current-komi-wrapper").hide();
-  });
   $("#btn-draw-stone-number").on('click', function (e) {
     setDrawStoneNumber(!isDrawStoneNumber());
     gameBoard.prepareAndRepaint(getCellNum());
@@ -750,9 +734,8 @@ function initView() {
     updatePlayerLabel("black", getBlackPlayerId());
     updatePlayerLabel("white", getWhitePlayerId());
   }
-  if (getGameMode() != PLAY) {
-    $("#btn-calc-komi").hide();
-  }
+  $("#btn-komi").toggle(getGameMode() == PLAY);
+
   $(".input-black-player-id").val(
     getBlackPlayerId() ? getBlackPlayerId() : gameId);
   $(".input-white-player-id").val(
@@ -772,9 +755,13 @@ function initView() {
             + getVisitedGameIds()[i])).html());
   }
   $("#list-game-history").empty();
-  vGames.forEach(function (e) {
-    $("#list-game-history").append(e);
-  });
+  vGames.forEach(e => $("#list-game-history").append(e));
+
+  new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
+    "getKomi", [getGameId()], function (data) {
+      $("#current-komi").html(data.result);
+    })).rpc();
+
 
   clearTimeout(initViewTimer);
 
@@ -792,10 +779,10 @@ function initView() {
       function (data) {
         let target = $("." + selector + "-player-id-label");
         target.html(uid
-          + " ("
-          + (data.result.seatId ? '<i class="fas fa-chair"></i> ' + data.result.seatId + ". " : "")
+          + " "
           + (data.result.userName ? data.result.userName + " " : "") + (data.result.rank ? data.result.rank + "級 " : "")
-          + (data.result.attendance ? '<span class="badge bg-info">出</span>' : '<span class="badge bg-danger">欠</span>') + ")");
+          + (data.result.seatId ? '<i class="fas fa-chair"></i> ' + data.result.seatId + " " : "")
+          + (data.result.attendance ? '<span class="badge bg-info">出</span>' : '<span class="badge bg-danger">欠</span>'));
       })).rpc();
 
   }

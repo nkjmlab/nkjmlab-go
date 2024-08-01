@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<div class="row no-gutters" th:fragment="fcontent">
+    <div class="col-12 col-lg-6 order-7 order-lg-0">
+        <div class="row student teacher">
+            <div class="col-12">
+                <form>
+                    <div class="form-group m-0">
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="input-short-talk-global"
+                                class="form-control input-short-talk-global">
+                            <button id="btn-short-talk-global" class="btn btn-secondary" type="button">
+                                全体 <i class="fas fa-bullhorn"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div id="hand-history-log-global-wrapper"
+                    class="selectable border rounded bg-light mt-1 mb-1 p-1 small">
+                    <ul id="hand-history-log-global" class="p-1"></ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="float-end">
+                    <button id="btn-hand-history-global-expand" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-arrows-alt-v"></i>
+                    </button>
+                    <button id="btn-hand-history-global-compress" class="btn btn-sm btn-secondary"
+                        style="display: none;">
+                        <i class="fas fa-compress-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12 small">
+                <div id="tbl-q-requests-wrapper"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-lg-6 order-0 order-lg-7">
+        <div class="row student teacher">
+            <div class="col-12">
+                <form>
+                    <div class="form-group m-0">
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="input-short-talk" class="form-control input-short-talk">
+                            <button id="btn-short-talk" class="btn btn-secondary" type="button">
+                                <i class="fas fa-paper-plane"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div id="hand-history-log-wrapper" class="selectable border rounded bg-light mt-1 mb-1 p-1 small">
+                    <ul id="hand-history-log" class="p-1"></ul>
+                </div>
+                <div class="float-end">
+                    <button id="btn-hand-history-expand" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-arrows-alt-v"></i>
+                    </button>
+                    <button id="btn-hand-history-compress" class="btn btn-sm btn-secondary" style="display: none;">
+                        <i class="fas fa-compress-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

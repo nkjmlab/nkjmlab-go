@@ -1,0 +1,114 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<div class="modal fade" id="modal-komi" tabindex="-1" role="dialog" th:fragment="fcontent">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">
+          コミ <i class="fas fa-balance-scale-right"></i>
+        </h4>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div id="current-komi" class="row">
+        </div>
+        <hr>
+        <div class="row">
+          <div class="col-md-6">
+            <h6 class="badge bg-primary">コミ (はじめから対局) </h6>
+            <table class="table table-striped table-sm small">
+              <thead>
+                <tr>
+                  <th>級位の差</th>
+                  <th>9路，13路</th>
+                  <th>19路</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>同級</td>
+                  <td>互先 黒6目コミ出し</td>
+                  <td>互先 黒6目半コミ出し</td>
+                </tr>
+                <tr>
+                  <td>1級差</td>
+                  <td>先 黒3目コミ出し</td>
+                  <td>先 コミなし</td>
+                </tr>
+                <tr>
+                  <td>2級差</td>
+                  <td>先 コミなし</td>
+                  <td>2子</td>
+                </tr>
+                <tr>
+                  <td>3級差</td>
+                  <td>先 白3目コミ出し</td>
+                  <td>3子</td>
+                </tr>
+                <tr>
+                  <td>4級差</td>
+                  <td>2子</td>
+                  <td>4子</td>
+                </tr>
+                <tr>
+                  <td>5級差</td>
+                  <td>2子 白3目コミ出し<br>または<br>3子 黒3目コミ出し</td>
+                  <td>5子<br>以下，1級差増えるごとに1子増やす</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-md-6">
+            <h6 class="badge bg-success">コミ (棋譜並べから対局) </h6>
+            <table class="table table-striped table-sm small">
+              <thead>
+                <tr>
+                  <th>級位の差</th>
+                  <th>9路，13路</th>
+                  <th>19路</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>同級</td>
+                  <td>互先 黒6目コミ出し</td>
+                  <td>互先 黒6目半コミ出し</td>
+                </tr>
+                <tr>
+                  <td>1級差</td>
+                  <td>先 黒3目コミ出し</td>
+                  <td>先 コミなし</td>
+                </tr>
+                <tr>
+                  <td>2級差</td>
+                  <td>先 コミなし</td>
+                  <td>先 白6目半コミ出し</td>
+                </tr>
+                <tr>
+                  <td>3級差</td>
+                  <td>先 白3目コミ出し</td>
+                  <td>先 白13目コミ出し</td>
+                </tr>
+                <tr>
+                  <td>4級差</td>
+                  <td>先 白6目コミ出し</td>
+                  <td>先 白19目半コミ出し</td>
+                </tr>
+                <tr>
+                  <td>5級差</td>
+                  <td>先 白9目コミ出し</td>
+                  <td>先 白26目コミ出し<br>以下，1級差増えるごとに白のコミ出しを6目半増やす</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="col-12">
+            <p><b>互先</b>の場合は，ニギリ (またはじゃんけん) で先手を決めること．</p>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+      </div>
+    </div>
+  </div>
+</div>
