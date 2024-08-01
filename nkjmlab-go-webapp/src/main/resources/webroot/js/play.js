@@ -750,7 +750,9 @@ function initView() {
     updatePlayerLabel("black", getBlackPlayerId());
     updatePlayerLabel("white", getWhitePlayerId());
   }
-
+  if (getGameMode() != PLAY) {
+    $("#btn-calc-komi").hide();
+  }
   $(".input-black-player-id").val(
     getBlackPlayerId() ? getBlackPlayerId() : gameId);
   $(".input-white-player-id").val(
