@@ -11,10 +11,7 @@ $(function () {
       }
     },
     signInFlow: SIGN_IN_FLOW,
-    signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID, {
-      provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
-      forceSameDevice: false
-    }],
+    signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
     tosUrl: 'https://www.nakajimalab.is.sci.toho-u.ac.jp/site-policy.html',
     privacyPolicyUrl: 'https://www.nakajimalab.is.sci.toho-u.ac.jp/site-policy.html'
   };
