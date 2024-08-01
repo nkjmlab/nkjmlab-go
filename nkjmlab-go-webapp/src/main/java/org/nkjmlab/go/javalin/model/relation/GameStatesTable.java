@@ -98,7 +98,7 @@ public class GameStatesTable extends H2BasicTable<GameState> {
 
     String st = CsvWrite.builder(outputFile).query(selectSql).build().getSql();
     log.info("{}", st);
-    getOrm().executeUpdate(st);
+    getOrm().executeUpdate("CALL " + st);
 
     List<GameState> dels = readList(selectSql);
     delete(dels.toArray(GameState[]::new));
