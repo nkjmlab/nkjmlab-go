@@ -789,19 +789,11 @@ function initView() {
     new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "getUser", [uid],
       function (data) {
         let target = $("." + selector + "-player-id-label");
-
-        if (isTeacher()) {
-          target.html(uid
-            + " ("
-            + (data.result.seatId ? '<i class="fas fa-chair"></i> ' + data.result.seatId + ". " : "")
-            + (data.result.userName ? data.result.userName + " " : "") + ")");
-        } else {
-          target.html(uid
-            + " ("
-            + (data.result.seatId ? '<i class="fas fa-chair"></i> ' + data.result.seatId + ". " : "")
-            + (data.result.userName ? data.result.userName + " " : "") + (data.result.rank ? data.result.rank + "級 " : "")
-            + (data.result.attendance ? '<span class="badge bg-info">出</span>' : '<span class="badge bg-danger">欠</span>') + ")");
-        }
+        target.html(uid
+          + " ("
+          + (data.result.seatId ? '<i class="fas fa-chair"></i> ' + data.result.seatId + ". " : "")
+          + (data.result.userName ? data.result.userName + " " : "") + (data.result.rank ? data.result.rank + "級 " : "")
+          + (data.result.attendance ? '<span class="badge bg-info">出</span>' : '<span class="badge bg-danger">欠</span>') + ")");
       })).rpc();
 
   }
