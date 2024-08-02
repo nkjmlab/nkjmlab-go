@@ -80,24 +80,41 @@ function refreshWaitingRequestFragment() {
         if (!gameLink) {
           return;
         }
-        swalAlert("次の対局", gameLink.split("=")[1], "info",
-          function (e) {
-            new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
-              "exitWaitingRoom", [getUserId()], function (data) {
-                location.href = gameLink;
-              })).rpc();
-          });
-
+        Swal.fire({
+          title: "対局相手が見つかりました",
+          html: "次の対局は" + gameLink.split("=")[1] + "です",
+          icon: "info",
+        }).then(result =>
+          new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
+            "exitWaitingRoom", [getUserId()], function (data) {
+              location.href = gameLink;
+            })).rpc()
+        );
       });
   }
 }
 
 function refreshQuestionFragment() {
-  if (!isTeacher()) { return; }
   refreshQuestionFragmentAux();
   function refreshQuestionFragmentAux() {
-    $.get("./fragment/question-table-small.html", function (data) {
+    $.get("./fragment/question-table-small.html", data => {
       $("#tbl-q-requests-wrapper").html(data);
+      if (isTeacher()) {
+        return;
+      }
+      $('#tbl-q-requests tr').each(function () {
+        const myId = getUserId();
+        let containsMyId = false;
+        $(this).find('td').each(function () {
+          if ($(this).text().indexOf(myId) !== -1) {
+            containsMyId = true;
+            return false;
+          }
+        });
+        if (!containsMyId) {
+          $(this).hide();
+        }
+      });
     });
   }
 }
@@ -124,23 +141,10 @@ $(function () {
   $("#span-current-user-icon").html(createImageTag(getUserId()));
 
   $('#modal-records').on('show.bs.modal', function () {
-    $("#current-komi-wrapper").hide();
     $.get("./fragment/game-record-table.html?userId=" + getUserId(),
       function (data) {
         $("#tbl-game-record-wrapper").html(data);
       });
-  });
-
-  $("#btn-calc-komi").on('click', function (e) {
-    if ($("#current-komi-wrapper").is(':visible')) {
-      $("#current-komi-wrapper").hide();
-    } else {
-      const client = new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
-        "getKomi", [getGameId()], function (data) {
-          $("#current-komi").html(data.result);
-          $("#current-komi-wrapper").show();
-        })).rpc();
-    }
   });
 
   $("#btn-attendance").on('click', function (e) {
@@ -160,9 +164,6 @@ $(function () {
     });
   });
 
-  $("#btn-close-komi").on('click', function (e) {
-    $("#current-komi-wrapper").hide();
-  });
   $("#btn-draw-stone-number").on('click', function (e) {
     setDrawStoneNumber(!isDrawStoneNumber());
     gameBoard.prepareAndRepaint(getCellNum());
@@ -520,22 +521,36 @@ $(function () {
 });
 
 $(function () {
+
+  function notifyJadge(target, msg) {
+    $(target).on('click',
+      () => swalConfirm('<i class="fas fa-check"></i>', msg, "", (e) => handDownAux(msg)));
+  }
+
+  notifyJadge("#btn-jadge-win-black", "「黒の勝ち」");
+  notifyJadge("#btn-jadge-win-white", "「白の勝ち」");
+  notifyJadge("#btn-jadge-draw", "「引分け」");
+  notifyJadge("#btn-jadge-continue", "「対局を続けて下さい」");
+  notifyJadge("#btn-jadge-finish", "「終局です．整地して数えて下さい」");
+
   $(".btn-hand-down").on(
     'click',
     function () {
-      swalConfirm('<i class="fas fa-check"></i>', "質問を対応済みにします", "",
+      swalConfirm('<i class="fas fa-check"></i>', "質問を完了にします", "",
         function (e) {
           handDown();
         });
     });
-
   function handDown() {
+    handDownAux('「質問は終わりです．ありがとうございました」');
+  }
+  function handDownAux(msg) {
     $("#btn-hand-up").show();
     $(".btn-hand-down").hide();
     new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "handUp", [getGameId(),
       false, ""], function (data) {
-        let html = getUserName() + "： "
-          + '質問を <span class="hanko">済</span> にしました';
+        let html = getUserName() + " " + msg;
+
         sendGameStateWithLastHand(getConnection(), gameState, {
           type: "message",
           stone: isStudent() ? getMyStoneColor() : 0,
@@ -595,27 +610,26 @@ $(function () {
   }
 
   function startQuestion() {
-    swalInput('質問 <i class="far fa-comment ms-2"></i>', "質問内容を記入して下さい", "",
-      "例: 終局しているか教えて下さい．", function (input) {
-        if (!input || input === 'false') { return; }
-        let qt = getUserName() + '： 質問  <i class="far fa-hand-paper"></i>  「'
-          + input + "」";
+    swalInput('質問 <i class="far fa-comment ms-2"></i>', "質問内容を記入して下さい", "終局していますか？", "", function (input) {
+      if (!input || input === 'false') { return; }
+      let qt = getUserName() + ' 「'
+        + input + "」";
 
-        $("#btn-hand-up").hide();
-        $(".btn-hand-down").show();
+      $("#btn-hand-up").hide();
+      $(".btn-hand-down").show();
 
-        setTimeout(function () {
-          handUp(qt);
-        }, 400);
+      setTimeout(function () {
+        handUp(qt);
+      }, 400);
 
-        setTimeout(function () {
-          sendGameStateWithLastHand(getConnection(), gameState, {
-            type: "message",
-            stone: getMyStoneColor(),
-            options: qt
-          }, 300);
-        }, 800);
-      });
+      setTimeout(function () {
+        sendGameStateWithLastHand(getConnection(), gameState, {
+          type: "message",
+          stone: getMyStoneColor(),
+          options: qt
+        }, 300);
+      }, 800);
+    });
   }
 });
 
@@ -629,7 +643,7 @@ $(function () {
       search: false,
       inline: true,
       hideSource: true,
-      placeholder: "この碁盤を見ている人にメッセージを送ります",
+      placeholder: "この碁盤にメッセージを送ります",
       events: {
         emojibtn_click: function (button, event) {
           emojiArea.hidePicker();
@@ -750,6 +764,11 @@ function initView() {
     updatePlayerLabel("black", getBlackPlayerId());
     updatePlayerLabel("white", getWhitePlayerId());
   }
+  if (getGameMode() == PLAY) {
+    $("#btn-komi").show();
+  } else {
+    $("#btn-komi").hide();
+  }
 
   $(".input-black-player-id").val(
     getBlackPlayerId() ? getBlackPlayerId() : gameId);
@@ -770,9 +789,13 @@ function initView() {
             + getVisitedGameIds()[i])).html());
   }
   $("#list-game-history").empty();
-  vGames.forEach(function (e) {
-    $("#list-game-history").append(e);
-  });
+  vGames.forEach(e => $("#list-game-history").append(e));
+
+  new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
+    "getKomi", [getGameId()], function (data) {
+      $("#current-komi").html(data.result);
+    })).rpc();
+
 
   clearTimeout(initViewTimer);
 
@@ -789,19 +812,11 @@ function initView() {
     new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "getUser", [uid],
       function (data) {
         let target = $("." + selector + "-player-id-label");
-
-        if (isTeacher()) {
-          target.html(uid
-            + " ("
-            + (data.result.seatId ? '<i class="fas fa-chair"></i> ' + data.result.seatId + ". " : "")
-            + (data.result.userName ? data.result.userName + " " : "") + ")");
-        } else {
-          target.html(uid
-            + " ("
-            + (data.result.seatId ? '<i class="fas fa-chair"></i> ' + data.result.seatId + ". " : "")
-            + (data.result.userName ? data.result.userName + " " : "") + (data.result.rank ? data.result.rank + "級 " : "")
-            + (data.result.attendance ? '<span class="badge bg-info">出</span>' : '<span class="badge bg-danger">欠</span>') + ")");
-        }
+        target.html(uid
+          + " "
+          + (data.result.userName ? data.result.userName + " " : "") + (data.result.rank ? data.result.rank + "級 " : "")
+          + (data.result.seatId ? '<i class="fas fa-chair"></i> ' + data.result.seatId + " " : "")
+          + (data.result.attendance ? '<span class="badge bg-info">出</span>' : '<span class="badge bg-danger">欠</span>'));
       })).rpc();
 
   }
@@ -869,12 +884,10 @@ function refreshWindow() {
 }
 
 function expandHandGlobalHistory() {
-  $("#hand-history-log-global li").each(function (i, e) {
-    $(e).show();
-  });
+  $("#hand-history-log-global li").each((i, e) => $(e).show());
 }
 function compressHandGlobalHistory() {
-  $("#hand-history-log-global li").each(function (i, e) {
+  $("#hand-history-log-global li").each((i, e) => {
     if (i < $("#game-board").width() / 60) {
       $(e).show();
     } else {

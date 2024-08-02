@@ -385,15 +385,19 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
       Map.of(
           "sm",
           List.of(
-              "互先 黒6目コミ出し", "互先 黒3目コミ出し", "先", "先 白3目コミ出し", "2子", "2子  白3目コミ出し または 3子  黒3目コミ出し"),
+              "互先 黒6目コミ出し",
+              "先 黒3目コミ出し",
+              "先 コミなし",
+              "先 白3目コミ出し",
+              "2子",
+              "2子  白3目コミ出し または 3子  黒3目コミ出し"),
           "lg",
-          List.of(
-              "互先 黒6目コミ出し", "互先 黒3目コミ出し", "先", "先 白3目コミ出し", "2子", "2子  白3目コミ出し または 3子  黒3目コミ出し"));
+          List.of("互先 黒6目半コミ出し", "先 コミなし", "2子", "3子", "4子", "5子 以下，1級差増えるごとに1子増やす"));
 
   private static final Map<String, List<String>> midFlow =
       Map.of(
           "sm",
-          List.of("互先 黒6目コミ出し", "互先 黒3目コミ出し", "先", "先 白3目コミ出し", "先 白6目コミ出し", "先 白9目コミ出し"),
+          List.of("互先 黒6目コミ出し", "互 黒3目コミ出し", "先 コミなし", "先 白3目コミ出し", "先 白6目コミ出し", "先 白9目コミ出し"),
           "lg",
           List.of(
               "互先 黒6目半コミ出し",
@@ -415,23 +419,12 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
       String s1 = start.get(roCol).get(Math.min(diff, 5));
       String s2 = midFlow.get(roCol).get(Math.min(diff, 5));
-      Object[] params = {
-        bp.userId(),
-        bp.userName(),
-        bp.rank(),
-        wp.userId(),
-        wp.userName(),
-        wp.rank(),
-        diff,
-        ro,
-        s1,
-        s2
-      };
+      String diffStr = diff == 0 ? "同級" : diff + "級差";
+      Object[] params = {diffStr, ro, s1, diffStr, ro, s2};
 
       String msg =
           ParameterizedStringFormatter.DEFAULT.format(
-              (String)
-                  "{} ({}，{}級) vs {} ({}，{}級): {}級差，{}路 <br><span class='badge bg-info'>はじめから</span> {}, <span class='badge bg-info'>棋譜並べから</span> {} <br>",
+              "<div class='col-md-6'><span class='badge bg-primary'>コミ (はじめから対局) {} {}路</span> {}</div><div class='col-md-6'><span class='badge bg-success'>コミ (棋譜並べから対局) {} {}路</span> {}</div>",
               params);
       return msg;
     } catch (Exception e) {

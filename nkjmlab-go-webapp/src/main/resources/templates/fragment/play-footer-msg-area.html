@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<div class="row student teacher" th:fragment="fcontent">
+    <div class="col-6">
+        <div class="row g-0">
+            <div class="col-11">
+                <div id="hand-history-log-global-wrapper"
+                    class="selectable border rounded bg-light mt-1 mb-1 p-1 small">
+                    <ul id="hand-history-log-global" class="p-1"></ul>
+                </div>
+            </div>
+            <div class="col-1">
+                <button id="btn-hand-history-global-expand" class="btn btn-sm btn-secondary">
+                    <i class="fas fa-arrows-alt-v"></i>
+                </button>
+                <button id="btn-hand-history-global-compress" class="btn btn-sm btn-secondary" style="display: none;">
+                    <i class="fas fa-compress-alt"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    <div class="col-6">
+        <div class="row student teacher">
+            <div class="col-12">
+                <form>
+                    <div class="form-group m-0">
+                        <div class="input-group input-group-sm">
+                            <input type="text" id="input-short-talk-global"
+                                class="form-control input-short-talk-global">
+                            <button id="btn-short-talk-global" class="btn btn-secondary" type="button">
+                                全体 <i class="fas fa-bullhorn"></i>
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

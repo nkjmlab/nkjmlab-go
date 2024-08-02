@@ -37,7 +37,7 @@ public class GoApplication {
 
   private final Javalin app;
   private final int port;
-  private final boolean useCache = true;
+  private final boolean useCache = false;
   private final boolean usePopupSignin = true;
 
   public static void main(String[] args) {

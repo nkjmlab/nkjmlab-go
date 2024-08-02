@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+
+<th:block th:fragment="fcontent">
+    <div id="row-message" class="row selectable mb-2 small">
+        <div class="col-12 bg-light">
+            <div id="btn-problem-title" class="p-1 font-weight-bold problem-info">
+                <span id="div-problem-group"></span> <span id="div-problem-name"></span>
+            </div>
+            <div id="game-state-message" class="pt-2 problem-info"></div>
+        </div>
+        <div class="col-12">
+            <div id="tbl-q-requests-wrapper"></div>
+        </div>
+    </div>
+    <div class="row g-0 ">
+        <div class="col-8">
+            <div class="row g-0 selectable">
+                <div class="col-11">
+                    <div id="hand-history-log-wrapper" class="selectable border rounded bg-light small">
+                        <ul id="hand-history-log" class="p-1 list-inline"></ul>
+                    </div>
+                </div>
+                <div class="col-1">
+                    <button id="btn-hand-history-expand" class="btn btn-sm btn-secondary">
+                        <i class="fas fa-arrows-alt-v"></i>
+                    </button>
+                    <button id="btn-hand-history-compress" class="btn btn-sm btn-secondary" style="display: none;">
+                        <i class="fas fa-compress-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="col-4">
+            <div class="row selectable student teacher">
+                <div class="col-12">
+                    <form>
+                        <div class="form-group m-0">
+                            <div class="input-group input-group-sm">
+                                <input type="text" id="input-short-talk" class="form-control input-short-talk">
+                                <button id="btn-short-talk" class="btn btn-secondary" type="button">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="col-12 student-only">
+                    <button id="btn-pass" class="btn btn-sm btn-outline-info">
+                        パス
+                    </button>
+                    <button id="btn-give-up" class="btn btn-sm btn-outline-info">
+                        投了
+                    </button>
+                    <button id="btn-hand-up" class="btn btn-sm btn-primary ">
+                        質問 <i class="fas fa-hand-paper"></i>
+                    </button>
+                    <button class="btn-hand-down btn btn-sm btn-success" style="display: none">
+                        質問完了
+                    </button>
+                </div>
+                <div class="col-12 teacher">
+                    <button id="btn-jadge-win-black" class="btn btn-sm btn-outline-secondary">
+                        <span class="hanko">黒勝ち</span>
+                    </button>
+                    <button id="btn-jadge-win-white" class="btn btn-sm btn-outline-secondary">
+                        <span class="hanko">白勝ち</span>
+                    </button>
+                    <button id="btn-jadge-draw" class="btn btn-sm btn-outline-secondary">
+                        <span class="hanko">引分け</span>
+                    </button>
+                </div>
+                <div class="col-12 teacher">
+                    <button id="btn-jadge-continue" class="btn btn-sm btn-outline-secondary">
+                        <span class="hanko">対局を続けて</span>
+                    </button>
+                    <button id="btn-jadge-finish" class="btn btn-sm btn-outline-secondary">
+                        <span class="hanko">整地して数えて</span>
+                    </button>
+                </div>
+                <div class="col-12">
+                    <div id="hand-question-msg" style="display: none">
+                        <span class="badge bg-danger me-2">質問中 <i class="fas fa-hand-paper"></i></span> <span
+                            class="small">
+                            <i class="fas fa-hourglass-half"></i> <span id="order-of-question"></span> 人待ち<br><span
+                                class="text-muted">回答を受けたら<span class="badge bg-success">質問完了</span> を押して下さい．
+                            </span></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+</th:block>

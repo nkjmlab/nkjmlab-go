@@ -68,6 +68,13 @@ class PlayWebSocket {
         $("#order-of-question").text(handUpOrder);
       }
       function _handUp(handUp) {
+        if (isTeacher()) {
+          $("#btn-hand-up").hide();
+          $(".btn-hand-down").hide();
+          $("#hand-question-msg").hide();
+          $("#order-of-question").hide();
+          return;
+        }
         if (handUp.handUp) {
           $("#btn-hand-up").hide();
           $(".btn-hand-down").show();
@@ -269,7 +276,7 @@ class PlayWebSocket {
 
 
 
-    const limit = $("#btn-hand-history-compress").css('display') == 'none' ? Math.max(handHistorySize - 14, 0) : 0;
+    const limit = $("#btn-hand-history-compress").css('display') == 'none' ? Math.max(handHistorySize - 4, 0) : 0;
 
     for (let j = 0; j < handHistorySize; j++) {
       const hand = gameState.handHistory[j];
@@ -288,14 +295,14 @@ class PlayWebSocket {
       const msg = this._getMessage(hand);
 
       if (hand.type == REMOVE_FROM_BOARD || hand.type == AGEHAMA || hand.type == FROM_AGEHAMA) {
-        area.push('<li class="text-left"><span>' + i + ". " + prefix + msg + '</span></li>');
+        area.push('<li class="list-inline-item"><span>' + i + ". " + prefix + msg + '</span></li>');
       } else if (hand.type == HAND_TYPE_PUT_ON_BOARD || hand.type == "onBoard" || hand.type == "pass" || hand.type == "giveUp") {
-        area.push('<li class="text-right"><span>' + i + ". " + prefix + msg + '</span></li>');
+        area.push('<li class="list-inline-item"><span>' + i + ". " + prefix + msg + '</span></li>');
       } else {
         const _msg = msg.replace('\n', '<br>');
         const msg1 = _msg.substring(0, _msg.indexOf("：") + 1);
         const msg2 = _msg.substring(_msg.indexOf("：") + 1);
-        area.push($('<li>').addClass("text-left")
+        area.push($('<li>').addClass("list-inline-item")
           .append(
             $('<span>').html(
               '<i class="far fa-comments"></i> ' + prefix + msg1))
@@ -306,7 +313,6 @@ class PlayWebSocket {
 
     }
     $("#hand-history-log").append(area.reverse());
-
   }
 }
 
