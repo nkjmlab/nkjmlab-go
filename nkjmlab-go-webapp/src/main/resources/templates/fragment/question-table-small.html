@@ -1,20 +1,11 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
-<table id="tbl-q-requests"
-  class="table table-bordered table-striped table-hover table-responsive-sm mt-2">
-  <thead>
-    <tr>
-      <th></th>
-      <th>碁盤ID</th>
-      <th>質問内容</th>
-    </tr>
-  </thead>
+<table id="tbl-q-requests" class="table table-bordered table-striped table-hover table-responsive-sm mt-2">
   <tbody>
     <tr th:each="item : ${games}">
       <td class="text-center h6" th:text="${itemStat.count}"></td>
-      <td class="h5"><a class="badge bg-primary"
-        th:href="|play.html?game_id=${item.gameState.gameId}|"><span
-          th:text="${item.gameState.gameId}"></span> <i class="fas fa-user-friends"></i></a></td>
+      <td class="h5"><a class="badge bg-primary" th:href="|play.html?game_id=${item.gameState.gameId}|"><span
+            th:text="${item.gameState.gameId}"></span> <i class="fas fa-user-friends"></i></a></td>
       <td class="text-start" th:utext="${item.handUp.message}"></td>
     </tr>
   </tbody>

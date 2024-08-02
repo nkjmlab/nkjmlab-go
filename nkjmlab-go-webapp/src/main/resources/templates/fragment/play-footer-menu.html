@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
 <th:block th:fragment="fcontent">
-    <div class="row no-gutters">
+    <div class="row g-0">
         <div class="col-12">
             <div class="btn-group">
                 <button id="btn-go-back" class="btn btn-sm btn-warning">
@@ -16,7 +16,7 @@
                 src="/img/play/c-stone.png">
         </div>
     </div>
-    <div class="row no-gutters">
+    <div class="row g-0">
         <div class="col-12">
             <div class="row student teacher creator mt-2">
                 <div class="col-12">
@@ -33,7 +33,6 @@
                                     </button>
                                     <a class="btn btn-sm btn-secondary dropdown-item" href="play.html?game_id=5588999">
                                         大盤
-                                        <!-- <i class="fas fa-users-class"></i> -->
                                         <i class="fas fa-users"></i>
                                     </a>
                                 </div>
@@ -86,21 +85,7 @@
                                     </button>
                                 </div>
                             </div>
-                            <button id="btn-pass" class="btn btn-sm btn-secondary">
-                                パス <i class="fas fa-hand-point-right"></i>
-                            </button>
-                            <button id="btn-give-up" class="btn btn-sm btn-secondary">
-                                投了
-                                <!--  <i class="fas fa-do-not-enter"></i> -->
-                                <i class="fas fa-exclamation-triangle"></i>
-                            </button>
                         </div>
-                        <button id="btn-hand-up" class="btn btn-sm btn-primary">
-                            質問 <i class="fas fa-hand-paper"></i>
-                        </button>
-                        <button class="btn-hand-down btn btn-sm btn-outline-secondary" style="display: none">
-                            <span class="hanko">済</span>
-                        </button>
                         <div class="btn-group ms-auto">
                             <button id="link-top-collapse-menu" data-bs-toggle="collapse"
                                 data-bs-target="#hidden-card-body" class="btn btn-sm btn-secondary">
@@ -121,13 +106,12 @@
                                     </button>
                                     <button class="btn btn-sm btn-secondary link-open-practice-board">
                                         碁盤指定
-                                        <!-- <i class="fas fa-users-class"></i> -->
                                         <i class="fas fa-users"></i>
                                     </button>
                                     <a id="link-reset-localdata" href="#" class="btn btn-sm btn-secondary"><span
                                             class="d-none d-sm-inline">ユーザ初期化</span> <i class="fas fa-trash"></i> </a>
                                 </div>
-                                <div id="list-game-history" class="small selectable p-1"></div>
+                                <div>対局履歴 <span id="list-game-history" class="small selectable p-1"></span></div>
                             </div>
                         </div>
                         <div class="row">
@@ -150,19 +134,10 @@
                     </div>
                 </div>
             </div>
-            <div class="row student teacher mt-1 mb-1">
+            <div class="row">
                 <div class="col-12">
                     <div class="ps-2 me-2 float-start">
                         <div id="tbl-waiting-requests-wrapper"></div>
-                    </div>
-                    <div id="hand-question-msg" style="display: none">
-                        <div class="float-end">
-                            <span class="badge bg-danger me-2">質問中 <i class="fas fa-hand-paper"></i></span> <span
-                                class="small">
-                                <i class="fas fa-hourglass-half"></i> <span id="order-of-question"></span> 人待ちです. <span
-                                    class="text-muted">質問終了後は <span class="hanko">済</span> を押して下さい．
-                                </span></span>
-                        </div>
                     </div>
                 </div>
             </div>

@@ -176,7 +176,7 @@ body.unselectable {
   border-radius: 0.8em;
   margin: 0.1em 0.3em;
   display: inline-block;
-  max-width: calc(100% - 100px);
+  /*max-width: calc(100% - 100px);*/
   vertical-align: top;
 }
 
@@ -292,13 +292,4 @@ body.unselectable {
   line-height: 1;
   color: #f40;
   font-weight: 600
-}
-
-@media ( max-width : 767.98px) {
-  .problem-info {
-    font-size: 80%;
-  }
-  #card-player-info {
-    font-size: 80%;
-  }
 }
