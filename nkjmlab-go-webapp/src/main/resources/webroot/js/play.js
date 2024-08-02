@@ -95,11 +95,26 @@ function refreshWaitingRequestFragment() {
 }
 
 function refreshQuestionFragment() {
-  if (!isTeacher()) { return; }
   refreshQuestionFragmentAux();
   function refreshQuestionFragmentAux() {
-    $.get("./fragment/question-table-small.html", function (data) {
+    $.get("./fragment/question-table-small.html", data => {
       $("#tbl-q-requests-wrapper").html(data);
+      if (isTeacher()) {
+        return;
+      }
+      $('#tbl-q-requests tr').each(function () {
+        const myId = getUserId();
+        let containsMyId = false;
+        $(this).find('td').each(function () {
+          if ($(this).text().indexOf(myId) !== -1) {
+            containsMyId = true;
+            return false;
+          }
+        });
+        if (!containsMyId) {
+          $(this).hide();
+        }
+      });
     });
   }
 }
@@ -506,6 +521,18 @@ $(function () {
 });
 
 $(function () {
+
+  function notifyJadge(target, msg) {
+    $(target).on('click',
+      () => swalConfirm('<i class="fas fa-check"></i>', msg, "", (e) => handDownAux(msg)));
+  }
+
+  notifyJadge("#btn-jadge-win-black", "「黒の勝ち」");
+  notifyJadge("#btn-jadge-win-white", "「白の勝ち」");
+  notifyJadge("#btn-jadge-draw", "「引分け」");
+  notifyJadge("#btn-jadge-continue", "「対局を続けて下さい」");
+  notifyJadge("#btn-jadge-finish", "「終局です．整地して数えて下さい」");
+
   $(".btn-hand-down").on(
     'click',
     function () {
@@ -514,14 +541,16 @@ $(function () {
           handDown();
         });
     });
-
   function handDown() {
+    handDownAux('「質問は終わりです．ありがとうございました」');
+  }
+  function handDownAux(msg) {
     $("#btn-hand-up").show();
     $(".btn-hand-down").hide();
     new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "handUp", [getGameId(),
       false, ""], function (data) {
-        let html = getUserName() + "： "
-          + '質問を <span class="hanko">質問完了</span> にしました';
+        let html = getUserName() + " " + msg;
+
         sendGameStateWithLastHand(getConnection(), gameState, {
           type: "message",
           stone: isStudent() ? getMyStoneColor() : 0,
@@ -583,7 +612,7 @@ $(function () {
   function startQuestion() {
     swalInput('質問 <i class="far fa-comment ms-2"></i>', "質問内容を記入して下さい", "終局していますか？", "", function (input) {
       if (!input || input === 'false') { return; }
-      let qt = getUserName() + '： 質問  <i class="far fa-hand-paper"></i>  「'
+      let qt = getUserName() + ' 「'
         + input + "」";
 
       $("#btn-hand-up").hide();

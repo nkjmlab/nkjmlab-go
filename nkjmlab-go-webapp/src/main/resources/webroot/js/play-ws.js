@@ -68,6 +68,13 @@ class PlayWebSocket {
         $("#order-of-question").text(handUpOrder);
       }
       function _handUp(handUp) {
+        if (isTeacher()) {
+          $("#btn-hand-up").hide();
+          $(".btn-hand-down").hide();
+          $("#hand-question-msg").hide();
+          $("#order-of-question").hide();
+          return;
+        }
         if (handUp.handUp) {
           $("#btn-hand-up").hide();
           $(".btn-hand-down").show();
