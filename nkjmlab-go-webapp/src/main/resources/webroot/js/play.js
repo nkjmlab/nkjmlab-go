@@ -80,14 +80,16 @@ function refreshWaitingRequestFragment() {
         if (!gameLink) {
           return;
         }
-        swalAlert("次の対局", gameLink.split("=")[1], "info",
-          function (e) {
-            new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
-              "exitWaitingRoom", [getUserId()], function (data) {
-                location.href = gameLink;
-              })).rpc();
-          });
-
+        Swal.fire({
+          title: "対局相手が見つかりました",
+          html: "次の対局は" + gameLink.split("=")[1] + "です",
+          icon: "info",
+        }).then(result =>
+          new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
+            "exitWaitingRoom", [getUserId()], function (data) {
+              location.href = gameLink;
+            })).rpc()
+        );
       });
   }
 }
@@ -507,7 +509,7 @@ $(function () {
   $(".btn-hand-down").on(
     'click',
     function () {
-      swalConfirm('<i class="fas fa-check"></i>', "質問を対応済みにします", "",
+      swalConfirm('<i class="fas fa-check"></i>', "質問を完了にします", "",
         function (e) {
           handDown();
         });
@@ -519,7 +521,7 @@ $(function () {
     new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(), "handUp", [getGameId(),
       false, ""], function (data) {
         let html = getUserName() + "： "
-          + '質問を <span class="hanko">済</span> にしました';
+          + '質問を <span class="hanko">質問完了</span> にしました';
         sendGameStateWithLastHand(getConnection(), gameState, {
           type: "message",
           stone: isStudent() ? getMyStoneColor() : 0,
@@ -579,27 +581,26 @@ $(function () {
   }
 
   function startQuestion() {
-    swalInput('質問 <i class="far fa-comment ms-2"></i>', "質問内容を記入して下さい", "",
-      "例: 終局しているか教えて下さい．", function (input) {
-        if (!input || input === 'false') { return; }
-        let qt = getUserName() + '： 質問  <i class="far fa-hand-paper"></i>  「'
-          + input + "」";
+    swalInput('質問 <i class="far fa-comment ms-2"></i>', "質問内容を記入して下さい", "終局していますか？", "", function (input) {
+      if (!input || input === 'false') { return; }
+      let qt = getUserName() + '： 質問  <i class="far fa-hand-paper"></i>  「'
+        + input + "」";
 
-        $("#btn-hand-up").hide();
-        $(".btn-hand-down").show();
+      $("#btn-hand-up").hide();
+      $(".btn-hand-down").show();
 
-        setTimeout(function () {
-          handUp(qt);
-        }, 400);
+      setTimeout(function () {
+        handUp(qt);
+      }, 400);
 
-        setTimeout(function () {
-          sendGameStateWithLastHand(getConnection(), gameState, {
-            type: "message",
-            stone: getMyStoneColor(),
-            options: qt
-          }, 300);
-        }, 800);
-      });
+      setTimeout(function () {
+        sendGameStateWithLastHand(getConnection(), gameState, {
+          type: "message",
+          stone: getMyStoneColor(),
+          options: qt
+        }, 300);
+      }, 800);
+    });
   }
 });
 
@@ -613,7 +614,7 @@ $(function () {
       search: false,
       inline: true,
       hideSource: true,
-      placeholder: "この碁盤を見ている人にメッセージを送ります",
+      placeholder: "この碁盤にメッセージを送ります",
       events: {
         emojibtn_click: function (button, event) {
           emojiArea.hidePicker();
@@ -734,7 +735,11 @@ function initView() {
     updatePlayerLabel("black", getBlackPlayerId());
     updatePlayerLabel("white", getWhitePlayerId());
   }
-  $("#btn-komi").toggle(getGameMode() == PLAY);
+  if (getGameMode() == PLAY) {
+    $("#btn-komi").show();
+  } else {
+    $("#btn-komi").hide();
+  }
 
   $(".input-black-player-id").val(
     getBlackPlayerId() ? getBlackPlayerId() : gameId);
@@ -850,12 +855,10 @@ function refreshWindow() {
 }
 
 function expandHandGlobalHistory() {
-  $("#hand-history-log-global li").each(function (i, e) {
-    $(e).show();
-  });
+  $("#hand-history-log-global li").each((i, e) => $(e).show());
 }
 function compressHandGlobalHistory() {
-  $("#hand-history-log-global li").each(function (i, e) {
+  $("#hand-history-log-global li").each((i, e) => {
     if (i < $("#game-board").width() / 60) {
       $(e).show();
     } else {
