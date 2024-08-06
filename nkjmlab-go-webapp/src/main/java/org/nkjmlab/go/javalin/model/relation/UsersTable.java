@@ -18,6 +18,7 @@ import org.nkjmlab.sorm4j.Sorm;
 import org.nkjmlab.sorm4j.annotation.OrmRecord;
 import org.nkjmlab.sorm4j.annotation.OrmTable;
 import org.nkjmlab.sorm4j.common.Tuple.Tuple2;
+import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.sorm4j.sql.OrderedParameterSqlParser;
 import org.nkjmlab.sorm4j.sql.ParameterizedSql;
 import org.nkjmlab.sorm4j.sql.ParameterizedSqlParser;
@@ -68,17 +69,29 @@ public class UsersTable extends H2BasicTable<User> {
     return readOne(selectStarFrom(getTableName()) + WHERE + EMAIL + "=?", email);
   }
 
-  public void readFromFileAndMerge(File usersCsvFile) {
-    H2BasicTable<UserCsv> table = new H2BasicTable<>(getOrm(), UserCsv.class);
-    List<UserCsv> csvRows =
-        table.readList(
-            "select * from " + CsvRead.builderForCsvWithHeader(usersCsvFile).build().getSql());
+  public void readFileAndInsertIfNotExists(File usersCsvFile) {
+    List<UserCsv> csvRows = readInitialUsersCsv(usersCsvFile);
 
-    transformToUser(csvRows).forEach(user -> insert(user));
+    transformToUser(csvRows.stream().filter(user -> !exists(user.userId())).toList()).stream()
+        .forEach(user -> insert(user));
+  }
+
+  private List<UserCsv> readInitialUsersCsv(File usersCsvFile) {
+    return new H2BasicTable<>(getOrm(), UserCsv.class)
+            .readList(
+                "select * from " + CsvRead.builderForCsvWithHeader(usersCsvFile).build().getSql())
+            .stream()
+            .toList();
   }
 
   @OrmRecord
-  public static record UserCsv(String userId, String email, String username, String role) {}
+  public static record UserCsv(
+      String userId,
+      String email,
+      String username,
+      String role,
+      int initialRank,
+      int initialPoint) {}
 
   private List<User> transformToUser(List<UserCsv> users) {
     return users.stream()
@@ -90,8 +103,8 @@ public class UsersTable extends H2BasicTable<User> {
                     row.username(),
                     row.role(),
                     "-1",
-                    30,
-                    0,
+                    row.initialRank(),
+                    row.initialPoint(),
                     LocalDateTime.now()))
         .collect(Collectors.toList());
   }
@@ -151,8 +164,8 @@ public class UsersTable extends H2BasicTable<User> {
       int point,
       LocalDateTime createdAt) {
 
-    public User() {
-      this("", "", "", AccessRole.STUDENT.name(), "", 30, 0, LocalDateTime.MIN);
+    public static User createBlankUser() {
+      return new User("", "", "", AccessRole.STUDENT.name(), "", -1, 0, LocalDateTime.MIN);
     }
 
     public boolean isAdmin() {
@@ -192,8 +205,12 @@ public class UsersTable extends H2BasicTable<User> {
           attendance);
     }
 
-    public UserJson(String userId) {
-      this(userId, "", "", 30, 0, LocalDateTime.now(), false);
+    public static UserJson createNotFound(String userId) {
+      return new UserJson(userId, "", "", -1, 0, LocalDateTime.now(), false);
     }
+  }
+
+  void updateRankAndPoint(String userId, int currentRank, int currentPoint) {
+    updateByPrimaryKey(RowMap.of("rank", currentRank, "point", currentPoint), userId);
   }
 }

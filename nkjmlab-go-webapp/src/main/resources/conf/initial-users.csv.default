@@ -1,0 +1,6 @@
+﻿user_id,email,username,role,initial_rank,initial_point
+5500900,example0@example.com,管理者1,ADMIN,1,0
+5500911,example1@example.com,TA1,TA,30,0
+5500920,example2@example.com,学生0,STUDENT,30,0
+5500921,example3@example.com,学生1,STUDENT,30,0
+5500922,example4@example.com,学生2,STUDENT,30,0

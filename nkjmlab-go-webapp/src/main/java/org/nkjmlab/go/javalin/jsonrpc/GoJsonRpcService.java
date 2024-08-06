@@ -16,7 +16,6 @@ import java.util.stream.Stream;
 
 import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
-import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.go.javalin.model.relation.GoTables;
 import org.nkjmlab.go.javalin.model.relation.HandUpsTable.HandUp;
@@ -28,7 +27,6 @@ import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
 import org.nkjmlab.sorm4j.internal.util.Try;
-import org.nkjmlab.sorm4j.result.RowMap;
 import org.nkjmlab.util.java.json.JsonMapper;
 import org.nkjmlab.util.java.lang.ParameterizedStringFormatter;
 import org.nkjmlab.util.java.util.Base64Utils;
@@ -180,7 +178,7 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   public UserJson getUser(String userId) {
     User u = goTables.usersTable.selectByPrimaryKey(userId);
     if (u == null) {
-      UserJson uj = new UserJson(userId);
+      UserJson uj = UserJson.createNotFound(userId);
       return uj;
     }
     UserJson uj = new UserJson(u, goTables.loginsTable.isAttendance(userId));
@@ -371,14 +369,13 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
 
   @Override
   public int registerRecord(String userId, String opponentUserId, String jadge, String memo) {
-    GameRecord grec =
-        goTables.gameRecordsTable.registerRecordAndGetRank(
-            goTables.usersTable, userId, opponentUserId, jadge, memo);
+    User user = goTables.usersTable.selectByPrimaryKey(userId);
 
-    User before = goTables.usersTable.selectByPrimaryKey(userId);
-    goTables.usersTable.updateByPrimaryKey(
-        RowMap.of("rank", grec.rank(), "point", grec.point()), before.userId());
-    return before.rank() != grec.rank() ? grec.rank() : -1;
+    goTables.gameRecordsTable.registerGameResultAndUpdateUserRankAndPoint(
+        goTables.usersTable, user, opponentUserId, jadge, memo);
+
+    User next = goTables.usersTable.selectByPrimaryKey(userId);
+    return next.rank() != user.rank() ? next.rank() : -1;
   }
 
   private static final Map<String, List<String>> start =

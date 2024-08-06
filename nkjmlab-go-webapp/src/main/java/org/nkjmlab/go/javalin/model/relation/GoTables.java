@@ -134,14 +134,12 @@ public class GoTables {
   private static PasswordsTable preparePasswordsTable(DataSource dataSource) {
     PasswordsTable passwordsTable = new PasswordsTable(dataSource);
     passwordsTable.createTableIfNotExists().createIndexesIfNotExists();
-    try {
-      File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv");
-      passwordsTable.readFromFileAndMerge(f);
-    } catch (Exception e) {
+    File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv");
+    if (f == null) {
       log.warn("load password.csv.default ...");
-      File f = ResourceUtils.getResourceAsFile("/conf/passwords.csv.default");
-      passwordsTable.readFromFileAndMerge(f);
+      f = ResourceUtils.getResourceAsFile("/conf/passwords.csv.default");
     }
+    passwordsTable.readFromFileAndMerge(f);
     return passwordsTable;
   }
 
@@ -159,15 +157,11 @@ public class GoTables {
     UsersTable usersTable = new UsersTable(dataSource);
     usersTable.dropTableIfExists();
     usersTable.createTableIfNotExists().createIndexesIfNotExists();
-    try {
-      File f = ResourceUtils.getResourceAsFile("/conf/initial-users.csv");
-      usersTable.readFileAndInsertIfNotExists(f);
-    } catch (Exception e) {
-      log.error(e, e);
-      log.warn("load initial-users.csv.default ...");
-      File f = ResourceUtils.getResourceAsFile("/conf/initial-users.csv.default");
-      usersTable.readFileAndInsertIfNotExists(f);
+    File f = ResourceUtils.getResourceAsFile("/conf/initial-users.csv");
+    if (f == null) {
+      f = ResourceUtils.getResourceAsFile("/conf/initial-users.csv.default");
     }
+    usersTable.readFileAndInsertIfNotExists(f);
     return usersTable;
   }
 
