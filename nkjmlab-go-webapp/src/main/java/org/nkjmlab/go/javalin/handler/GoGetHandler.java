@@ -59,6 +59,8 @@ class GoGetHandler implements Handler {
               "stacktrace-js",
               "datatables.net",
               "datatables.net-bs5",
+              "datatables.net-buttons",
+              "datatables.net-buttons-bs5",
               "firebase",
               "firebaseui",
               "ua-parser-js",

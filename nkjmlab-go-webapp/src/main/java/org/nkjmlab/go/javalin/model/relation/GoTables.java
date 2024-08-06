@@ -95,7 +95,6 @@ public class GoTables {
         new File(
             new File(SystemFileUtils.getUserHomeDirectory(), "go-bkup/"),
             "game-record" + System.currentTimeMillis() + ".csv"));
-    gameRecordsTable.recalculateAndUpdateRank(usersTable);
     return gameRecordsTable;
   }
 
@@ -114,7 +113,9 @@ public class GoTables {
   }
 
   private static GameStatesTables prepareGameStateTables(
-      GoDataSourceManager basicDataSource, DataSource fileDbDataSource, DataSource memDbDataSource) {
+      GoDataSourceManager basicDataSource,
+      DataSource fileDbDataSource,
+      DataSource memDbDataSource) {
     final int TRIM_THRESHOLD_OF_GAME_STATE_TABLE = 30000;
 
     GameStatesTable gameStatesTable = new GameStatesTable(fileDbDataSource);
@@ -159,13 +160,13 @@ public class GoTables {
     usersTable.dropTableIfExists();
     usersTable.createTableIfNotExists().createIndexesIfNotExists();
     try {
-      File f = ResourceUtils.getResourceAsFile("/conf/users.csv");
-      usersTable.readFromFileAndMerge(f);
+      File f = ResourceUtils.getResourceAsFile("/conf/initial-users.csv");
+      usersTable.readFileAndInsertIfNotExists(f);
     } catch (Exception e) {
       log.error(e, e);
-      log.warn("load users.csv.default ...");
-      File f = ResourceUtils.getResourceAsFile("/conf/users.csv.default");
-      usersTable.readFromFileAndMerge(f);
+      log.warn("load initial-users.csv.default ...");
+      File f = ResourceUtils.getResourceAsFile("/conf/initial-users.csv.default");
+      usersTable.readFileAndInsertIfNotExists(f);
     }
     return usersTable;
   }

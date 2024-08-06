@@ -5,14 +5,14 @@
   <object th:insert="~{/fragment/head.html::meta-fragment}" th:remove="tag"></object>
   <script>
     $(function () {
-      var o = [1, "asc"];
+      const o = [1, "asc"];
       $("#tbl-players").DataTable({
         dom: 'Blfrtip',
-        buttons: ['copy', 'csv', 'excel', 'print'],
-        "lengthChange": false,
-        "searching": false,
-        "pageLength": 1000,
-        "order": [o]
+        buttons: ['copy', 'csv', 'print'],
+        lengthChange: false,
+        searching: false,
+        pageLength: 1000,
+        order: [o]
       });
 
       if (new URL(location).pathname.split('/').pop() == "players.html") {
