@@ -1,14 +1,15 @@
 package org.nkjmlab.go.javalin.jsonrpc;
 
 import java.util.Optional;
+
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
-import org.nkjmlab.sorm4j.util.h2.datasource.H2DataSourceFactory;
-import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
+import org.nkjmlab.sorm4j.extension.h2.datasource.H2DataSourceFactory;
+import org.nkjmlab.sorm4j.extension.h2.orm.table.definition.H2DefinedTableBase;
+import org.nkjmlab.sorm4j.table.definition.annotation.PrimaryKey;
 import org.nkjmlab.util.firebase.auth.FirebaseAuthHandler;
+
 import com.google.firebase.auth.FirebaseToken;
 
 public class GoAuthService {
@@ -63,10 +64,9 @@ public class GoAuthService {
         : Optional.empty();
   }
 
-  @OrmRecord
   public record SigninSession(@PrimaryKey String sessionId, String userId) {}
 
-  private static class SigninSessionsTable extends H2BasicTable<SigninSession> {
+  private static class SigninSessionsTable extends H2DefinedTableBase<SigninSession> {
 
     public SigninSessionsTable() {
       super(

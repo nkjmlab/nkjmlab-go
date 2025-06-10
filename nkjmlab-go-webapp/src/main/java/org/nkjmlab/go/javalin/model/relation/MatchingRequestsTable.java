@@ -1,13 +1,5 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.cond;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.from;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.literal;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.orderByAsc;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.select;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.where;
-
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
@@ -19,13 +11,15 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.result.RowMap;
-import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
-import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
-import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
+import org.nkjmlab.sorm4j.common.container.RowMap;
+import org.nkjmlab.sorm4j.extension.h2.orm.table.definition.H2DefinedTableBase;
+import org.nkjmlab.sorm4j.sql.statement.SqlKeyword;
+import org.nkjmlab.sorm4j.sql.statement.SqlTrait;
+import org.nkjmlab.sorm4j.table.definition.annotation.Index;
+import org.nkjmlab.sorm4j.table.definition.annotation.PrimaryKey;
 
-public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
+public class MatchingRequestsTable extends H2DefinedTableBase<MatchingRequest>
+    implements SqlTrait, SqlKeyword {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
@@ -131,7 +125,6 @@ public class MatchingRequestsTable extends H2BasicTable<MatchingRequest> {
     return nextOpponent;
   }
 
-  @OrmRecord
   public static record MatchingRequest(
       @PrimaryKey String userId,
       String seatId,

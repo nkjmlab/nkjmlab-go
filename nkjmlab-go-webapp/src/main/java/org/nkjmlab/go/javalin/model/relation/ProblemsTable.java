@@ -1,10 +1,5 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.from;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.orderByAsc;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectDistinct;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.where;
 import java.io.File;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
@@ -12,20 +7,23 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
 import javax.sql.DataSource;
+
 import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
-import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
-import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
+import org.nkjmlab.sorm4j.extension.h2.orm.table.definition.H2DefinedTableBase;
+import org.nkjmlab.sorm4j.sql.statement.SelectSql;
+import org.nkjmlab.sorm4j.table.definition.annotation.Index;
+import org.nkjmlab.sorm4j.table.definition.annotation.PrimaryKey;
 import org.nkjmlab.util.java.json.JsonMapper;
 import org.threeten.bp.Instant;
+
 import com.google.firebase.database.annotations.NotNull;
 
-public class ProblemsTable extends H2BasicTable<Problem> {
+public class ProblemsTable extends H2DefinedTableBase<Problem> {
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
@@ -101,12 +99,18 @@ public class ProblemsTable extends H2BasicTable<Problem> {
   private List<String> getGroupsOrderByAsc() {
     return getOrm()
         .readList(
-            String.class, selectDistinct(GROUP_ID) + from(getTableName()) + orderByAsc(GROUP_ID));
+            String.class,
+            SelectSql.selectDistinct(GROUP_ID)
+                + SelectSql.from(getTableName())
+                + SelectSql.orderByAsc(GROUP_ID));
   }
 
   private List<Problem> readProblemsByGroupId(String groupId) {
     return readList(
-        selectStarFrom(getTableName()) + where(GROUP_ID + "=?") + orderByAsc(NAME), groupId);
+        SelectSql.selectStarFrom(getTableName())
+            + SelectSql.where(GROUP_ID + "=?")
+            + SelectSql.orderByAsc(NAME),
+        groupId);
   }
 
   public void dropAndInsertInitialProblemsToTable() {
@@ -175,7 +179,6 @@ public class ProblemsTable extends H2BasicTable<Problem> {
     return new ArrayList<>();
   }
 
-  @OrmRecord
   public static record Problem(
       @PrimaryKey long id,
       LocalDateTime createdAt,

@@ -131,7 +131,7 @@ $(function () {
   const userId = getUserId();
 
   $("#signup-seatid").val(getSeatId() ? getSeatId() : null);
-  $("#signup-username-stdid").val(getUserId() ? getUserId() : 5518000);
+  $("#signup-username-stdid").val(getUserId() ? getUserId() : 5523000);
   $("#signup-username-stdid").prop("disabled", true);
   $("#signup-username-name").val(getUserName());
   $("#signup-username-name").prop("disabled", true);

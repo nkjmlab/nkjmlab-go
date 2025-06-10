@@ -8,13 +8,15 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.result.RowMap;
-import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
-import org.nkjmlab.sorm4j.util.table_def.annotation.AutoIncrement;
-import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
+import org.nkjmlab.sorm4j.common.container.RowMap;
+import org.nkjmlab.sorm4j.extension.h2.orm.table.definition.H2DefinedTableBase;
+import org.nkjmlab.sorm4j.sql.statement.SqlKeyword;
+import org.nkjmlab.sorm4j.sql.statement.SqlTrait;
+import org.nkjmlab.sorm4j.table.definition.annotation.AutoIncrement;
+import org.nkjmlab.sorm4j.table.definition.annotation.PrimaryKey;
 
-public class GameRecordsTable extends H2BasicTable<GameRecord> {
+public class GameRecordsTable extends H2DefinedTableBase<GameRecord>
+    implements SqlTrait, SqlKeyword {
   private static final String CREATED_AT = "created_at";
   private static final String USER_ID = "user_id";
 
@@ -123,7 +125,6 @@ public class GameRecordsTable extends H2BasicTable<GameRecord> {
         userId);
   }
 
-  @OrmRecord
   public static record GameRecord(
       @PrimaryKey @AutoIncrement int id,
       LocalDateTime createdAt,

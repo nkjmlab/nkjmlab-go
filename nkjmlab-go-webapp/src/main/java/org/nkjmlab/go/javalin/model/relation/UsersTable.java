@@ -1,7 +1,5 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
-
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -15,18 +13,18 @@ import org.nkjmlab.go.javalin.GoAccessManager.AccessRole;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.annotation.OrmTable;
-import org.nkjmlab.sorm4j.common.Tuple.Tuple2;
-import org.nkjmlab.sorm4j.result.RowMap;
-import org.nkjmlab.sorm4j.sql.OrderedParameterSqlParser;
-import org.nkjmlab.sorm4j.sql.ParameterizedSql;
-import org.nkjmlab.sorm4j.sql.ParameterizedSqlParser;
-import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
-import org.nkjmlab.sorm4j.util.h2.functions.table.CsvRead;
-import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
-import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
-import org.nkjmlab.sorm4j.util.table_def.annotation.Unique;
+import org.nkjmlab.sorm4j.common.container.RowMap;
+import org.nkjmlab.sorm4j.common.container.Tuple.Tuple2;
+import org.nkjmlab.sorm4j.extension.h2.functions.table.CsvRead;
+import org.nkjmlab.sorm4j.extension.h2.orm.table.definition.H2DefinedTable;
+import org.nkjmlab.sorm4j.extension.h2.orm.table.definition.H2DefinedTableBase;
+import org.nkjmlab.sorm4j.mapping.annotation.OrmTableName;
+import org.nkjmlab.sorm4j.sql.parameterize.ParameterizedSql;
+import org.nkjmlab.sorm4j.sql.statement.SelectSql;
+import org.nkjmlab.sorm4j.sql.statement.SqlKeyword;
+import org.nkjmlab.sorm4j.table.definition.annotation.Index;
+import org.nkjmlab.sorm4j.table.definition.annotation.PrimaryKey;
+import org.nkjmlab.sorm4j.table.definition.annotation.Unique;
 
 /***
  * Userという名前で統一したかったけど，H2のデフォルトのテーブルと衝突してしまうので，Playerに改名した．
@@ -34,7 +32,7 @@ import org.nkjmlab.sorm4j.util.table_def.annotation.Unique;
  * @author nkjm
  *
  */
-public class UsersTable extends H2BasicTable<User> {
+public class UsersTable extends H2DefinedTableBase<User> implements SqlKeyword {
   static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
@@ -62,11 +60,11 @@ public class UsersTable extends H2BasicTable<User> {
   }
 
   private List<User> readAllOrderedUsers() {
-    return readList(selectStarFrom(getTableName()) + " ORDER BY " + USER_ID);
+    return readList(SelectSql.selectStarFrom(getTableName()) + " ORDER BY " + USER_ID);
   }
 
   public User readByEmail(String email) {
-    return readOne(selectStarFrom(getTableName()) + WHERE + EMAIL + "=?", email);
+    return readOne(SelectSql.selectStarFrom(getTableName()) + WHERE + EMAIL + "=?", email);
   }
 
   public void readFileAndInsertIfNotExists(File usersCsvFile) {
@@ -77,14 +75,12 @@ public class UsersTable extends H2BasicTable<User> {
   }
 
   private List<UserCsv> readInitialUsersCsv(File usersCsvFile) {
-    return new H2BasicTable<>(getOrm(), UserCsv.class)
-            .readList(
-                "select * from " + CsvRead.builderForCsvWithHeader(usersCsvFile).build().getSql())
-            .stream()
-            .toList();
+    return H2DefinedTable.of(getOrm(), UserCsv.class)
+        .readList("select * from " + CsvRead.builderForCsvWithHeader(usersCsvFile).build().getSql())
+        .stream()
+        .toList();
   }
 
-  @OrmRecord
   public static record UserCsv(
       String userId,
       String email,
@@ -114,10 +110,8 @@ public class UsersTable extends H2BasicTable<User> {
       return Collections.emptyList();
     }
     ParameterizedSql st =
-        OrderedParameterSqlParser.of(
-                "SELECT * from " + getTableName() + " where " + USER_ID + " IN (<?>)")
-            .addParameter(uids)
-            .parse();
+        ParameterizedSql.withOrderedParameters(
+            "SELECT * from " + getTableName() + " where " + USER_ID + " IN (<?>)", uids);
     return readList(st.getSql(), st.getParameters());
   }
 
@@ -147,13 +141,12 @@ public class UsersTable extends H2BasicTable<User> {
 
   public List<Tuple2<User, Login>> readAllWithLastLogin() {
     ParameterizedSql stmt =
-        ParameterizedSqlParser.parse(
+        ParameterizedSql.of(
             "SELECT * except(r.USER_NAME) FROM PLAYERS  LEFT JOIN (SELECT * FROM LOGINS  WHERE ID IN (SELECT MAX(ID) FROM LOGINS GROUP BY USER_ID)) r USING(USER_ID) ORDER BY USER_ID");
     return getOrm().readTupleList(User.class, Login.class, stmt);
   }
 
-  @OrmRecord
-  @OrmTable("PLAYERS")
+  @OrmTableName("PLAYERS")
   public static record User(
       @PrimaryKey String userId,
       @Unique @Index String email,

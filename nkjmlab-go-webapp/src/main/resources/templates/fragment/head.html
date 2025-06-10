@@ -42,21 +42,11 @@
     <script
         th:src="|/webjars/datatables.net-buttons-bs5/${webjars.datatables_net_buttons_bs5}/js/buttons.bootstrap5.min.js|"></script>
 
-    <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-app-compat.js|"></script>
-    <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-auth-compat.js|"></script>
-    <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-firestore-compat.js|"></script>
 
     <script th:src="|/webjars/ua-parser-js/${webjars.ua_parser_js}/dist/ua-parser.min.js|"></script>
 
     <script th:src="|/js/lib/jsonrpc-client.js?${MODIFIED_DATES.js_lib_jsonrpc_client_js}|"></script>
     <script th:src="|/js/utils.js?${MODIFIED_DATES.js_utils_js}|"></script>
-
-    <script th:inline="javascript">
-        const firebaseConfig = /*[[${firebaseConfig}]]*/ {};
-        firebase.initializeApp(firebaseConfig);
-    </script>
-
-    <script th:src="|/js/firebase.js?${MODIFIED_DATES.js_firebase_js}|"></script>
 
 
 </th:block>

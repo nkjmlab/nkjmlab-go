@@ -1,6 +1,8 @@
 package org.nkjmlab.go.javalin;
 
-import org.nkjmlab.sorm4j.common.DriverManagerDataSource;
+import javax.sql.DataSource;
+
+import org.nkjmlab.sorm4j.internal.util.datasource.DriverManagerDataSource;
 import org.nkjmlab.util.java.lang.ResourceUtils;
 
 public class WebApp {
@@ -23,10 +25,10 @@ public class WebApp {
     this.app = new GoApplication(dataSourceManager, 12345);
   }
 
-  public static DriverManagerDataSource getInMemoryDataSource() {
+  public static DataSource getInMemoryDataSource() {
     final String JDBC_URL = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE";
     final String USER = "sa";
     final String PASSWORD = "";
-    return DriverManagerDataSource.create(JDBC_URL, USER, PASSWORD);
+    return DriverManagerDataSource.of(JDBC_URL, USER, PASSWORD);
   }
 }

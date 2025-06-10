@@ -2,9 +2,11 @@ package org.nkjmlab.go.javalin.model.common;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+
 import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.util.jackson.JacksonMapper;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 
 public record ProblemJson(

@@ -1,25 +1,24 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.orderBy;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.where;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
 import javax.sql.DataSource;
+
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
-import org.nkjmlab.sorm4j.util.table_def.annotation.AutoIncrement;
-import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
-import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
+import org.nkjmlab.sorm4j.extension.h2.orm.table.definition.H2DefinedTableBase;
+import org.nkjmlab.sorm4j.sql.statement.SqlTrait;
+import org.nkjmlab.sorm4j.table.definition.annotation.AutoIncrement;
+import org.nkjmlab.sorm4j.table.definition.annotation.Index;
+import org.nkjmlab.sorm4j.table.definition.annotation.PrimaryKey;
 
-public class LoginsTable extends H2BasicTable<Login> {
+public class LoginsTable extends H2DefinedTableBase<Login> implements SqlTrait {
 
   private static final String USER_ID = "user_id";
 
@@ -88,7 +87,6 @@ public class LoginsTable extends H2BasicTable<Login> {
         .orElse(false);
   }
 
-  @OrmRecord
   public static record Login(
       @PrimaryKey @AutoIncrement long id,
       @Index String userId,

@@ -26,7 +26,7 @@ import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.go.javalin.model.relation.VotesTable.VoteResult;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
-import org.nkjmlab.sorm4j.internal.util.Try;
+import org.nkjmlab.sorm4j.util.function.exception.Try;
 import org.nkjmlab.util.java.json.JsonMapper;
 import org.nkjmlab.util.java.lang.ParameterizedStringFormatter;
 import org.nkjmlab.util.java.util.Base64Utils;

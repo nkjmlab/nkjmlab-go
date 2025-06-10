@@ -17,7 +17,7 @@ import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.MatchingRequestsTable.MatchingRequest;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager;
-import org.nkjmlab.sorm4j.common.Tuple.Tuple2;
+import org.nkjmlab.sorm4j.common.container.Tuple.Tuple2;
 import org.nkjmlab.util.java.web.ViewModel.Builder;
 import org.nkjmlab.util.java.web.WebApplicationFileLocation;
 

@@ -3,6 +3,7 @@ setlocal
 chcp 65001
 set _B=%~dp0
 set BAT_DIR=%_B:~0,-1%
+set PATH=%MAVEN_HOME%\bin;%JAVA_HOME%\bin;%PATH%
 
 setlocal enabledelayedexpansion
 set wmicKillNameFilter=java

@@ -121,7 +121,8 @@ public class GoTables {
     GameStatesTable gameStatesTable = new GameStatesTable(fileDbDataSource);
     gameStatesTable.createTableIfNotExists().createIndexesIfNotExists();
     gameStatesTable.trimAndBackupToFile(
-        basicDataSource.getFactory().getDatabaseDirectory(), TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
+        basicDataSource.getFactory().getDatabaseDirectoryPath().toFile(),
+        TRIM_THRESHOLD_OF_GAME_STATE_TABLE);
 
     GameStatesTable gameStatesTableInMem = new GameStatesTable(memDbDataSource);
     gameStatesTableInMem.createTableIfNotExists().createIndexesIfNotExists();
