@@ -64,6 +64,11 @@ public class GoGetHandlers {
         "/app/fragment/game-record-table.html",
         createGameRecordTableHandler(),
         AccessRole.LOGIN_ROLES);
+    app.get(
+        "/app/fragment/question-table-small.html",
+        createQuestionTableHandler(),
+        AccessRole.LOGIN_ROLES);
+
     app.get("/app/fragment/question-table*", createQuestionTableHandler(), AccessRole.ADMIN);
 
     app.get(
