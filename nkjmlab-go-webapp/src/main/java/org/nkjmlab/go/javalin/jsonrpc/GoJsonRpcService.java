@@ -368,6 +368,11 @@ public class GoJsonRpcService implements GoJsonRpcServiceInterface {
   }
 
   @Override
+  public void modifyRankAndPoint(String userId, int rank, int point) {
+    goTables.usersTable.modifyRankAndPoint(goTables.gameRecordsTable, userId, rank, point);
+  }
+
+  @Override
   public int registerRecord(String userId, String opponentUserId, String jadge, String memo) {
     User user = goTables.usersTable.selectByPrimaryKey(userId);
 

@@ -3,6 +3,8 @@
 
 <head>
   <object th:insert="~{/fragment/head.html::meta-fragment}" th:remove="tag"></object>
+  <script th:src="|/js/play-common.js?${MODIFIED_DATES.js_play_common_js}|"></script>
+  <script th:src="|/js/players.js?${MODIFIED_DATES.js_players_js}|"></script>
   <script>
     $(function () {
       const o = [1, "asc"];
@@ -68,6 +70,7 @@
               <th>ポイント</th>
               <th>座席</th>
               <th>Login</th>
+              <th>操作</th>
             </tr>
           </thead>
           <tbody>
@@ -82,12 +85,19 @@
               <td class="" th:text="${item.user.point}"></td>
               <td class="" th:text="${item.login.seatId}"></td>
               <td class="small" th:text="${#temporals.format(item.login.loggedInAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+              <td>
+                <button class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#modify-rank-modal"
+                  th:attr="data-stdid=${item.login.userId}, data-rank=${item.user.rank}, data-point=${item.user.point}">
+                  級位修正
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
     </div>
   </div>
+  <div th:insert="~{/fragment/modal-modify-rank.html::fcontent}" th:remove="tag"></div>
 </body>
 
 </html>

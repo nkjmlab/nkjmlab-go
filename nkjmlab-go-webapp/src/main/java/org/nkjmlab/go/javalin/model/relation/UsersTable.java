@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 import org.nkjmlab.go.javalin.GoAccessManager.AccessRole;
+import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
 import org.nkjmlab.go.javalin.model.relation.LoginsTable.Login;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
@@ -205,5 +206,15 @@ public class UsersTable extends H2DefinedTableBase<User> implements SqlKeyword {
 
   void updateRankAndPoint(String userId, int currentRank, int currentPoint) {
     updateByPrimaryKey(RowMap.of("rank", currentRank, "point", currentPoint), userId);
+  }
+
+  public void modifyRankAndPoint(
+      GameRecordsTable gameRecordsTable, String userId, int rank, int point) {
+    updateRankAndPoint(userId, rank, point);
+
+    GameRecord rec =
+        new GameRecord(
+            -1, LocalDateTime.now(), userId, userId, "MODIFY", "MODIFY", rank, point, "MODIFY");
+    gameRecordsTable.insert(rec);
   }
 }

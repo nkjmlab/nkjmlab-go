@@ -29,7 +29,8 @@ public class GameRecordsTable extends H2DefinedTableBase<GameRecord>
    *
    * @param usersTable
    */
-  void restoreUsersRankAndPointByLatestGameRecord(UsersTable usersTable) {
+  @SuppressWarnings("unused")
+  private void restoreUsersRankAndPointByLatestGameRecord(UsersTable usersTable) {
     usersTable
         .selectAll()
         .forEach(
@@ -55,7 +56,7 @@ public class GameRecordsTable extends H2DefinedTableBase<GameRecord>
 
   public void registerGameResultAndUpdateUserRankAndPoint(
       UsersTable usersTable, User user, String opponentUserId, String jadge, String memo) {
-    RankAndPoint rankAndPoint = calcRankAndPoint(user, opponentUserId, jadge, memo);
+    RankAndPoint rankAndPoint = calcRankAndPoint(user, jadge, memo);
     usersTable.updateRankAndPoint(user.userId(), rankAndPoint.rank(), rankAndPoint.point());
     GameRecord ret =
         new GameRecord(
@@ -71,8 +72,7 @@ public class GameRecordsTable extends H2DefinedTableBase<GameRecord>
     insert(ret);
   }
 
-  private RankAndPoint calcRankAndPoint(
-      User user, String opponentUserId, String jadge, String memo) {
+  private RankAndPoint calcRankAndPoint(User user, String jadge, String memo) {
     int currentRank = user.rank();
     int currentPoint = user.point();
 
