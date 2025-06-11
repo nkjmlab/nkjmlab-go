@@ -271,7 +271,7 @@
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>firebase</artifactId>
-			<version>10.13.0</version>
+			<version>11.9.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>*</groupId>
@@ -282,7 +282,7 @@
 		<dependency>
 			<groupId>org.webjars.npm</groupId>
 			<artifactId>firebaseui</artifactId>
-			<version>6.0.2</version>
+			<version>6.1.0</version>
 			<exclusions>
 				<exclusion>
 					<groupId>*</groupId>
