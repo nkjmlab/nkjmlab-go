@@ -10,16 +10,16 @@
   <script th:src="|/js/check-environment.js?${MODIFIED_DATES.js_check_environment_js}|"></script>
   <script th:src="|/js/firebase-login.js?${MODIFIED_DATES.js_firebase_login_js}|"></script>
   <script th:src="|/js/index.js?${MODIFIED_DATES.js_index_js}|"></script>
-    <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-app-compat.js|"></script>
-    <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-auth-compat.js|"></script>
-    <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-firestore-compat.js|"></script>
+  <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-app-compat.js|"></script>
+  <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-auth-compat.js|"></script>
+  <script th:src="|/webjars/firebase/${webjars.firebase}/firebase-firestore-compat.js|"></script>
 
-    <script th:inline="javascript">
-        const firebaseConfig = /*[[${firebaseConfig}]]*/ {};
-        firebase.initializeApp(firebaseConfig);
-    </script>
+  <script th:inline="javascript">
+    const firebaseConfig = /*[[${firebaseConfig}]]*/ {};
+    firebase.initializeApp(firebaseConfig);
+  </script>
 
-    <script th:src="|/js/firebase.js?${MODIFIED_DATES.js_firebase_js}|"></script>
+  <script th:src="|/js/firebase.js?${MODIFIED_DATES.js_firebase_js}|"></script>
 
   <title>ようこそ | 囲碁の演習と対局</title>
   <script th:utext="|const SIGN_IN_FLOW = '${popupSignin ? 'popup':'redirect'}';|"></script>
@@ -49,6 +49,11 @@
           </div>
           <div class="mt-2 small">
             <div class="text-muted">碁盤へ進めない場合は，ログアウトしてからもう一度ログインして下さい．</div>
+          </div>
+          <div class="btn-group">
+            <button class="float-end btn btn-sm btn-warning" type="button" id="btn-logout">
+              Googleログイン解除 <i class="fas fa-sign-out-alt"></i>
+            </button>
           </div>
         </div>
       </div>
@@ -109,11 +114,6 @@
         <!--
         <a class="btn btn-warning btn-sm" href="reset-localdata.html"><i class="fas fa-exclamation-triangle"></i></a>
         -->
-        <div class="btn-group">
-          <button class="float-end btn btn-sm btn-warning" type="button" id="btn-logout">
-            ログアウト <i class="fas fa-sign-out-alt"></i>
-          </button>
-        </div>
         <div class="btn-group">
           <a class="btn btn-sm btn-info" href="https://scrapbox.io/toho-go/"> アプリについて <i
               class="fas fa-external-link-alt"></i>

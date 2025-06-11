@@ -39,14 +39,14 @@ $(function () {
                 }
             }
 
-            const stdId = getFormattedStdId($("#signup-username-stdid").val());
-            const seatId = getFormattedSeatId($("#signup-seatid").val());
+            const stdId = getFormattedStdId($("#signup-username-stdid").val()).trim();
+            const seatId = getFormattedSeatId($("#signup-seatid").val()).trim();
 
             if (!seatId || !stdId) {
                 swalAlert("入力エラー", (!seatId ? "座席番号" : "") + (!stdId ? " 学籍番号" : "") + "に無効な値が入力されました", "error");
                 return;
             }
-            const uname = $("#signup-username-name").val();
+            const uname = $("#signup-username-name").val().trim();
 
             new JsonRpcClient(new JsonRpcRequest(getAuthRpcServiceUrl(), "signupAsGuest", [
                 stdId, uname, seatId], function () {
@@ -70,15 +70,15 @@ $(function () {
                 }
             }
 
-            const stdId = getFormattedStdId($("#signup-username-stdid").val());
-            const seatId = getFormattedSeatId($("#signup-seatid").val());
+            const stdId = getFormattedStdId($("#signup-username-stdid").val()).trim();
+            const seatId = getFormattedSeatId($("#signup-seatid").val()).trim();
 
             if (!seatId || !stdId) {
                 swalAlert("入力エラー", (!seatId ? "座席番号" : "") + (!stdId ? " 学籍番号" : "") + "に無効な値が入力されました", "error");
                 return;
             }
 
-            const password = $("#signup-password").val();
+            const password = $("#signup-password").val().trim();
             new JsonRpcClient(new JsonRpcRequest(getAuthRpcServiceUrl(), "signinWithoutFirebase", [
                 stdId, password, seatId], function (data) {
                     if (data.result == null) {
