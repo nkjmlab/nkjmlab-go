@@ -125,8 +125,8 @@ body.unselectable {
   /*-webkit-touch-callout: initial;*/
 }
 
-.symbols-area {
-
+.symbol-in-msg {
+  height: 1.2em;
 }
 
 #a-stones, #moving-a-stone, #b-stones, #moving-b-stone, #c-stones, #moving-c-stone, #x-stones,
