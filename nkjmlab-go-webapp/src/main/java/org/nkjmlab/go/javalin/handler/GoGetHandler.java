@@ -59,6 +59,8 @@ class GoGetHandler implements Handler {
               "stacktrace-js",
               "datatables.net",
               "datatables.net-bs5",
+              "datatables.net-buttons",
+              "datatables.net-buttons-bs5",
               "firebase",
               "firebaseui",
               "ua-parser-js",
@@ -83,7 +85,7 @@ class GoGetHandler implements Handler {
         authService
             .toSigninSession(request.getSession().getId())
             .map(uid -> goTables.usersTable.selectByPrimaryKey(uid.userId()))
-            .orElse(new User());
+            .orElse(User.createBlankUser());
 
     Map<String, Object> map = template.builder().put("currentUser", u).build();
     return ViewModel.builder(map);

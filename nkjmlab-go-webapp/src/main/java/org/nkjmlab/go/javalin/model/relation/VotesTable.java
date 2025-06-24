@@ -1,17 +1,19 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.*;
 import java.time.LocalDateTime;
 import java.util.List;
+
 import javax.sql.DataSource;
+
 import org.nkjmlab.go.javalin.model.relation.VotesTable.Vote;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
-import org.nkjmlab.sorm4j.util.sql.SelectSql;
-import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKeyColumns;
+import org.nkjmlab.sorm4j.extension.h2.orm.table.definition.H2DefinedTableBase;
+import org.nkjmlab.sorm4j.sql.statement.SelectSql;
+import org.nkjmlab.sorm4j.sql.statement.SqlKeyword;
+import org.nkjmlab.sorm4j.sql.statement.SqlTrait;
+import org.nkjmlab.sorm4j.table.definition.annotation.PrimaryKeyConstraint;
 
-public class VotesTable extends H2BasicTable<Vote> {
+public class VotesTable extends H2DefinedTableBase<Vote> implements SqlTrait, SqlKeyword {
 
   private static final String PROBLEM_ID = "problem_id";
   private static final String VOTE_ID = "vote_id";
@@ -29,7 +31,7 @@ public class VotesTable extends H2BasicTable<Vote> {
       return getOrm()
           .readList(
               VoteResult.class,
-              sql + WHERE + cond(PROBLEM_ID, "=", "?") + groupBy(VOTE_ID),
+              statement(sql, WHERE, cond(PROBLEM_ID, "=", "?"), groupBy(VOTE_ID)),
               problemId);
     } else {
       return getOrm()
@@ -38,11 +40,9 @@ public class VotesTable extends H2BasicTable<Vote> {
     }
   }
 
-  @OrmRecord
   public static record VoteResult(String voteId, int numOfVote) {}
 
-  @OrmRecord
-  @PrimaryKeyColumns({"USER_ID", "PROBLEM_ID", "GAME_ID"})
+  @PrimaryKeyConstraint("USER_ID, PROBLEM_ID, GAME_ID")
   public static record Vote(
       String userId,
       long problemId,

@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org" lang="ja">
+<div th:fragment="fcontent">
+  <div class="modal fade" id="modify-rank-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h4 id="signup-modal-title" class="modal-title">
+            級位修正 <i class="fas fa-address-card"></i>
+          </h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="form-modify-rank">
+            <div class="form-group">
+              <label class="control-label">学籍番号 </label> <input id="modify-rank-stdid"
+                type="tel" class="form-control bg-light" required readonly>
+            </div>
+            <div class="form-group">
+              <label class="control-label">級位</label> <input id="modify-rank-rank" type="tel"
+                class="form-control" required>
+            </div>
+            <div class="form-group">
+              <label class="control-label">ポイント</label> <input id="modify-rank-point" type="tel"
+                class="form-control" required>
+            </div>
+            <input class="submit-for-validation" style="display: none" type="submit"
+              formmethod="GET">
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">キャンセル</button>
+          <button id="btn-modify-rank-send" type="button" class="btn btn-primary">更新</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

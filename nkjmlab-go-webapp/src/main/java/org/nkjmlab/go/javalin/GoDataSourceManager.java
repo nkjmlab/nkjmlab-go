@@ -5,7 +5,8 @@ import java.io.File;
 import javax.sql.DataSource;
 
 import org.h2.jdbcx.JdbcConnectionPool;
-import org.nkjmlab.sorm4j.util.h2.datasource.H2DataSourceFactory;
+import org.nkjmlab.sorm4j.extension.h2.datasource.H2DataSourceFactory;
+import org.nkjmlab.sorm4j.extension.h2.datasource.H2DataSourceFactory.Config;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
 import org.nkjmlab.util.java.json.FileDatabaseConfigJson;
@@ -24,14 +25,14 @@ public class GoDataSourceManager {
   public GoDataSourceManager(File h2Json) {
     FileDatabaseConfigJson fileDbConf = getFileDbConfig(h2Json);
     H2DataSourceFactory factory =
-        H2DataSourceFactory.builder(
-                fileDbConf.databaseDirectory,
+        H2DataSourceFactory.of(
+            Config.of(
+                fileDbConf.databaseDirectory.toPath(),
                 fileDbConf.databaseName,
                 fileDbConf.username,
-                fileDbConf.password)
-            .build();
+                fileDbConf.password));
     this.factory = factory;
-    factory.makeFileDatabaseIfNotExists();
+    factory.makeDatabaseFileIfNotExists();
     log.info("H2factory", factory);
   }
 

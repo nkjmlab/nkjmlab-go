@@ -3,6 +3,7 @@ $(function () {
     firebaseSignOut();
   });
 
+
   const uiConfig = {
     callbacks: {
       signInSuccessWithAuthResult: function (authResult, redirectUrl) {
@@ -11,7 +12,10 @@ $(function () {
       }
     },
     signInFlow: SIGN_IN_FLOW,
-    signInOptions: [firebase.auth.GoogleAuthProvider.PROVIDER_ID],
+    signInOptions: [{
+      provider: firebase.auth.GoogleAuthProvider.PROVIDER_ID,
+      customParameters: { prompt: 'select_account' }
+    }],
     tosUrl: 'https://www.nakajimalab.is.sci.toho-u.ac.jp/site-policy.html',
     privacyPolicyUrl: 'https://www.nakajimalab.is.sci.toho-u.ac.jp/site-policy.html'
   };

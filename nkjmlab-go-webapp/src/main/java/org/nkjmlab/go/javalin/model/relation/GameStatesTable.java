@@ -1,14 +1,5 @@
 package org.nkjmlab.go.javalin.model.relation;
 
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.cond;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.from;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.func;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.limit;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.orderBy;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.orderByDesc;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.select;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.selectStarFrom;
-import static org.nkjmlab.sorm4j.util.sql.SelectSql.where;
 import java.io.File;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -16,23 +7,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
 import javax.sql.DataSource;
+
 import org.nkjmlab.go.javalin.GoApplication;
 import org.nkjmlab.go.javalin.model.common.Agehama;
 import org.nkjmlab.go.javalin.model.common.Hand;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
-import org.nkjmlab.sorm4j.util.h2.functions.system.CsvWrite;
-import org.nkjmlab.sorm4j.util.jackson.JacksonSormContext;
-import org.nkjmlab.sorm4j.util.table_def.annotation.AutoIncrement;
-import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
-import org.nkjmlab.sorm4j.util.table_def.annotation.IndexColumns;
-import org.nkjmlab.sorm4j.util.table_def.annotation.NotNull;
-import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
+import org.nkjmlab.sorm4j.context.SormContext;
+import org.nkjmlab.sorm4j.extension.datatype.jackson.JacksonSupport;
+import org.nkjmlab.sorm4j.extension.h2.functions.system.CsvWrite;
+import org.nkjmlab.sorm4j.extension.h2.orm.table.definition.H2DefinedTableBase;
+import org.nkjmlab.sorm4j.sql.statement.SqlKeyword;
+import org.nkjmlab.sorm4j.sql.statement.SqlTrait;
+import org.nkjmlab.sorm4j.table.definition.annotation.AutoIncrement;
+import org.nkjmlab.sorm4j.table.definition.annotation.Index;
+import org.nkjmlab.sorm4j.table.definition.annotation.IndexColumnPair;
+import org.nkjmlab.sorm4j.table.definition.annotation.NotNull;
+import org.nkjmlab.sorm4j.table.definition.annotation.PrimaryKey;
 
-public class GameStatesTable extends H2BasicTable<GameState> {
+public class GameStatesTable extends H2DefinedTableBase<GameState> implements SqlTrait, SqlKeyword {
+
   private static final org.apache.logging.log4j.Logger log =
       org.apache.logging.log4j.LogManager.getLogger();
 
@@ -50,12 +46,14 @@ public class GameStatesTable extends H2BasicTable<GameState> {
   public static final String OPTIONS = "options";
 
   public GameStatesTable(DataSource dataSource) {
-    super(
-        Sorm.create(
-            dataSource,
-            JacksonSormContext.builder(GoApplication.getDefaultJacksonMapper().getObjectMapper())
-                .build()),
-        GameState.class);
+    super(Sorm.create(dataSource, buildContext()), GameState.class);
+  }
+
+  private static SormContext buildContext() {
+    org.nkjmlab.sorm4j.context.SormContext.Builder builder = SormContext.builder();
+    new JacksonSupport(GoApplication.getDefaultJacksonMapper().getObjectMapper())
+        .addSupport(builder);
+    return builder.build();
   }
 
   Optional<GameState> getLatestGameStateFromDb(String gameId) {
@@ -117,8 +115,7 @@ public class GameStatesTable extends H2BasicTable<GameState> {
             "SELECT DISTINCT GAME_ID FROM GAME_STATES  WHERE GAME_ID LIKE '%-vs-%' AND CAST(CREATED_AT AS DATE) = CURRENT_DATE");
   }
 
-  @OrmRecord
-  @IndexColumns({BLACK_PLAYER_ID, WHITE_PLAYER_ID})
+  @IndexColumnPair({BLACK_PLAYER_ID, WHITE_PLAYER_ID})
   public record GameState(
       @PrimaryKey @AutoIncrement long id,
       LocalDateTime createdAt,

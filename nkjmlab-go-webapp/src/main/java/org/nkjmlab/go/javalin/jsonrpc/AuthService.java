@@ -8,7 +8,7 @@ import org.nkjmlab.go.javalin.jsonrpc.GoAuthService.SigninSession;
 import org.nkjmlab.go.javalin.model.relation.GoTables;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
-import org.nkjmlab.sorm4j.result.RowMap;
+import org.nkjmlab.sorm4j.common.container.RowMap;
 
 import jakarta.servlet.http.HttpServletRequest;
 

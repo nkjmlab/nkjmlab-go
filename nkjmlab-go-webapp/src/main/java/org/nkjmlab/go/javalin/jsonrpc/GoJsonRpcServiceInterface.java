@@ -2,6 +2,7 @@ package org.nkjmlab.go.javalin.jsonrpc;
 
 import java.io.File;
 import java.util.List;
+
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
@@ -57,6 +58,8 @@ public interface GoJsonRpcServiceInterface {
   void sendGlobalMessage(String userId, String message);
 
   int registerRecord(String userId, String opponentUserId, String jadge, String memo);
+
+  void modifyRankAndPoint(String userId, int rank, int point);
 
   String getKomi(String gameId);
 }

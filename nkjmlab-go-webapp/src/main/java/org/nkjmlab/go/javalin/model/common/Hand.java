@@ -1,14 +1,15 @@
 package org.nkjmlab.go.javalin.model.common;
 
 import java.util.stream.Stream;
-import org.nkjmlab.sorm4j.util.datatype.OrmJsonColumnContainer;
+
+import org.nkjmlab.sorm4j.extension.datatype.jackson.annotation.OrmJacksonMapped;
 
 /**
  * stone<br>
  * 1桁目 0:ブランク， 1:黒， 2:白, 3:A, 4:B, 5:C<br>
  * 2桁目 0：ブランク， 1:□， 2：△, 3:x
  */
-@OrmJsonColumnContainer
+@OrmJacksonMapped
 public record Hand(String type, int number, int x, int y, int stone, String options) {
 
   public static Hand createDummyHand() {

@@ -12,6 +12,7 @@ import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import org.eclipse.jetty.websocket.client.ClientUpgradeRequest;
 import org.eclipse.jetty.websocket.client.WebSocketClient;
 import org.junit.jupiter.api.Test;
+import org.nkjmlab.sorm4j.util.function.exception.Try;
 
 class GoWebSocketClientTest {
 
@@ -43,8 +44,8 @@ class GoWebSocketClientTest {
         URI toUri = new URI(uri + "?userId=" + stdId + "&gameId=" + stdId);
         client.connect(new GoWebSocket(), toUri, new ClientUpgradeRequest()).get();
 
-      } catch (Throwable t) {
-        log.error(t, t);
+      } catch (Exception t) {
+        throw Try.rethrow(t);
       } finally {
         try {
           client.stop();

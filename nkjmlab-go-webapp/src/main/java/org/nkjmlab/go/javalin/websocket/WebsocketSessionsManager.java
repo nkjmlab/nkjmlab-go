@@ -18,7 +18,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+
 import javax.sql.DataSource;
+
 import org.eclipse.jetty.websocket.api.RemoteEndpoint;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.WriteCallback;
@@ -28,24 +30,25 @@ import org.nkjmlab.go.javalin.model.common.Hand;
 import org.nkjmlab.go.javalin.model.common.Hand.HandType;
 import org.nkjmlab.go.javalin.model.common.ProblemJson;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
-import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.go.javalin.model.relation.GoTables;
+import org.nkjmlab.go.javalin.model.relation.ProblemsTable.Problem;
 import org.nkjmlab.go.javalin.model.relation.UsersTable;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.UserJson;
 import org.nkjmlab.go.javalin.websocket.WebsocketSessionsManager.WebsoketSessionsTable.WebSocketSession;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.annotation.OrmRecord;
-import org.nkjmlab.sorm4j.sql.OrderedParameterSqlParser;
-import org.nkjmlab.sorm4j.sql.ParameterizedSql;
-import org.nkjmlab.sorm4j.sql.ParameterizedSqlParser;
-import org.nkjmlab.sorm4j.util.h2.H2BasicTable;
-import org.nkjmlab.sorm4j.util.table_def.annotation.Index;
-import org.nkjmlab.sorm4j.util.table_def.annotation.PrimaryKey;
+import org.nkjmlab.sorm4j.extension.h2.orm.table.definition.H2DefinedTableBase;
+import org.nkjmlab.sorm4j.sql.parameterize.ParameterizedSql;
+import org.nkjmlab.sorm4j.sql.statement.SqlKeyword;
+import org.nkjmlab.sorm4j.sql.statement.SqlTrait;
+import org.nkjmlab.sorm4j.table.definition.annotation.Index;
+import org.nkjmlab.sorm4j.table.definition.annotation.PrimaryKey;
 import org.nkjmlab.util.jackson.JacksonMapper;
 import org.nkjmlab.util.java.concurrent.ForkJoinPoolUtils;
 import org.nkjmlab.util.java.json.JsonMapper;
+
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import io.javalin.websocket.WsMessageContext;
 
 public class WebsocketSessionsManager {
@@ -346,7 +349,8 @@ public class WebsocketSessionsManager {
     }
   }
 
-  public static class WebsoketSessionsTable extends H2BasicTable<WebSocketSession> {
+  public static class WebsoketSessionsTable extends H2DefinedTableBase<WebSocketSession>
+      implements SqlTrait, SqlKeyword {
 
     private static final String USER_ID = "user_id";
     private static final String GAME_ID = "game_id";
@@ -388,7 +392,7 @@ public class WebsocketSessionsManager {
         return Collections.emptyList();
       }
       ParameterizedSql psql =
-          ParameterizedSqlParser.parse(
+          ParameterizedSql.withOrderedParameters(
               "select * from " + getTableName() + " where " + USER_ID + " IN(<?>) ", userIds);
       return readList(psql.getSql(), psql.getParameters()).stream()
           .map(session -> sessions.get(session.sessionId()))
@@ -447,9 +451,16 @@ public class WebsocketSessionsManager {
 
     public List<String> readActiveGameIdsOrderByGameId(UsersTable usersTable) {
       ParameterizedSql psql =
-          ParameterizedSqlParser.parse(
-              SELECT + DISTINCT + GAME_ID + FROM + getTableName() + WHERE + GAME_ID + LIKE + "?",
-              "%-vs-%");
+          ParameterizedSql.of(
+              SELECT
+                  + DISTINCT
+                  + GAME_ID
+                  + FROM
+                  + getTableName()
+                  + WHERE
+                  + GAME_ID
+                  + LIKE
+                  + "'%-vs-%'");
       return getOrm().readList(String.class, psql).stream()
           .filter(gid -> readUsers(usersTable, gid).size() > 0)
           .sorted()
@@ -471,7 +482,7 @@ public class WebsocketSessionsManager {
         return Collections.emptyList();
       }
       ParameterizedSql st =
-          OrderedParameterSqlParser.parse(
+          ParameterizedSql.withOrderedParameters(
               "select * from " + getTableName() + " where " + USER_ID + " IN (<?>)", ids);
       return readList(st.getSql(), st.getParameters()).stream()
           .map(ws -> sessions.get(ws.sessionId()))
@@ -479,7 +490,6 @@ public class WebsocketSessionsManager {
           .collect(Collectors.toList());
     }
 
-    @OrmRecord
     public static record WebSocketSession(
         @PrimaryKey int sessionId, String userId, @Index String gameId, LocalDateTime createdAt) {}
   }

@@ -131,7 +131,7 @@ $(function () {
   const userId = getUserId();
 
   $("#signup-seatid").val(getSeatId() ? getSeatId() : null);
-  $("#signup-username-stdid").val(getUserId() ? getUserId() : 5518000);
+  $("#signup-username-stdid").val(getUserId() ? getUserId() : 5523000);
   $("#signup-username-stdid").prop("disabled", true);
   $("#signup-username-name").val(getUserName());
   $("#signup-username-name").prop("disabled", true);
@@ -766,6 +766,10 @@ function initView() {
   }
   if (getGameMode() == PLAY) {
     $("#btn-komi").show();
+    new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
+      "getKomi", [getGameId()], function (data) {
+        $("#current-komi").html(data.result);
+      })).rpc();
   } else {
     $("#btn-komi").hide();
   }
@@ -790,12 +794,6 @@ function initView() {
   }
   $("#list-game-history").empty();
   vGames.forEach(e => $("#list-game-history").append(e));
-
-  new JsonRpcClient(new JsonRpcRequest(getGoRpcServiceUrl(),
-    "getKomi", [getGameId()], function (data) {
-      $("#current-komi").html(data.result);
-    })).rpc();
-
 
   clearTimeout(initViewTimer);
 

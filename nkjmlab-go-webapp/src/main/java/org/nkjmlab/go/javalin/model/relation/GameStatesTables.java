@@ -10,10 +10,11 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
+
 import org.nkjmlab.go.javalin.model.common.Agehama;
 import org.nkjmlab.go.javalin.model.common.Hand;
 import org.nkjmlab.go.javalin.model.relation.GameStatesTable.GameState;
-import org.nkjmlab.sorm4j.internal.util.Try;
+import org.nkjmlab.sorm4j.util.function.exception.TryRunnable;
 
 public class GameStatesTables {
   private static final org.apache.logging.log4j.Logger log =
@@ -36,7 +37,7 @@ public class GameStatesTables {
     statesCache.put(json.gameId(), json);
     gameStatesTableInMem.insert(json);
     fileDbService.execute(
-        Try.createRunnable(
+        TryRunnable.toRunnable(
             () -> gameStatesTableInFile.insert(json), e -> log.error(e.getMessage())));
   }
 
