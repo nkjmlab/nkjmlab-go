@@ -67,8 +67,8 @@ public class GoTables {
     final MatchingRequestsTable matchingRequestsTable =
         prepareMatchingRequestsTable(memDbDataSource, gameStatesTables);
 
-    final UsersTable usersTable = prepareUsersTable(fileDbDataSource);
-    final GameRecordsTable gameRecordsTable = prepareGameRecordsTable(fileDbDataSource, usersTable);
+    final GameRecordsTable gameRecordsTable = prepareGameRecordsTable(fileDbDataSource);
+    final UsersTable usersTable = prepareUsersTable(fileDbDataSource, gameRecordsTable);
     final LoginsTable loginsTable = prepareLoginsTable(fileDbDataSource);
 
     GoTables goTables =
@@ -87,8 +87,7 @@ public class GoTables {
     return goTables;
   }
 
-  private static GameRecordsTable prepareGameRecordsTable(
-      DataSource fileDbDataSource, UsersTable usersTable) {
+  private static GameRecordsTable prepareGameRecordsTable(DataSource fileDbDataSource) {
     GameRecordsTable gameRecordsTable = new GameRecordsTable(fileDbDataSource);
     gameRecordsTable.createTableIfNotExists().createIndexesIfNotExists();
     gameRecordsTable.writeCsv(
@@ -154,7 +153,8 @@ public class GoTables {
     return loginsTable;
   }
 
-  private static UsersTable prepareUsersTable(DataSource dataSource) {
+  private static UsersTable prepareUsersTable(
+      DataSource dataSource, GameRecordsTable gameRecordsTable) {
     UsersTable usersTable = new UsersTable(dataSource);
     usersTable.dropTableIfExists();
     usersTable.createTableIfNotExists().createIndexesIfNotExists();
@@ -163,6 +163,7 @@ public class GoTables {
       f = ResourceUtils.getResourceAsFile("/conf/initial-users.csv.default");
     }
     usersTable.readFileAndInsertIfNotExists(f);
+    usersTable.restoreUsersRankAndPointByLatestGameRecord(gameRecordsTable);
     return usersTable;
   }
 

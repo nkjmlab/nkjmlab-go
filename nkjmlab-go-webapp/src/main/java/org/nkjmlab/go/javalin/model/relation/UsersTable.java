@@ -208,6 +208,34 @@ public class UsersTable extends H2DefinedTableBase<User> implements SqlKeyword {
     updateByPrimaryKey(RowMap.of("rank", currentRank, "point", currentPoint), userId);
   }
 
+  /**
+   * GameRecordsTableの最新レコードから復元する
+   *
+   * @param usersTable
+   */
+  public void restoreUsersRankAndPointByLatestGameRecord(GameRecordsTable gameRecordsTable) {
+    selectAll()
+        .forEach(
+            user -> {
+              GameRecord lastRecord =
+                  gameRecordsTable.readFirst(
+                      "select * from "
+                          + gameRecordsTable.getTableName()
+                          + " where "
+                          + USER_ID
+                          + "=?"
+                          + " order by "
+                          + " created_at "
+                          + " desc limit 1",
+                      user.userId());
+              if (lastRecord == null) {
+                return;
+              }
+              updateByPrimaryKey(
+                  RowMap.of("rank", lastRecord.rank(), "point", lastRecord.point()), user.userId());
+            });
+  }
+
   public void modifyRankAndPoint(
       GameRecordsTable gameRecordsTable, String userId, int rank, int point) {
     updateRankAndPoint(userId, rank, point);

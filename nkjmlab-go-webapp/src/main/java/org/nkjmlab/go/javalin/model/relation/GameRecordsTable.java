@@ -8,7 +8,6 @@ import javax.sql.DataSource;
 import org.nkjmlab.go.javalin.model.relation.GameRecordsTable.GameRecord;
 import org.nkjmlab.go.javalin.model.relation.UsersTable.User;
 import org.nkjmlab.sorm4j.Sorm;
-import org.nkjmlab.sorm4j.common.container.RowMap;
 import org.nkjmlab.sorm4j.extension.h2.orm.table.definition.H2DefinedTableBase;
 import org.nkjmlab.sorm4j.sql.statement.SqlKeyword;
 import org.nkjmlab.sorm4j.sql.statement.SqlTrait;
@@ -22,36 +21,6 @@ public class GameRecordsTable extends H2DefinedTableBase<GameRecord>
 
   public GameRecordsTable(DataSource dataSource) {
     super(Sorm.create(dataSource), GameRecord.class);
-  }
-
-  /**
-   * UserTableを間違って消してしまった時などに使う．基本的には使わない．
-   *
-   * @param usersTable
-   */
-  @SuppressWarnings("unused")
-  private void restoreUsersRankAndPointByLatestGameRecord(UsersTable usersTable) {
-    usersTable
-        .selectAll()
-        .forEach(
-            user -> {
-              GameRecord lastRecord =
-                  readFirst(
-                      "select * from "
-                          + getTableName()
-                          + " where "
-                          + USER_ID
-                          + "=?"
-                          + " order by "
-                          + CREATED_AT
-                          + " desc limit 1",
-                      user.userId());
-              if (lastRecord == null) {
-                return;
-              }
-              usersTable.updateByPrimaryKey(
-                  RowMap.of("rank", lastRecord.rank(), "point", lastRecord.point()), user.userId());
-            });
   }
 
   public void registerGameResultAndUpdateUserRankAndPoint(

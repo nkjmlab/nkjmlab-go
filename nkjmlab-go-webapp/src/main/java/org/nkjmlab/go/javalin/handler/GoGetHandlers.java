@@ -131,7 +131,7 @@ public class GoGetHandlers {
         ctx ->
             filePath ->
                 model -> {
-                  putUserAccounts(model);
+                  putLoginAccounts(model);
                   ctx.render("players.html", model.build());
                 });
   }
@@ -141,12 +141,19 @@ public class GoGetHandlers {
         ctx ->
             filePath ->
                 model -> {
-                  putUserAccounts(model);
+                  putLoginStudentAccounts(model);
                   ctx.render(filePath, model.build());
                 });
   }
 
-  private void putUserAccounts(Builder model) {
+  private void putLoginAccounts(Builder model) {
+    List<Tuple2<User, Login>> users = goTables.usersTable.readAllWithLastLogin();
+    List<GoGetHandlers.LoginJson> loginJsons =
+        users.stream().map(t -> new LoginJson(t.getT2(), t.getT1())).collect(Collectors.toList());
+    model.put("userAccounts", loginJsons);
+  }
+
+  private void putLoginStudentAccounts(Builder model) {
     List<Tuple2<User, Login>> users = goTables.usersTable.readAllWithLastLogin();
     List<GoGetHandlers.LoginJson> loginJsons =
         users.stream()

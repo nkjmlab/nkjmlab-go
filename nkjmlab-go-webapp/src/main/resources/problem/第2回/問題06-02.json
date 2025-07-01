@@ -1,323 +1,45 @@
-{
-	"agehama": {
-		"black": 0,
-		"white": 0
-	},
-	"cells": [
-		[
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0
-		],
-		[
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0
-		],
-		[
-			0,
-			0,
-			0,
-			2,
-			2,
-			2,
-			0,
-			0,
-			0
-		],
-		[
-			0,
-			0,
-			0,
-			2,
-			0,
-			1,
-			2,
-			2,
-			0
-		],
-		[
-			2,
-			2,
-			2,
-			2,
-			1,
-			0,
-			1,
-			2,
-			2
-		],
-		[
-			1,
-			1,
-			1,
-			1,
-			1,
-			1,
-			1,
-			1,
-			1
-		],
-		[
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0
-		],
-		[
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0
-		],
-		[
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0,
-			0
-		]
-	],
-	"groupId": "第2回",
-	"handHistory": [
-		{
-			"number": 0,
-			"options": "",
-			"stone": 1,
-			"type": "putOnBoard",
-			"x": 5,
-			"y": 0
-		},
-		{
-			"number": 1,
-			"options": "",
-			"stone": 1,
-			"type": "putOnBoard",
-			"x": 5,
-			"y": 1
-		},
-		{
-			"number": 2,
-			"options": "",
-			"stone": 1,
-			"type": "putOnBoard",
-			"x": 5,
-			"y": 2
-		},
-		{
-			"number": 3,
-			"options": "",
-			"stone": 1,
-			"type": "putOnBoard",
-			"x": 5,
-			"y": 3
-		},
-		{
-			"number": 4,
-			"options": "",
-			"stone": 1,
-			"type": "putOnBoard",
-			"x": 5,
-			"y": 4
-		},
-		{
-			"number": 5,
-			"options": "",
-			"stone": 1,
-			"type": "putOnBoard",
-			"x": 5,
-			"y": 5
-		},
-		{
-			"number": 6,
-			"options": "",
-			"stone": 1,
-			"type": "putOnBoard",
-			"x": 5,
-			"y": 6
-		},
-		{
-			"number": 7,
-			"options": "",
-			"stone": 1,
-			"type": "putOnBoard",
-			"x": 5,
-			"y": 7
-		},
-		{
-			"number": 8,
-			"options": "",
-			"stone": 1,
-			"type": "putOnBoard",
-			"x": 5,
-			"y": 8
-		},
-		{
-			"number": 9,
-			"options": "",
-			"stone": 1,
-			"type": "putOnBoard",
-			"x": 4,
-			"y": 4
-		},
-		{
-			"number": 10,
-			"options": "",
-			"stone": 1,
-			"type": "putOnBoard",
-			"x": 3,
-			"y": 4
-		},
-		{
-			"number": 11,
-			"options": "",
-			"stone": 1,
-			"type": "putOnBoard",
-			"x": 3,
-			"y": 5
-		},
-		{
-			"number": 12,
-			"options": "",
-			"stone": 2,
-			"type": "putOnBoard",
-			"x": 4,
-			"y": 0
-		},
-		{
-			"number": 13,
-			"options": "",
-			"stone": 2,
-			"type": "putOnBoard",
-			"x": 3,
-			"y": 6
-		},
-		{
-			"number": 14,
-			"options": "",
-			"stone": 2,
-			"type": "putOnBoard",
-			"x": 3,
-			"y": 7
-		},
-		{
-			"number": 15,
-			"options": "",
-			"stone": 2,
-			"type": "putOnBoard",
-			"x": 4,
-			"y": 7
-		},
-		{
-			"number": 16,
-			"options": "",
-			"stone": 2,
-			"type": "putOnBoard",
-			"x": 4,
-			"y": 8
-		},
-		{
-			"number": 17,
-			"options": "",
-			"stone": 2,
-			"type": "putOnBoard",
-			"x": 2,
-			"y": 5
-		},
-		{
-			"number": 18,
-			"options": "",
-			"stone": 2,
-			"type": "putOnBoard",
-			"x": 2,
-			"y": 4
-		},
-		{
-			"number": 19,
-			"options": "",
-			"stone": 2,
-			"type": "putOnBoard",
-			"x": 3,
-			"y": 3
-		},
-		{
-			"number": 20,
-			"options": "",
-			"stone": 2,
-			"type": "putOnBoard",
-			"x": 2,
-			"y": 3
-		},
-		{
-			"number": 21,
-			"options": "",
-			"stone": 2,
-			"type": "putOnBoard",
-			"x": 4,
-			"y": 3
-		},
-		{
-			"number": 22,
-			"options": "",
-			"stone": 2,
-			"type": "putOnBoard",
-			"x": 4,
-			"y": 1
-		},
-		{
-			"number": 23,
-			"options": "",
-			"stone": 2,
-			"type": "putOnBoard",
-			"x": 4,
-			"y": 2
-		},
-		{
-			"number": 24,
-			"options": "",
-			"stone": 1,
-			"type": "removeFromBoard",
-			"x": 3,
-			"y": 4
-		},
-		{
-			"number": 25,
-			"options": "",
-			"stone": 1,
-			"type": "putOnBoard",
-			"x": 4,
-			"y": 6
-		}
-	],
-	"message": "⿊番です。陣地を増やせるところにAと記入してください",
-	"name": "問題06-02",
-	"problemId": 1591765161325,
-	"ro": 9,
-	"symbols": {}
-}
+{"id":-1,"createdAt":[
+2025,7,1,14,24,24,986884656],
+"gameId":"5566990","blackPlayerId":"","whitePlayerId":"","lastHand":{"type":"putOnBoard","number":28,"x":2,"y":6,"stone":2,"options":null},
+"agehama":{"black":0,"white":0},
+"cells":[
+[0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0],
+[0,0,0,2,2,2,2,0,0],
+[0,0,0,2,0,1,2,2,0],
+[2,2,2,2,1,0,1,2,2],
+[1,1,1,1,1,1,1,1,1],
+[0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0],
+[0,0,0,0,0,0,0,0,0]],
+"symbols":{},
+"handHistory":[
+{"type":"putOnBoard","number":0,"x":5,"y":0,"stone":1,"options":""},
+{"type":"putOnBoard","number":1,"x":5,"y":1,"stone":1,"options":""},
+{"type":"putOnBoard","number":2,"x":5,"y":2,"stone":1,"options":""},
+{"type":"putOnBoard","number":3,"x":5,"y":3,"stone":1,"options":""},
+{"type":"putOnBoard","number":4,"x":5,"y":4,"stone":1,"options":""},
+{"type":"putOnBoard","number":5,"x":5,"y":5,"stone":1,"options":""},
+{"type":"putOnBoard","number":6,"x":5,"y":6,"stone":1,"options":""},
+{"type":"putOnBoard","number":7,"x":5,"y":7,"stone":1,"options":""},
+{"type":"putOnBoard","number":8,"x":5,"y":8,"stone":1,"options":""},
+{"type":"putOnBoard","number":9,"x":4,"y":4,"stone":1,"options":""},
+{"type":"putOnBoard","number":10,"x":3,"y":4,"stone":1,"options":""},
+{"type":"putOnBoard","number":11,"x":3,"y":5,"stone":1,"options":""},
+{"type":"putOnBoard","number":12,"x":4,"y":0,"stone":2,"options":""},
+{"type":"putOnBoard","number":13,"x":3,"y":6,"stone":2,"options":""},
+{"type":"putOnBoard","number":14,"x":3,"y":7,"stone":2,"options":""},
+{"type":"putOnBoard","number":15,"x":4,"y":7,"stone":2,"options":""},
+{"type":"putOnBoard","number":16,"x":4,"y":8,"stone":2,"options":""},
+{"type":"putOnBoard","number":17,"x":2,"y":5,"stone":2,"options":""},
+{"type":"putOnBoard","number":18,"x":2,"y":4,"stone":2,"options":""},
+{"type":"putOnBoard","number":19,"x":3,"y":3,"stone":2,"options":""},
+{"type":"putOnBoard","number":20,"x":2,"y":3,"stone":2,"options":""},
+{"type":"putOnBoard","number":21,"x":4,"y":3,"stone":2,"options":""},
+{"type":"putOnBoard","number":22,"x":4,"y":1,"stone":2,"options":""},
+{"type":"putOnBoard","number":23,"x":4,"y":2,"stone":2,"options":""},
+{"type":"removeFromBoard","number":24,"x":3,"y":4,"stone":1,"options":""},
+{"type":"putOnBoard","number":25,"x":4,"y":6,"stone":1,"options":""},
+{"type":"putOnBoard","number":28,"x":2,"y":6,"stone":2,"options":null}],
+"problemId":"1591765161325","options":{},
+"name":"問題06-02","groupId":"第2回","message":"⿊番です。陣地を増やせるところにAと記入してください"}
